@@ -1,18 +1,38 @@
 <!-- Main Section
 ================================================== -->
+<script src="js/bootstrap-datepicker.js"></script>
+<script src="js/bootstrap-timepicker.js"></script>
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== --> 
   <form class="form-horizontal well">
     <fieldset>
       <legend>1. Election Information</legend>
+      <!-- Election Name -->
       <div class="control-group">
-        <label class="control-label" for="input01">Text input</label>
+        <label class="control-label" for="name">Election Name</label>
         <div class="controls">
-          <input type="text" class="input-xlarge" id="input01">
-          <p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>
+          <input type="text" class="input-xlarge" id="name">
         </div>
       </div>
+
+      <!-- Start Date Time -->
+      <div class="control-group">
+        <label class="control-label">Voting Start</label>
+        <div class="controls controls-row">
+          <!-- Start Date -->
+          <div class="input-append date" data-date-format="mm/dd/yyyy" id="startDate">
+            <input class="span2" size="16" type="text" readonly="">
+            <span class="add-on"><i class="icon-calendar"></i></span>
+          </div>
+          <!-- Start Time -->
+<!--           <div class="input-append bootstrap-timepicker-component" id="startTime">
+            <input class="input-small timepicker-default" type="text">
+            <span class="add-on"><i class="icon-time"></i></span>
+          </div> -->
+        </div>
+      </div>
+
       <div class="control-group">
         <label class="control-label" for="optionsCheckbox">Checkbox</label>
         <div class="controls">
@@ -124,6 +144,16 @@
         <button type="reset" class="btn">Cancel</button>
       </div>
     </fieldset>
+    <div class="input-append bootstrap-timepicker-component">
+    <input type="text" class="timepicker-default input-small">
+    <span class="add-on">
+        <i class="icon-time"></i>
+    </span>
+</div>
   </form>
 </section>
-
+<!-- Initialize date / time pickers -->
+<script>
+  $('.timepicker-default').timepicker();
+  $('#startDate').datepicker();
+</script>
