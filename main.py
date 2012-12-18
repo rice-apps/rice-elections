@@ -16,22 +16,24 @@ JINJA_ENV = jinja2.Environment(
     loader=jinja2.FileSystemLoader(PAGES_DIR))
 
 NAV_BAR = [
-    {'text': 'Home', 'link': 'index.html'},
-    {'text': 'Contact', 'link': 'contact.html'}]
+    {'text': 'Home', 'link': 'home'},
+    {'text': 'Vote', 'link': 'vote'},
+    {'text': 'Create Election', 'link': 'create'},
+    {'text': 'Contact', 'link': 'contact'}]
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         logging.info('Requested URL: %s', self.request.path)
 
         # Get the page name being requested
-        # assume index.html if none specified
+        # assume home.html if none specified
         page_name = self.request.path
         if page_name == '/':
-            page_name = NAV_BAR[0]['link']
+            page_name += NAV_BAR[0]['link']
 
         # Get page info
         try:
-            page = JINJA_ENV.get_template(page_name).render()
+            page = JINJA_ENV.get_template(page_name + '.html').render()
         except Exception as e:
             page = JINJA_ENV.get_template('not_found.html').render()
 
