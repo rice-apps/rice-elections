@@ -36,7 +36,7 @@ class MainHandler(webapp2.RequestHandler):
             page = JINJA_ENV.get_template(page_name + '.html').render()
         except Exception as e:
             page = JINJA_ENV.get_template('not_found.html').render()
-
+            
         # Mark all links in the nav bar as inactive except the page open
         for item in NAV_BAR:
             if '/'+item['link'] == page_name:

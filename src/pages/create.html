@@ -55,6 +55,74 @@
           <textarea class="span5" id="textarea" rows="5" placeholder="Comma separated NetIDs"></textarea>
         </div>
       </div>
+      
+      <!-- Add Positions -->
+      <div class="control-group">
+        <label class="control-label" for="positions">Positions</label>
+        <div class="controls" id="positions">
+          <a data-toggle="modal" href="#addPositions" class="btn">Add Position</a>
+        </div>
+      </div>
+      
+      <!-- Add Positions Modal -->
+      <div id="addPositions" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addPositionsLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="addPositionsLabel">Add Position</h3>
+        </div>
+        <div class="modal-body">
+          <div class="control-group">
+            <label class="control-label" for="selectPositionType">Position type</label>
+            <div class="controls">
+              <select id="selectPositionType">
+                <option value="0">Single Person Position</option>
+                <option value="1">Multiple People Position</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Single Person Position -->
+          <div class="selection-content" id="0">
+            <h4>Single Person Position</h4>
+            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem.</p>
+  
+            <h4>Popover in a modal</h4>
+            <p>This <a href="#" role="button" class="btn popover-test" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">button</a> should trigger a popover on click.</p>
+  
+            <h4>Tooltips in a modal</h4>
+            <p><a href="#" class="tooltip-test" data-original-title="Tooltip">This link</a> and <a href="#" class="tooltip-test" data-original-title="Tooltip">that link</a> should have tooltips on hover.</p>
+          </div>
+          
+          <!-- Multiple People Position -->
+          <div class="selection-content" id="1" style="display:none">
+            <h4>Multiple People Position</h4>
+            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem.</p>
+  
+            <h4>Popover in a modal</h4>
+            <p>This <a href="#" role="button" class="btn popover-test" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">button</a> should trigger a popover on click.</p>
+  
+            <h4>Tooltips in a modal</h4>
+            <p><a href="#" class="tooltip-test" data-original-title="Tooltip">This link</a> and <a href="#" class="tooltip-test" data-original-title="Tooltip">that link</a> should have tooltips on hover.</p>
+          </div>
+          
+          <hr>
+
+          <h4>Overflowing text to show optional scrollbar</h4>
+          <p>We set a fixed <code>max-height</code> on the <code>.modal-body</code>. Watch it overflow with all this extra lorem ipsum text we've included.</p>
+          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal">Close</button>
+          <span id="addPositionButton" class="btn btn-primary">Add Position</span>
+        </div>
+      </div>
+      
+      <!-- Form Actions -->
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Continue</button>
         <button type="reset" class="btn">Cancel</button>
@@ -62,9 +130,9 @@
     </fieldset>
   </form>
 </section>
-<!-- Initialize date / time pickers -->
 <script type="text/javascript">
   $(document).ready(function () {
+    // Initialize the date / time pickers.
     $('#startDate').datepicker();
     $('#startTime').timepicker({
         minuteStep: 5,
@@ -74,5 +142,19 @@
         minuteStep: 5,
     });
     
+    
+  });
+  
+  $('#selectPositionType').change(function() {
+    // Hide all of the other selection content
+    $('.selection-content').hide();
+    var selectedId = $(this).val();
+    $('#' + selectedId).show();
+  });
+  
+  $('#addPositionButton').click(function() {
+    $('#addPositions').modal('hide');
+    $('#positions').append('<h3>New Position</h3>');
+    $('#positions h3:last-child').hide().fadeIn(2000);
   });
 </script>
