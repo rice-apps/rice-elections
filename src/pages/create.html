@@ -8,7 +8,7 @@
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== --> 
-  <form class="form-horizontal well">
+  <form class="form-horizontal well" id="createForm">
     <fieldset>
       <legend>1. Election Information</legend>
       <!-- Election Name -->
@@ -142,8 +142,40 @@
         minuteStep: 5,
     });
     
+    // Form validation
+    $('#createForm').submit(validateForm);
+    
     
   });
+  
+  function validateForm() {
+    var isNameValid = validateElectionName();
+    return false;
+  }
+
+  function validateElectionName() {
+    var name = $('#name');
+    var nameContainer = name.parent().parent();
+    if (name.val() == '') {   // Name not specified
+      // Animate to name
+      $('html, body').animate({
+        scrollTop: $(name).offset().top
+      }, 1000);
+      // Mark error if not already marked
+      if (!nameContainer.hasClass('error')) {
+        nameContainer.addClass('error');
+        $('<span class="help-inline">Please enter election name.</span>').insertAfter(name);
+      }
+      return false;
+    }
+    
+    // Valid election name
+    if (nameContainer.hasClass('error')) {    // Remove error mark
+      nameContainer.removeClass('error');
+      $('#name').next().remove();
+    }
+    return true;
+  }
   
   $('#selectPositionType').change(function() {
     // Hide all of the other selection content
