@@ -11,6 +11,15 @@
   <form class="form-horizontal well" id="createForm">
     <fieldset>
       <legend>1. Election Information</legend>
+      <div class="control-group">
+        <label class="control-label" for="organization">Organization</label>
+        <div class="controls">
+          <select id="organization" class="input-xlarge">
+            <option>Brown College</option>
+          </select>
+        </div>
+      </div>
+      
       <!-- Election Name -->
       <div class="control-group">
         <label class="control-label" for="name">Election Name</label>
@@ -24,8 +33,8 @@
         <label class="control-label">Voting Times</label>
         <div class="controls controls-row">
           <!-- Start Date -->
-          <div class="input-append date" data-date-format="mm/dd/yy" id="startDate">
-            <input class="input-mini" size="16" type="text" readonly="">
+          <div class="input-append date" data-date-format="mm/dd/yy">
+            <input class="input-mini" size="16" type="text" readonly="" id="startDate">
             <span class="add-on"><i class="icon-calendar"></i></span>
           </div>
           <!-- Start Time -->
@@ -37,8 +46,8 @@
           <span class="help-inline">-</span>
 
           <!-- End Date -->
-          <div class="input-append date" data-date-format="mm/dd/yy" id="endDate">
-            <input class="input-mini" size="16" type="text" readonly="">
+          <div class="input-append date" data-date-format="mm/dd/yy">
+            <input class="input-mini" size="16" type="text" readonly="" id="endDate">
             <span class="add-on"><i class="icon-calendar"></i></span>
           </div>
           <!-- End Time -->
@@ -75,17 +84,34 @@
             <label class="control-label" for="selectPositionType">Position type</label>
             <div class="controls">
               <select id="selectPositionType">
-                <option value="0">Single Person Position</option>
-                <option value="1">Multiple People Position</option>
+                <option value="0">Ranked-Choice Voting Position</option>
+                <option value="1">Single-Choice Voting Position</option>
               </select>
             </div>
           </div>
           
           <!-- Single Person Position -->
           <div class="selection-content" id="0">
-            <h4>Single Person Position</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem.</p>
-  
+            <h4>Ranked-Choice Voting Position</h4>
+            <p>Ranked-Choice Voting (also known as instant runoff voting) allows voters to rank a first, second, third (and onwards) choice candidate for a single position. This makes it possible to elect people by majority vote without the need for a separate run-off election.</p>
+            <form>
+              <fieldset>
+                <!-- Position Name -->
+                <div class="control-group">
+                  <label class="control-label" for="name">Position Name</label>
+                  <div class="controls">
+                    <input type="text" class="input-xlarge" id="position-name">
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <label class="control-label" for="slots">Slots</label>
+                  <div class="controls">
+                    <input type="number" class="input-mini" name="slots" min="1" max="10" id="slots" value="1">
+                  </div>
+                </div>
+              </fieldset>
+            </form>
             <h4>Popover in a modal</h4>
             <p>This <a href="#" role="button" class="btn popover-test" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">button</a> should trigger a popover on click.</p>
   
@@ -131,62 +157,105 @@
   </form>
 </section>
 <script type="text/javascript">
-  $(document).ready(function () {
-    // Initialize the date / time pickers.
-    $('#startDate').datepicker();
-    $('#startTime').timepicker({
-        minuteStep: 5,
+    $(document).ready(function () {
+        // Initialize the date / time pickers.
+        $('#startDate').parent().datepicker();
+        $('#startTime').timepicker({
+                minuteStep: 5,
+        });
+        $('#endDate').parent().datepicker();
+        $('#endTime').timepicker({
+                minuteStep: 5,
+        });
+        
+        // Form validation
+        $('#createForm').submit(validateForm);
+        
+        
     });
-    $('#endDate').datepicker();
-    $('#endTime').timepicker({
-        minuteStep: 5,
-    });
     
-    // Form validation
-    $('#createForm').submit(validateForm);
+    function validateForm() {
+        var validationStatuses = [validateElectionName(), validateElectionTimes()];
+        console.log('Validation Statuses: ' + validationStatuses);
+        return false;
+    }
     
-    
-  });
-  
-  function validateForm() {
-    var isNameValid = validateElectionName();
-    return false;
-  }
+    // Validate individual fields live
+    $('#name').blur(validateElectionName);
 
-  function validateElectionName() {
-    var name = $('#name');
-    var nameContainer = name.parent().parent();
-    if (name.val() == '') {   // Name not specified
-      // Animate to name
-      $('html, body').animate({
-        scrollTop: $(name).offset().top
-      }, 1000);
-      // Mark error if not already marked
-      if (!nameContainer.hasClass('error')) {
-        nameContainer.addClass('error');
-        $('<span class="help-inline">Please enter election name.</span>').insertAfter(name);
-      }
-      return false;
+    function validateElectionName() {
+        var name = $('#name');
+        var nameContainer = name.parent().parent();
+        if (name.val() == '') {   // Name not specified
+            // Animate to name
+            $('html, body').animate({
+                scrollTop: $(name).offset().top
+            }, 500);
+            // Mark error if not already marked
+            if (!nameContainer.hasClass('error')) {
+                nameContainer.addClass('error');
+                
+                $('<span class="help-inline errorMsgName">Please enter election name.</span>').insertAfter(name);
+            }
+            return false;
+        }
+        
+        // Valid election name
+        if (nameContainer.hasClass('error')) {    // Remove error mark
+            nameContainer.removeClass('error');
+            $('.errorMsgName').remove();
+        }
+        return true;
+        
     }
     
-    // Valid election name
-    if (nameContainer.hasClass('error')) {    // Remove error mark
-      nameContainer.removeClass('error');
-      $('#name').next().remove();
+    function validateElectionTimes() {
+        var startDate = $('#startDate');
+        var startTime = $('#startTime');
+        var endDate = $('#endDate');
+        var endTime = $('#endTime');
+        var timeContainer = startDate.parent().parent().parent();
+        var errorMessage = '';
+        
+        // Make sure user has entered all information
+        if (!startDate.val() || !startTime.val() || !endDate.val() || !endTime.val()) {
+            errorMessage = 'Missing information.';
+        }
+        
+        // if (!errorMessage) {
+            // // Validate start and end date / time
+        // }
+        
+        
+        if (errorMessage) {
+            console.log('Missing information');
+            // Mark error if not already marked
+            if (!timeContainer.hasClass('error')) {
+                timeContainer.addClass('error');
+            }
+            
+            // Clear existing error message
+            $('.errorMsgTime').remove();
+            
+            // Add new error message
+            startDate.parent().parent().append('<span class="help-inline errorMsgTime">' + errorMessage + '</span>');
+        } else {
+            timeContainer.removeClass('error');
+            $('.errorMsgTime').remove();
+        }
+        return false;
     }
-    return true;
-  }
-  
-  $('#selectPositionType').change(function() {
-    // Hide all of the other selection content
-    $('.selection-content').hide();
-    var selectedId = $(this).val();
-    $('#' + selectedId).show();
-  });
-  
-  $('#addPositionButton').click(function() {
-    $('#addPositions').modal('hide');
-    $('#positions').append('<h3>New Position</h3>');
-    $('#positions h3:last-child').hide().fadeIn(2000);
-  });
+    
+    $('#selectPositionType').change(function() {
+        // Hide all of the other selection content
+        $('.selection-content').hide();
+        var selectedId = $(this).val();
+        $('#' + selectedId).show();
+    });
+    
+    $('#addPositionButton').click(function() {
+        $('#addPositions').modal('hide');
+        $('#positions').append('<h3>New Position</h3>');
+        $('#positions h3:last-child').hide().fadeIn(2000);
+    });
 </script>
