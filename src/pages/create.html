@@ -81,9 +81,9 @@
         </div>
         <div class="modal-body">
           <div class="control-group">
-            <label class="control-label" for="selectPositionType">Position type</label>
+            <label class="control-label" for="position-select-type">Position type</label>
             <div class="controls">
-              <select id="selectPositionType">
+              <select id="position-select-type">
                 <option value="0">Ranked-Choice Voting Position</option>
                 <option value="1">Single-Choice Voting Position</option>
               </select>
@@ -98,53 +98,42 @@
               <fieldset>
                 <!-- Position Name -->
                 <div class="control-group">
-                  <label class="control-label" for="name">Position Name</label>
+                  <label class="control-label" for="position-name">Position Name</label>
                   <div class="controls">
                     <input type="text" class="input-xlarge" id="position-name">
                   </div>
                 </div>
                 
                 <div class="control-group">
-                  <label class="control-label" for="slots">Slots</label>
+                  <label class="control-label" for="position-slots">Slots</label>
                   <div class="controls">
-                    <input type="number" class="input-mini" name="slots" min="1" max="10" id="slots" value="1">
+                    <input type="number" class="input-mini" name="slots" min="1" max="10" id="position-slots" value="1">
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <label class="control-label" for="position-candidates">Candidates<br /></label>
+                  <div class="controls">
+                    <div class="add-on btn" id="position-add-candidate" style="margin-bottom:5px;"><i class="icon-plus"></i></div>
+                    <div style="margin-bottom: 5px;" id="position-candidates"></div>
                   </div>
                 </div>
               </fieldset>
             </form>
-            <h4>Popover in a modal</h4>
-            <p>This <a href="#" role="button" class="btn popover-test" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">button</a> should trigger a popover on click.</p>
-  
-            <h4>Tooltips in a modal</h4>
-            <p><a href="#" class="tooltip-test" data-original-title="Tooltip">This link</a> and <a href="#" class="tooltip-test" data-original-title="Tooltip">that link</a> should have tooltips on hover.</p>
           </div>
           
           <!-- Multiple People Position -->
           <div class="selection-content" id="1" style="display:none">
-            <h4>Multiple People Position</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem.</p>
-  
-            <h4>Popover in a modal</h4>
-            <p>This <a href="#" role="button" class="btn popover-test" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">button</a> should trigger a popover on click.</p>
-  
-            <h4>Tooltips in a modal</h4>
-            <p><a href="#" class="tooltip-test" data-original-title="Tooltip">This link</a> and <a href="#" class="tooltip-test" data-original-title="Tooltip">that link</a> should have tooltips on hover.</p>
+            <h4>Single-Choice Voting Position</h4>
+            <p>Not currently supported.</p>
           </div>
           
           <hr>
 
-          <h4>Overflowing text to show optional scrollbar</h4>
-          <p>We set a fixed <code>max-height</code> on the <code>.modal-body</code>. Watch it overflow with all this extra lorem ipsum text we've included.</p>
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal">Close</button>
-          <span id="addPositionButton" class="btn btn-primary">Add Position</span>
+          <span id="position-add-submit" class="btn btn-primary">Add Position</span>
         </div>
       </div>
       
@@ -222,13 +211,12 @@
             errorMessage = 'Missing information.';
         }
         
-        // if (!errorMessage) {
-            // // Validate start and end date / time
-        // }
+        if (!errorMessage) {
+            // Validate start and end date / time
+        }
         
         
         if (errorMessage) {
-            console.log('Missing information');
             // Mark error if not already marked
             if (!timeContainer.hasClass('error')) {
                 timeContainer.addClass('error');
@@ -246,16 +234,61 @@
         return false;
     }
     
-    $('#selectPositionType').change(function() {
+    /********************** Add Position Modal Popup **********************/
+    var candidatesIDs = [];      // List of HTML IDs of candidates added to the form    
+    var candidateIDGen = 0;      // Generator for candidate IDs
+    var candidateIDPrefix = 'position-candidate-';
+
+    $('#position-select-type').change(function() {
         // Hide all of the other selection content
         $('.selection-content').hide();
         var selectedId = $(this).val();
         $('#' + selectedId).show();
     });
     
-    $('#addPositionButton').click(function() {
-        $('#addPositions').modal('hide');
-        $('#positions').append('<h3>New Position</h3>');
-        $('#positions h3:last-child').hide().fadeIn(2000);
+    $('#position-add-candidate').click(function() {
+        var index = candidateIDGen++;
+        var id = candidateIDPrefix + index;
+        var candidateInput = $('<div class="input-append" style="margin-top:3px; margin-bottom:3px;">' +
+            '<input type="text" class="input-xlarge" id="' + id + '-name" placeholder="Candidate Name">' +
+            '<span class="add-on" id="' + id + '"><i class="icon-remove"></i></span></div>');
+        $('#position-candidates').append(candidateInput);
+        candidateInput.hide().fadeIn(500);
+        candidatesIDs.push(index);
+        
+        $('#'+id).click(function() {
+            var indexPtr = candidatesIDs.indexOf(index);
+            if (indexPtr != -1) {
+              candidatesIDs.splice(indexPtr, 1);
+            } else {
+            }
+            $(this).parent().fadeOut(500);
+        });
+    });
+    
+    $('#position-add-submit').click(function() {
+        var missingInformation = false;
+        var candidateNameContainer = $('#position-candidates').parent().parent();
+        
+        // Make sure the candidate name is defined for all candidates
+        $.each(candidatesIDs, function(index, value) {
+            console.log(value);
+            var candidateNameInput = $('#position-candidate-' + value + '-name');
+            if (candidateNameInput.val() == '') {
+                missingInformation = true;
+            }
+        });
+        
+        // Remove existing errors
+        $('.errorMsgCandidateName').remove();
+        candidateNameContainer.removeClass('error');
+        if (missingInformation) {
+            candidateNameContainer.addClass('error');
+            $('<div class="help-inline errorMsgCandidateName">Missing information.</div>').insertAfter($('#position-candidates'));
+        } else {
+            $('#addPositions').modal('hide');
+            $('#positions').append('<h3>New Position</h3>');
+            $('#positions h3:last-child').hide().fadeIn(2000);
+        }
     });
 </script>
