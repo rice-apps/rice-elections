@@ -294,7 +294,18 @@
     }
     
     function getPositions() {
-        return null;
+        var pos = $('#positions-list');
+        var posContainer = pos.parent().parent();
+        
+        // Remove existing errors
+        posContainer.removeClass('error');
+        $('.errorMsgPositions').remove();
+        if (positions.length == 0) {
+            posContainer.addClass('error');
+            $('<span class="help-inline errorMsgPositions">Need atleast one position.</span>').insertAfter(pos);
+            return null;
+        }
+        return positions;
     }
     
     /********************** Add Position Modal Popup **********************/
@@ -364,19 +375,22 @@
     function getSlots() {
         var slots = $('#position-slots');
         var slotsContainer = slots.parent().parent();
+        var slotsVal = parseInt(slots.val());
+        var slotsMin = parseInt(slots.attr('min'));
+        var slotsMax = parseInt(slots.attr('max'));
         // Remove existing errors
         slotsContainer.removeClass('error');
         $('.errorMsgSlots').remove();
-        if (!(slots.attr('min') <= slots.val() && slots.val() <= slots.attr('max'))) {
+        if (!(slotsMin <= slotsVal && slotsVal <= slotsMax)) {
             slotsContainer.addClass('error');
             $('<span class="help-inline errorMsgSlots">Out of valid range.</span>').insertAfter(slots)
             return null;
-        } else if (slots.val() > candidatesIDs.length) {
+        } else if (slotsVal > candidatesIDs.length) {
             slotsContainer.addClass('error');
             $('<span class="help-inline errorMsgSlots">Number of slots exceed number of candidates.</span>').insertAfter(slots);
             return null;
         }
-        return slots.val();
+        return slotsVal;
     }
     
     // TODO: Trim input
