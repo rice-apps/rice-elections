@@ -5,12 +5,13 @@
 <script src="js/prettify.js" type="text/javascript"></script>
 <script src="js/bootstrap-datepicker.js"></script>
 <script src="js/bootstrap-timepicker.js"></script>
+<script src="js/bootstrap-tooltip.js"></script>
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== --> 
   <form class="form-horizontal well" id="createForm">
     <fieldset>
-      <legend>1. Election Information</legend>
+      <legend>Election Information</legend>
       <div class="control-group">
         <label class="control-label" for="organization">Organization</label>
         <div class="controls">
@@ -59,9 +60,9 @@
       </div>
       <!-- Eligible Voters -->
       <div class="control-group">
-        <label class="control-label" for="textarea">Eligible Voters</label>
+        <label class="control-label" for="eligible-voters">Eligible Voters</label>
         <div class="controls">
-          <textarea class="span5" id="textarea" rows="5" placeholder="Comma separated NetIDs"></textarea>
+          <textarea class="span5" id="eligible-voters" rows="5" placeholder="Comma separated NetIDs"></textarea>
         </div>
       </div>
       
@@ -70,6 +71,7 @@
         <label class="control-label" for="positions">Positions</label>
         <div class="controls" id="positions">
           <a data-toggle="modal" href="#addPositions" class="btn">Add Position</a>
+          <div id="positions-list"></div>
         </div>
       </div>
       
@@ -84,8 +86,8 @@
             <label class="control-label" for="position-select-type">Position type</label>
             <div class="controls">
               <select id="position-select-type">
-                <option value="0">Ranked-Choice Voting Position</option>
-                <option value="1">Single-Choice Voting Position</option>
+                <option id="ranked-choice" value="0">Ranked-Choice Voting Position</option>
+                <option id="single-choice" value="1">Single-Choice Voting Position</option>
               </select>
             </div>
           </div>
@@ -94,6 +96,15 @@
           <div class="selection-content" id="0">
             <h4>Ranked-Choice Voting Position</h4>
             <p>Ranked-Choice Voting (also known as instant runoff voting) allows voters to rank a first, second, third (and onwards) choice candidate for a single position. This makes it possible to elect people by majority vote without the need for a separate run-off election.</p>
+          </div>
+          
+          <!-- Multiple People Position -->
+          <div class="selection-content" id="1" style="display:none">
+            <h4>Single-Choice Voting Position</h4>
+            <p>Single-Choice voting allows voters to only vote for a single candidate for a position.</p>
+          </div>
+          
+          <hr>
             <form>
               <fieldset>
                 <!-- Position Name -->
@@ -105,7 +116,7 @@
                 </div>
                 
                 <div class="control-group">
-                  <label class="control-label" for="position-slots">Slots</label>
+                  <label class="control-label" for="position-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
                   <div class="controls">
                     <input type="number" class="input-mini" name="slots" min="1" max="10" id="position-slots" value="1">
                   </div>
@@ -120,16 +131,6 @@
                 </div>
               </fieldset>
             </form>
-          </div>
-          
-          <!-- Multiple People Position -->
-          <div class="selection-content" id="1" style="display:none">
-            <h4>Single-Choice Voting Position</h4>
-            <p>Not currently supported.</p>
-          </div>
-          
-          <hr>
-
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal">Close</button>
@@ -146,6 +147,8 @@
   </form>
 </section>
 <script type="text/javascript">
+    var positions = [];         // Contains the positions added in the election where each position is a literal object
+    
     $(document).ready(function () {
         // Initialize the date / time pickers.
         $('#startDate').parent().datepicker();
@@ -159,34 +162,49 @@
         
         // Form validation
         $('#createForm').submit(validateForm);
+        $('#createForm').bind('reset', function() {
+            console.log('Form Reset');
+            resetPositionForm();
+            positions = [];
+            $('#positions-list').children().remove();
+        });
+        
+        $('label[rel="tooltip"]').tooltip();
         
         
     });
     
     function validateForm() {
-        var validationStatuses = [validateElectionName(), validateElectionTimes()];
-        console.log('Validation Statuses: ' + validationStatuses);
-        return false;
+        var valid = true;
+        var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions()];
+        $.each(formData, function(index, value) {
+            if (value == null) {
+                valid = false;
+            }
+        });
+        console.log(formData);
+        if (valid) {
+            return true;
+        } else {
+            // Animate to name
+            $('html, body').animate({
+                scrollTop: $('#createForm').offset().top
+            }, 500);
+            return false;
+        }
     }
     
-    // Validate individual fields live
-    $('#name').blur(validateElectionName);
-
-    function validateElectionName() {
+    function getElectionName() {
         var name = $('#name');
         var nameContainer = name.parent().parent();
         if (name.val() == '') {   // Name not specified
-            // Animate to name
-            $('html, body').animate({
-                scrollTop: $(name).offset().top
-            }, 500);
             // Mark error if not already marked
             if (!nameContainer.hasClass('error')) {
                 nameContainer.addClass('error');
                 
                 $('<span class="help-inline errorMsgName">Please enter election name.</span>').insertAfter(name);
             }
-            return false;
+            return null;
         }
         
         // Valid election name
@@ -194,17 +212,19 @@
             nameContainer.removeClass('error');
             $('.errorMsgName').remove();
         }
-        return true;
+        return name.val();
         
     }
     
-    function validateElectionTimes() {
+    function getElectionTimes() {
         var startDate = $('#startDate');
         var startTime = $('#startTime');
         var endDate = $('#endDate');
         var endTime = $('#endTime');
         var timeContainer = startDate.parent().parent().parent();
         var errorMessage = '';
+        var start;      // Return val
+        var end;        // Return val
         
         // Make sure user has entered all information
         if (!startDate.val() || !startTime.val() || !endDate.val() || !endTime.val()) {
@@ -213,6 +233,16 @@
         
         if (!errorMessage) {
             // Validate start and end date / time
+            var start = new Date(startDate.val() + ' ' + startTime.val()).getTime();
+            var end = new Date(endDate.val() + ' ' + endTime.val()).getTime();
+            console.log(start);
+            console.log(end);
+            if (start > end) {
+                errorMessage = 'Start time is later than end time.';
+            }
+            if (start == end) {
+                errorMessage = 'Start time is the same as end time.';
+            }
         }
         
         
@@ -227,11 +257,44 @@
             
             // Add new error message
             startDate.parent().parent().append('<span class="help-inline errorMsgTime">' + errorMessage + '</span>');
+            return null;
         } else {
             timeContainer.removeClass('error');
             $('.errorMsgTime').remove();
+            return {'start': start, 'end': end};
         }
-        return false;
+    }
+    
+    function getEligibleVoters() {
+        var voters = $('#eligible-voters');
+        var votersContainer = voters.parent().parent();
+        var errorMessage = '';
+        var votersList = [];     // Return val
+        $.each(voters.val().split(','), function(index, value) {
+            var voter = value.trim();
+            if (voter) {
+                votersList.push(voter);
+            }
+        });
+        
+        if (votersList.length == 0) {   // Name not specified
+            errorMessage = 'Missing information.';
+        }
+        
+        // Remove existing errors
+        votersContainer.removeClass('error');
+        $('.errorMsgEligibleVoters').remove();
+        console.log(errorMessage);
+        if (errorMessage) {
+            votersContainer.addClass('error');
+            $('<span class="help-inline errorMsgEligibleVoters">' + errorMessage + '</span>').insertAfter(voters);
+            return null;
+        }
+        return votersList;
+    }
+    
+    function getPositions() {
+        return null;
     }
     
     /********************** Add Position Modal Popup **********************/
@@ -253,6 +316,7 @@
             '<input type="text" class="input-xlarge" id="' + id + '-name" placeholder="Candidate Name">' +
             '<span class="add-on" id="' + id + '"><i class="icon-remove"></i></span></div>');
         $('#position-candidates').append(candidateInput);
+        
         candidateInput.hide().fadeIn(500);
         candidatesIDs.push(index);
         
@@ -260,22 +324,74 @@
             var indexPtr = candidatesIDs.indexOf(index);
             if (indexPtr != -1) {
               candidatesIDs.splice(indexPtr, 1);
-            } else {
             }
             $(this).parent().fadeOut(500);
         });
     });
     
-    $('#position-add-submit').click(function() {
+    function resetPositionForm()  {
+        $('#position-select-type').val('0').change();
+        candidatesIDs = [];
+        $('#position-candidates').children().remove();
+        $('#position-slots').val('1').change();
+        $('#position-name').val('').change();
+    }
+    
+    function getPositionType() {
+        if ($('#ranked-choice').attr('selected') == 'selected') {
+            return 'Ranked-Choice';
+        } else if ($('#single-choice').attr('selected') == 'selected') {
+            return 'Single-Choice';
+        }
+    }
+    
+    // TODO: Trim input
+    function getPositionName() {
+        var positionName = $('#position-name');
+        var positionNameContainer = positionName.parent().parent();
+        // Remove existing errors
+        positionNameContainer.removeClass('error');
+        $('.errorMsgPositionName').remove();
+        if (positionName.val() == '') {
+            positionNameContainer.addClass('error');
+            $('<span class="help-inline errorMsgPositionName">Missing information.</span>').insertAfter($('#position-name'));
+            return null;
+        }
+        return positionName.val();
+    }
+    
+    // TODO: Trim input
+    function getSlots() {
+        var slots = $('#position-slots');
+        var slotsContainer = slots.parent().parent();
+        // Remove existing errors
+        slotsContainer.removeClass('error');
+        $('.errorMsgSlots').remove();
+        if (!(slots.attr('min') <= slots.val() && slots.val() <= slots.attr('max'))) {
+            slotsContainer.addClass('error');
+            $('<span class="help-inline errorMsgSlots">Out of valid range.</span>').insertAfter(slots)
+            return null;
+        } else if (slots.val() > candidatesIDs.length) {
+            slotsContainer.addClass('error');
+            $('<span class="help-inline errorMsgSlots">Number of slots exceed number of candidates.</span>').insertAfter(slots);
+            return null;
+        }
+        return slots.val();
+    }
+    
+    // TODO: Trim input
+    function getCandidateNames() {
         var missingInformation = false;
         var candidateNameContainer = $('#position-candidates').parent().parent();
+        var candidateNames = [];        // Function output
         
         // Make sure the candidate name is defined for all candidates
         $.each(candidatesIDs, function(index, value) {
-            console.log(value);
             var candidateNameInput = $('#position-candidate-' + value + '-name');
             if (candidateNameInput.val() == '') {
                 missingInformation = true;
+            } else {
+                candidateNames.push(candidateNameInput.val());
             }
         });
         
@@ -284,11 +400,39 @@
         candidateNameContainer.removeClass('error');
         if (missingInformation) {
             candidateNameContainer.addClass('error');
-            $('<div class="help-inline errorMsgCandidateName">Missing information.</div>').insertAfter($('#position-candidates'));
-        } else {
+            $('<span class="help-inline errorMsgCandidateName">Missing information.</span>').insertAfter(
+                $('#position-candidates'));
+            return null;
+        }
+        
+        return candidateNames;
+    }
+    
+    function displayPosition(position) {
+        var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + '<br /><ul>';
+        $.each(position['candidates'], function(index, value) {
+           html +=  '<li>' + value + '</li>';
+        });
+        html += '</ul>';
+        var newPos = $(html);
+        $('#positions-list').append(newPos);
+        newPos.hide().slideDown(1000);
+    }
+    
+    $('#position-add-submit').click(function() {
+        var valid = true;
+        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames()];
+        $.each(formData, function(index, value) {
+            if (value == null) {
+                valid = false;
+            }
+        });
+        if (valid) {
+            var position = {'type': formData[0], 'name': formData[1], 'slots': formData[2], 'candidates': formData[3]};
+            positions.push(position);
+            displayPosition(position);
             $('#addPositions').modal('hide');
-            $('#positions').append('<h3>New Position</h3>');
-            $('#positions h3:last-child').hide().fadeIn(2000);
+            resetPositionForm();
         }
     });
 </script>
