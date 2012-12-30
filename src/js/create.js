@@ -173,6 +173,15 @@ function getPositions() {
 	return positions;
 }
 
+function createSuccessResponse(responseText, statusText, xhr, $form) {
+    alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
+    
+    console.log('Form Reset');
+    resetPositionForm();
+    positions = [];
+    $('#positions-list').children().remove();
+}
+
 /********************** Add Position Modal Popup **********************/
 var addPositionModal = function() {
     var candidatesIDs = [];                                       // List of HTML IDs of candidates added to the form
@@ -186,12 +195,13 @@ var addPositionModal = function() {
     var positionSlots = $('#position-slots');                     // Number Input: Position slots
     var positionAddCandidate = $('#position-add-candidate');      // Button: Add candidate
     var positionCandidates = $('#position-candidates');           // Div: list of candidates
+    var positionWriteIn = $('#position-write-in');                // Checkbox: whether the position has a write-in
     var positionAddSubmit = $('#position-add-submit');            // Button: Add position
     
     /**
      * Resets the HTML form in the modal box on the page. 
      */
-    function resetForm() {
+    var resetForm = function() {
         positionSelectType.val('0').change();
         candidatesIDs = [];
         positionCandidates.children().remove();
@@ -246,7 +256,7 @@ var addPositionModal = function() {
     /**
      * Returns the position type selected. 
      */
-    function getPositionType() {
+    var getPositionType = function() {
         if (rankedChoice.attr('selected') == 'selected') {
             return 'Ranked-Choice';
         } else if (singleChoice.attr('selected') == 'selected') {
@@ -258,7 +268,7 @@ var addPositionModal = function() {
      * Validates and returns the position name typed. 
      * TODO: Trim input
      */
-    function getPositionName() {
+    var getPositionName = function() {
         var positionNameContainer = positionName.parent().parent();
         // Remove existing errors
         positionNameContainer.removeClass('error');
@@ -274,7 +284,7 @@ var addPositionModal = function() {
     /**
      * Validates and returns the slot input number. 
      */
-    function getSlots() {
+    var getSlots = function() {
         var slotsContainer = positionSlots.parent().parent();
         var slotsVal = parseInt(positionSlots.val());
         var slotsMin = parseInt(positionSlots.attr('min'));
@@ -286,7 +296,7 @@ var addPositionModal = function() {
             slotsContainer.addClass('error');
             $('<span class="help-inline errorMsgSlots">Out of valid range.</span>').insertAfter(positionSlots)
             return null;
-        } else if (slotsVal > candidatesIDs.length) {
+        } else if (slotsVal > candidatesIDs.length && !hasWriteIn()) {
             slotsContainer.addClass('error');
             $('<span class="help-inline errorMsgSlots">Number of ' + 
                         'slots exceed number of candidates.</span>').insertAfter(positionSlots);
@@ -299,7 +309,7 @@ var addPositionModal = function() {
      * Validates and returns a list of candidate name strings that the user has input. 
      * TODO: Trim input
      */
-    function getCandidateNames() {
+    var getCandidateNames = function() {
         var missingInformation = false;
         var candidateNameContainer = $('#position-candidates').parent().parent();
         var candidateNames = [];        // Function output
@@ -328,14 +338,28 @@ var addPositionModal = function() {
     }
     
     /**
+     * Returns whether the user specified a write-in for this position. 
+     */
+    var hasWriteIn = function() {
+        if (positionWriteIn.attr('checked') == 'checked') {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Displays the specified position on the main page.
      * @param {Object} position a valid position
      */
-    function displayPosition(position) {
-        var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + '<br /><ul>';
+    var displayPosition = function(position) {
+        var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + 
+                '<br /><ul>';
         $.each(position['candidates'], function(index, value) {
             html += '<li>' + value + '</li>';
         });
+        if (position['writeIn']) {
+            html += '<li><em>Write-in</em></li>';
+        }
         html += '</ul>';
         var newPos = $(html);
         $('#positions-list').append(newPos);
@@ -347,7 +371,7 @@ var addPositionModal = function() {
      */
     positionAddSubmit.click(function() {
         var valid = true;
-        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames()];
+        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames(), hasWriteIn()];
         $.each(formData, function(index, value) {
             if (value == null) {
                 valid = false;
@@ -358,7 +382,8 @@ var addPositionModal = function() {
                 'type' : formData[0],
                 'name' : formData[1],
                 'slots' : formData[2],
-                'candidates' : formData[3]
+                'candidates' : formData[3],
+                'writeIn': formData[4]
             };
             positions.push(position);
             displayPosition(position);
@@ -369,12 +394,3 @@ var addPositionModal = function() {
 };
 
 var currentModal = new addPositionModal();
-
-function createSuccessResponse(responseText, statusText, xhr, $form) {
-	alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
-	
-	console.log('Form Reset');
-	resetPositionForm();
-	positions = [];
-	$('#positions-list').children().remove();
-}
