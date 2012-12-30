@@ -29,6 +29,7 @@ $(document).ready(function() {
 	$('#createForm').ajaxForm({
 		beforeSubmit : validateForm,
 		success : createSuccessResponse,
+		resetForm: true,
 	});
 
 });
@@ -196,6 +197,7 @@ $('#position-add-candidate').click(function() {
 		type : 'text',
 		class : 'input-xlarge',
 		id : id + '-name',
+		name : id + '-name',
 		placeholder : "Candidate Name"
 	})).append($('<span/>', {
 		class : 'add-on',
