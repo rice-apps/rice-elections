@@ -174,166 +174,201 @@ function getPositions() {
 }
 
 /********************** Add Position Modal Popup **********************/
-var candidatesIDs = [];
-// List of HTML IDs of candidates added to the form
-var candidateIDGen = 0;
-// Generator for candidate IDs
-var candidateIDPrefix = 'position-candidate-';
+var addPositionModal = function() {
+    var candidatesIDs = [];                                       // List of HTML IDs of candidates added to the form
+    var candidateIDGen = 0;                                       // Generator for candidate IDs
+    var candidateIDPrefix = 'position-candidate-';                // HTML ID prefix for candidates
+    var positionSelectType = $('#position-select-type');          // Drop-down: Position type
+    var positionSelectionContent = $('.selection-content');       // Divs: Content for selected position types
+    var rankedChoice = $('#ranked-choice');                       // Select: ranked choice position type
+    var singleChoice = $('#single-choice');                       // Select: single choice position type
+    var positionName = $('#position-name');                       // Text Input: Position name input
+    var positionSlots = $('#position-slots');                     // Number Input: Position slots
+    var positionAddCandidate = $('#position-add-candidate');      // Button: Add candidate
+    var positionCandidates = $('#position-candidates');           // Div: list of candidates
+    var positionAddSubmit = $('#position-add-submit');            // Button: Add position
+    
+    /**
+     * Resets the HTML form in the modal box on the page. 
+     */
+    function resetForm() {
+        positionSelectType.val('0').change();
+        candidatesIDs = [];
+        positionCandidates.children().remove();
+        positionSlots.val('1').change();
+        positionName.val('').change();
+    };
+    
+    /**
+     * Updates the form when the position type is changed from the drop-down. 
+     */
+    positionSelectType.change(function() {
+        positionSelectionContent.hide();    // Hide all of the other selection content
+        var selectedId = $(this).val();
+        $('#' + selectedId).show();
+    });
+    
+    /**
+     * Adds an input field for a candidate to the form when add candidate button is clicked. 
+     */
+    positionAddCandidate.click(function() {
+        var index = candidateIDGen++;
+        var id = candidateIDPrefix + index;
+    
+        var candidateInput = $('<div/>', {
+            class : 'input-append'
+        }).append($('<input>', {
+            type : 'text',
+            class : 'input-xlarge',
+            id : id + '-name',
+            name : id + '-name',
+            placeholder : "Candidate Name"
+        })).append($('<span/>', {
+            class : 'add-on',
+            id : id
+        }).append($('<i/>', {
+            class : 'icon-remove'
+        })));
+        $('#position-candidates').append(candidateInput);
+    
+        candidateInput.hide().fadeIn(500);
+        candidatesIDs.push(index);
+    
+        $('#' + id).click(function() {
+            var indexPtr = candidatesIDs.indexOf(index);
+            if (indexPtr != -1) {
+                candidatesIDs.splice(indexPtr, 1);
+            }
+            $(this).parent().fadeOut(500);
+        });
+    });
+    
+    /**
+     * Returns the position type selected. 
+     */
+    function getPositionType() {
+        if (rankedChoice.attr('selected') == 'selected') {
+            return 'Ranked-Choice';
+        } else if (singleChoice.attr('selected') == 'selected') {
+            return 'Single-Choice';
+        }
+    }
+    
+    /**
+     * Validates and returns the position name typed. 
+     * TODO: Trim input
+     */
+    function getPositionName() {
+        var positionNameContainer = positionName.parent().parent();
+        // Remove existing errors
+        positionNameContainer.removeClass('error');
+        $('.errorMsgPositionName').remove();
+        if (positionName.val() == '') {
+            positionNameContainer.addClass('error');
+            $('<span class="help-inline errorMsgPositionName">Missing information.</span>').insertAfter(positionName);
+            return null;
+        }
+        return positionName.val();
+    }
+    
+    /**
+     * Validates and returns the slot input number. 
+     */
+    function getSlots() {
+        var slotsContainer = positionSlots.parent().parent();
+        var slotsVal = parseInt(positionSlots.val());
+        var slotsMin = parseInt(positionSlots.attr('min'));
+        var slotsMax = parseInt(positionSlots.attr('max'));
+        // Remove existing errors
+        slotsContainer.removeClass('error');
+        $('.errorMsgSlots').remove();
+        if (!(slotsMin <= slotsVal && slotsVal <= slotsMax)) {
+            slotsContainer.addClass('error');
+            $('<span class="help-inline errorMsgSlots">Out of valid range.</span>').insertAfter(positionSlots)
+            return null;
+        } else if (slotsVal > candidatesIDs.length) {
+            slotsContainer.addClass('error');
+            $('<span class="help-inline errorMsgSlots">Number of ' + 
+                        'slots exceed number of candidates.</span>').insertAfter(positionSlots);
+            return null;
+        }
+        return slotsVal;
+    }
+    
+    /**
+     * Validates and returns a list of candidate name strings that the user has input. 
+     * TODO: Trim input
+     */
+    function getCandidateNames() {
+        var missingInformation = false;
+        var candidateNameContainer = $('#position-candidates').parent().parent();
+        var candidateNames = [];        // Function output
+    
+        // Make sure the candidate name is defined for all candidates
+        $.each(candidatesIDs, function(index, value) {
+            var candidateNameInput = $('#position-candidate-' + value + '-name');
+            if (candidateNameInput.val() == '') {
+                missingInformation = true;
+            } else {
+                candidateNames.push(candidateNameInput.val());
+            }
+        });
+    
+        // Remove existing errors
+        $('.errorMsgCandidateName').remove();
+        candidateNameContainer.removeClass('error');
+        if (missingInformation) {
+            candidateNameContainer.addClass('error');
+            $('<span class="help-inline errorMsgCandidateName">' +
+                    'Missing information.</span>').insertAfter(positionCandidates);
+            return null;
+        }
+    
+        return candidateNames;
+    }
+    
+    /**
+     * Displays the specified position on the main page.
+     * @param {Object} position a valid position
+     */
+    function displayPosition(position) {
+        var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + '<br /><ul>';
+        $.each(position['candidates'], function(index, value) {
+            html += '<li>' + value + '</li>';
+        });
+        html += '</ul>';
+        var newPos = $(html);
+        $('#positions-list').append(newPos);
+        newPos.hide().slideDown(1000);
+    }
+    
+    /**
+     * Validates all position form entries and adds to the main election form. 
+     */
+    positionAddSubmit.click(function() {
+        var valid = true;
+        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames()];
+        $.each(formData, function(index, value) {
+            if (value == null) {
+                valid = false;
+            }
+        });
+        if (valid) {
+            var position = {
+                'type' : formData[0],
+                'name' : formData[1],
+                'slots' : formData[2],
+                'candidates' : formData[3]
+            };
+            positions.push(position);
+            displayPosition(position);
+            $('#addPositions').modal('hide');
+            resetForm();
+        }
+    });
+};
 
-$('#position-select-type').change(function() {
-	// Hide all of the other selection content
-	$('.selection-content').hide();
-	var selectedId = $(this).val();
-	$('#' + selectedId).show();
-});
-
-$('#position-add-candidate').click(function() {
-	var index = candidateIDGen++;
-	var id = candidateIDPrefix + index;
-
-	var candidateInput = $('<div/>', {
-		class : 'input-append'
-	}).append($('<input>', {
-		type : 'text',
-		class : 'input-xlarge',
-		id : id + '-name',
-		name : id + '-name',
-		placeholder : "Candidate Name"
-	})).append($('<span/>', {
-		class : 'add-on',
-		id : id
-	}).append($('<i/>', {
-		class : 'icon-remove'
-	})));
-	$('#position-candidates').append(candidateInput);
-
-	candidateInput.hide().fadeIn(500);
-	candidatesIDs.push(index);
-
-	$('#' + id).click(function() {
-		var indexPtr = candidatesIDs.indexOf(index);
-		if (indexPtr != -1) {
-			candidatesIDs.splice(indexPtr, 1);
-		}
-		$(this).parent().fadeOut(500);
-	});
-});
-
-function resetPositionForm() {
-	$('#position-select-type').val('0').change();
-	candidatesIDs = [];
-	$('#position-candidates').children().remove();
-	$('#position-slots').val('1').change();
-	$('#position-name').val('').change();
-}
-
-function getPositionType() {
-	if ($('#ranked-choice').attr('selected') == 'selected') {
-		return 'Ranked-Choice';
-	} else if ($('#single-choice').attr('selected') == 'selected') {
-		return 'Single-Choice';
-	}
-}
-
-// TODO: Trim input
-function getPositionName() {
-	var positionName = $('#position-name');
-	var positionNameContainer = positionName.parent().parent();
-	// Remove existing errors
-	positionNameContainer.removeClass('error');
-	$('.errorMsgPositionName').remove();
-	if (positionName.val() == '') {
-		positionNameContainer.addClass('error');
-		$('<span class="help-inline errorMsgPositionName">Missing information.</span>').insertAfter($('#position-name'));
-		return null;
-	}
-	return positionName.val();
-}
-
-// TODO: Trim input
-function getSlots() {
-	var slots = $('#position-slots');
-	var slotsContainer = slots.parent().parent();
-	var slotsVal = parseInt(slots.val());
-	var slotsMin = parseInt(slots.attr('min'));
-	var slotsMax = parseInt(slots.attr('max'));
-	// Remove existing errors
-	slotsContainer.removeClass('error');
-	$('.errorMsgSlots').remove();
-	if (!(slotsMin <= slotsVal && slotsVal <= slotsMax)) {
-		slotsContainer.addClass('error');
-		$('<span class="help-inline errorMsgSlots">Out of valid range.</span>').insertAfter(slots)
-		return null;
-	} else if (slotsVal > candidatesIDs.length) {
-		slotsContainer.addClass('error');
-		$('<span class="help-inline errorMsgSlots">Number of slots exceed number of candidates.</span>').insertAfter(slots);
-		return null;
-	}
-	return slotsVal;
-}
-
-// TODO: Trim input
-function getCandidateNames() {
-	var missingInformation = false;
-	var candidateNameContainer = $('#position-candidates').parent().parent();
-	var candidateNames = [];
-	// Function output
-
-	// Make sure the candidate name is defined for all candidates
-	$.each(candidatesIDs, function(index, value) {
-		var candidateNameInput = $('#position-candidate-' + value + '-name');
-		if (candidateNameInput.val() == '') {
-			missingInformation = true;
-		} else {
-			candidateNames.push(candidateNameInput.val());
-		}
-	});
-
-	// Remove existing errors
-	$('.errorMsgCandidateName').remove();
-	candidateNameContainer.removeClass('error');
-	if (missingInformation) {
-		candidateNameContainer.addClass('error');
-		$('<span class="help-inline errorMsgCandidateName">Missing information.</span>').insertAfter($('#position-candidates'));
-		return null;
-	}
-
-	return candidateNames;
-}
-
-function displayPosition(position) {
-	var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + '<br /><ul>';
-	$.each(position['candidates'], function(index, value) {
-		html += '<li>' + value + '</li>';
-	});
-	html += '</ul>';
-	var newPos = $(html);
-	$('#positions-list').append(newPos);
-	newPos.hide().slideDown(1000);
-}
-
-
-$('#position-add-submit').click(function() {
-	var valid = true;
-	var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames()];
-	$.each(formData, function(index, value) {
-		if (value == null) {
-			valid = false;
-		}
-	});
-	if (valid) {
-		var position = {
-			'type' : formData[0],
-			'name' : formData[1],
-			'slots' : formData[2],
-			'candidates' : formData[3]
-		};
-		positions.push(position);
-		displayPosition(position);
-		$('#addPositions').modal('hide');
-		resetPositionForm();
-	}
-});
+var currentModal = new addPositionModal();
 
 function createSuccessResponse(responseText, statusText, xhr, $form) {
 	alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
