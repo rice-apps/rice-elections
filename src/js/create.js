@@ -16,15 +16,20 @@ $(document).ready(function() {
 	});
 
 	// Form validation
-	$('#createForm').submit(validateForm);
-	$('#createForm').bind('reset', function() {
-		console.log('Form Reset');
-		resetPositionForm();
-		positions = [];
-		$('#positions-list').children().remove();
-	});
+	// $('#createForm').submit(validateForm);
+	// $('#createForm').bind('reset', function() {
+		// console.log('Form Reset');
+		// resetPositionForm();
+		// positions = [];
+		// $('#positions-list').children().remove();
+	// });
 
 	$('label[rel="tooltip"]').tooltip();
+
+	$('#createForm').ajaxForm({
+		beforeSubmit : validateForm,
+		success : createSuccessResponse,
+	});
 
 });
 
@@ -326,4 +331,13 @@ $('#position-add-submit').click(function() {
 		$('#addPositions').modal('hide');
 		resetPositionForm();
 	}
-}); 
+});
+
+function createSuccessResponse(responseText, statusText, xhr, $form) {
+	alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
+	
+	console.log('Form Reset');
+	resetPositionForm();
+	positions = [];
+	$('#positions-list').children().remove();
+}

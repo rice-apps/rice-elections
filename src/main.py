@@ -48,7 +48,16 @@ class MainHandler(webapp2.RequestHandler):
         template_vals = {'nav_bar': NAV_BAR,
                          'page_content': page}
         self.response.out.write(template.render(template_vals))
+    
+class CreateElectionHandler(webapp2.RequestHandler):
+    def post(self):
+        logging.info("Creating new election!")
+        logging.info(self.request.POST)
+        self.response.out.write("SUCCESS!")
+#        self.response.out.write(self.request.GET)
+
 
 app = webapp2.WSGIApplication([
+    ('/createElection', CreateElectionHandler),
     ('/.*', MainHandler)
 ], debug=True)
