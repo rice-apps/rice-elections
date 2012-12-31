@@ -5,6 +5,7 @@ The Rice Elections App.
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
 import jinja2
+import json
 import logging
 import os
 import webapp2
@@ -53,8 +54,13 @@ class CreateElectionHandler(webapp2.RequestHandler):
     def post(self):
         logging.info("Creating new election!")
         logging.info(self.request.POST)
-        self.response.out.write("SUCCESS!")
-#        self.response.out.write(self.request.GET)
+        formData = self.request.get('formData')
+        if formData:
+            election = json.loads(formData)
+            logging.info(election)
+            self.response.out.write("SUCCESS!")
+        else:
+            self.response.out.write("No Form Data Sent!")
 
 
 app = webapp2.WSGIApplication([

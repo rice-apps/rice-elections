@@ -1,9 +1,13 @@
 /**
- * This file corresponds with create.html
+ * JS for create.html
  */
-var positions = [];
-// Contains the positions added in the election where each position is a literal object
 
+// Contains the positions added in the election where each position is a literal object
+var positions = [];
+
+/**
+ * Initializes JS plug-ins and event listeners on the page. 
+ */
 $(document).ready(function() {
 	// Initialize the date / time pickers.
 	$('#startDate').parent().datepicker();
@@ -16,25 +20,21 @@ $(document).ready(function() {
 	});
 
 	// Form validation
-	// $('#createForm').submit(validateForm);
-	// $('#createForm').bind('reset', function() {
-		// console.log('Form Reset');
-		// resetPositionForm();
-		// positions = [];
-		// $('#positions-list').children().remove();
-	// });
-
-	$('label[rel="tooltip"]').tooltip();
-
-	$('#createForm').ajaxForm({
-		beforeSubmit : validateForm,
-		success : createSuccessResponse,
-		resetForm: true,
+	$('#election-submit').click(submitForm);
+	$('#createForm').bind('reset', function() {
+		currentModal.resetForm();
+		positions = [];
+		$('#positions-list').children().remove();
 	});
 
+	$('label[rel="tooltip"]').tooltip();
+	
 });
 
-function validateForm() {
+/**
+ * Called when the submit button is clicked. Validates and makes an AJAX submission if form is valid. 
+ */
+function submitForm() {
 	var valid = true;
 	var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions()];
 	$.each(formData, function(index, value) {
@@ -42,9 +42,26 @@ function validateForm() {
 			valid = false;
 		}
 	});
-	console.log(formData);
+	
+	var postData = {
+	    'name': formData[0],
+	    'start': formData[1]['start'],
+	    'end': formData[1]['end'],
+	    'voters': formData[2],
+	    'positions': formData[3]
+	};
+	
+	console.log(postData);
 	if (valid) {
-		return true;
+		$.ajax({
+		    url: '/createElection',
+		    type: 'POST',
+		    data: {'formData': JSON.stringify(postData)},
+		    success: function(data) {
+		        console.log('Success');
+		        console.log(data);
+		    },
+		});
 	} else {
 		// Animate to name
 		$('html, body').animate({
@@ -54,6 +71,10 @@ function validateForm() {
 	}
 }
 
+/**
+ * Returns the election name.
+ * @return {String} election name, null if input is invalid. 
+ */
 function getElectionName() {
 	var name = $('#name');
 	var nameContainer = name.parent().parent();
@@ -76,6 +97,10 @@ function getElectionName() {
 
 }
 
+/**
+ * Returns the start and end times in time since epoch.
+ * @return {Object} start and end times keyed by 'start' and 'end'. null if input is invalid. 
+ */
 function getElectionTimes() {
 	var startDate = $('#startDate');
 	var startTime = $('#startTime');
@@ -129,6 +154,10 @@ function getElectionTimes() {
 	}
 }
 
+/**
+ * Returns the list of eligible voters the user has entered.
+ * @return {Object} list of voters, null if input is invalid.
+ */
 function getEligibleVoters() {
 	var voters = $('#eligible-voters');
 	var votersContainer = voters.parent().parent();
@@ -158,6 +187,10 @@ function getEligibleVoters() {
 	return votersList;
 }
 
+/**
+ * Returns the list of positions the user has entered.
+ * @return {Object} list of position objects, null if there are no positions
+ */
 function getPositions() {
 	var pos = $('#positions-list');
 	var posContainer = pos.parent().parent();
@@ -173,7 +206,26 @@ function getPositions() {
 	return positions;
 }
 
-function createSuccessResponse(responseText, statusText, xhr, $form) {
+/**
+ * Displays the specified position on the main page.
+ * @param {Object} position a valid position
+ */
+function displayPosition(position) {
+    var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + 
+            '<br /><ul>';
+    $.each(position['candidates'], function(index, value) {
+        html += '<li>' + value + '</li>';
+    });
+    if (position['writeIn']) {
+        html += '<li><em>Write-in</em></li>';
+    }
+    html += '</ul>';
+    var newPos = $(html);
+    $('#positions-list').append(newPos);
+    newPos.hide().slideDown(1000);
+}
+
+function createSuccessResponse(data, status) {
     alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
     
     console.log('Form Reset');
@@ -182,8 +234,11 @@ function createSuccessResponse(responseText, statusText, xhr, $form) {
     $('#positions-list').children().remove();
 }
 
-/********************** Add Position Modal Popup **********************/
+/**
+ * Add Position Modal Pop-up 
+ */
 var addPositionModal = function() {
+    var modal = this;                                             // Out of scope reference
     var candidatesIDs = [];                                       // List of HTML IDs of candidates added to the form
     var candidateIDGen = 0;                                       // Generator for candidate IDs
     var candidateIDPrefix = 'position-candidate-';                // HTML ID prefix for candidates
@@ -201,12 +256,14 @@ var addPositionModal = function() {
     /**
      * Resets the HTML form in the modal box on the page. 
      */
-    var resetForm = function() {
+    this.resetForm = function() {
+        console.log('Reset Form');
         positionSelectType.val('0').change();
         candidatesIDs = [];
         positionCandidates.children().remove();
         positionSlots.val('1').change();
         positionName.val('').change();
+        positionWriteIn.attr('checked', false);
     };
     
     /**
@@ -348,25 +405,6 @@ var addPositionModal = function() {
     }
     
     /**
-     * Displays the specified position on the main page.
-     * @param {Object} position a valid position
-     */
-    var displayPosition = function(position) {
-        var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + 
-                '<br /><ul>';
-        $.each(position['candidates'], function(index, value) {
-            html += '<li>' + value + '</li>';
-        });
-        if (position['writeIn']) {
-            html += '<li><em>Write-in</em></li>';
-        }
-        html += '</ul>';
-        var newPos = $(html);
-        $('#positions-list').append(newPos);
-        newPos.hide().slideDown(1000);
-    }
-    
-    /**
      * Validates all position form entries and adds to the main election form. 
      */
     positionAddSubmit.click(function() {
@@ -388,7 +426,7 @@ var addPositionModal = function() {
             positions.push(position);
             displayPosition(position);
             $('#addPositions').modal('hide');
-            resetForm();
+            modal.resetForm();
         }
     });
 };
