@@ -13,6 +13,9 @@ handlers:
 
 - url: /js
   static_dir: js
+  
+- url: /createElection
+  script: createelection.app
 
 - url: /.*
   script: main.app

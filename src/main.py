@@ -35,7 +35,7 @@ class MainHandler(webapp2.RequestHandler):
         # Get page info
         try:
             page = JINJA_ENV.get_template(page_name + '.html').render()
-        except Exception as e:
+        except Exception:
             page = JINJA_ENV.get_template('not_found.html').render()
             
         # Mark all links in the nav bar as inactive except the page open
@@ -50,20 +50,6 @@ class MainHandler(webapp2.RequestHandler):
                          'page_content': page}
         self.response.out.write(template.render(template_vals))
     
-class CreateElectionHandler(webapp2.RequestHandler):
-    def post(self):
-        logging.info("Creating new election!")
-        logging.info(self.request.POST)
-        formData = self.request.get('formData')
-        if formData:
-            election = json.loads(formData)
-            logging.info(election)
-            self.response.out.write("SUCCESS!")
-        else:
-            self.response.out.write("No Form Data Sent!")
-
-
 app = webapp2.WSGIApplication([
-    ('/createElection', CreateElectionHandler),
     ('/.*', MainHandler)
 ], debug=True)
