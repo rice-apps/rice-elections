@@ -32,12 +32,25 @@ class MainHandler(webapp2.RequestHandler):
         if page_name == '/':
             page_name += NAV_BAR[0]['link']
 
+        # Get the data for the page from the database
+        page_data = {}
+        if page_name == '/vote':
+            # TODO: get this data from the database
+            page_data = {'open_elections': [{'name' : 'Brown Spring Elections',
+                                             'start': 'Mar 11 @ 9:00 am',
+                                             'end': 'Mar 12 @ 9:00 am',
+                                             'organization': 'Brown College'},
+                                             {'name' : 'Ballot Initiative 82',
+                                             'start': 'Feb 9 @ 10:00 am',
+                                             'end': 'Feb 10 @ 10:00 am',
+                                             'organization': 'Rice Student Association'}]}
+
         # Get page info
         try:
-            page = JINJA_ENV.get_template(page_name + '.html').render()
+            page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
         except Exception as e:
             page = JINJA_ENV.get_template('not_found.html').render()
-            
+
         # Mark all links in the nav bar as inactive except the page open
         for item in NAV_BAR:
             if '/'+item['link'] == page_name:
@@ -49,7 +62,7 @@ class MainHandler(webapp2.RequestHandler):
         template_vals = {'nav_bar': NAV_BAR,
                          'page_content': page}
         self.response.out.write(template.render(template_vals))
-    
+
 class CreateElectionHandler(webapp2.RequestHandler):
     def post(self):
         logging.info("Creating new election!")
