@@ -1,0 +1,40 @@
+<!-- Load JS / CSS
+================================================== -->
+
+<section id="main">
+ <!-- PUT CONTENT IN HERE
+================================================== -->
+  <h2>Open Elections</h2>
+  <table class='table table-striped'>
+    <tr>
+      <th>
+        Election Name
+      </th>
+      <th>
+        Organization
+      </th>
+      <th>
+        Voting Starts
+      </th>
+      <th>
+        Voting Ends
+      </th>
+    </tr>
+    {% for open_election in open_elections %}
+    <tr>
+      <td>
+        <a href='#'>{{ open_election.name }}</a>
+      </td>
+      <td>
+        {{ open_election.organization }}
+      </td>
+      <td>
+        {{ open_election.start }}
+      </td>
+      <td>
+        {{ open_election.end }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</section>
