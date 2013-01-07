@@ -39,8 +39,9 @@ class CreateElectionHandler(webapp2.RequestHandler):
             logging.info('Organization not found')
             return
         
-        database.put_election(electionData['name'], electionData['start'],
-                              electionData['end'], organization)
+        election = database.put_election(electionData['name'], electionData['start'],
+                                         electionData['end'], organization)
+        database.add_eligible_voters(election, electionData['voters'])
         logging.info(electionData)
         
         
