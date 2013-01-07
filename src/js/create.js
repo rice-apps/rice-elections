@@ -122,6 +122,8 @@ function getElectionTimes() {
 		// Validate start and end date / time
 		var start = new Date(startDate.val() + ' ' + startTime.val()).getTime();
 		var end = new Date(endDate.val() + ' ' + endTime.val()).getTime();
+		start /= 1000;
+		end /= 1000;
 		console.log(start);
 		console.log(end);
 		if (start > end) {

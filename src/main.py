@@ -5,7 +5,6 @@ The Rice Elections App.
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
 import jinja2
-import json
 import logging
 import os
 import webapp2
