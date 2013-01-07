@@ -59,7 +59,9 @@ class Election(db.Model):
     name = db.StringProperty()
     start = db.DateTimeProperty()       # Time when voting begins
     end = db.DateTimeProperty()         # Time when voting ends
-    organization = Organization()       # The organization holding the election
+    organization = db.ReferenceProperty(Organization,
+                                        collection_name='elections')
+    eligible_voters = db.ListProperty(db.Key)
 
 def put_election(name, start, end, organization):
     """
@@ -94,13 +96,17 @@ class Voter(db.Model):
     A voter that uses the application.
     """
     net_id = db.StringProperty()
+    elections = db.ListProperty(db.Key)     # List of elections user is eligible to vote in
+    
+    def get_elections(self):
+        return Election.gql('WHERE eligible_voters = :1', self.key())
     
 
 class EligibleVoter(db.Model):
     """
     An entity that represents an election that an individual voter is eligible to vote for.
     """
-    voter = Voter()
+    voter = db.ReferenceProperty(Voter)
     election = Election()
     
 def add_eligible_voters(election, net_id_list):
@@ -114,10 +120,8 @@ def add_eligible_voters(election, net_id_list):
     """
     for net_id in net_id_list:
         voter = get_voter(net_id, create=True)
-        eligible_voter = EligibleVoter()
-        eligible_voter.voter = voter
-        eligible_voter.election = election
-        eligible_voter.put()
+        election.eligible_voters.append(voter.key())
+    election.put()
 
 def get_voter(net_id, create=False):
     """
@@ -153,6 +157,7 @@ def get_elections_for_voter(voter):
     Returns:
         elections: A list of Election entries the voter is eligible to vote in.
     """
+    logging.info('Requested elections for voter: %s', voter.net_id)
     query = db.GqlQuery('SELECT * FROM EligibleVoter WHERE voter=:1', voter)
     elections = []
     for eligible_voter in query:
