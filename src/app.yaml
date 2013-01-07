@@ -13,7 +13,10 @@ handlers:
 
 - url: /js
   static_dir: js
-  
+
+- url: /vote
+  script: vote.app  
+
 - url: /createElection
   script: createelection.app
 
