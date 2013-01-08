@@ -16,27 +16,19 @@ class VoteHandler(webapp2.RequestHandler):
     """
     Handles GET requests for the Vote page.
     """
-    
+
     def get(self):
-        page_data = {'open_elections': [{'name' : 'Brown College Spring Elections First Round',
-                                             'status': 'Voting ends in 1 day 23 hours 51 minutes',
-                                             'user_voted': False},
-                                            {'name' : 'Rice CS Club Officers',
-                                             'status': 'Voting begins in 3 days 12 hours 14 minutes',
-                                             'user_voted': True}],
-                         'election_results': [{'name' : 'Brown College Spring Elections First Round',
-                                               'end_date': 'Mon January 21, 2013 11:55 PM'},
-                                              {'name' : 'Rice CS Club Officers',
-                                               'end_date': 'Mon January 21, 2013 11:55 PM'}]}
+        page_data = {'open_elections': [], 'election_results': []}
+
         net_id = require_login(self)
         voter = database.get_voter(net_id)
         if not voter:
             render_page(self, '/vote', page_data)
             return
-        
+
         elections = voter.get_elections().run()
         logging.info(elections)
-        page_data = {'open_elections': [], 'election_results': []}
+
         for election in elections:
             logging.info('Found election')
             data = {}
@@ -54,7 +46,7 @@ class VoteHandler(webapp2.RequestHandler):
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p')
                     data['status'] = 'Voting ends at %s', end_str
                 page_data['open_elections'].append(data)
-        
+
         render_page(self, '/vote', page_data)
 
 
