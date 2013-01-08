@@ -10,7 +10,7 @@ import logging
 import random
 import webapp2
 
-from main import render_page
+from main import render_page, require_login
 
 class VoteHandler(webapp2.RequestHandler):
     """
@@ -28,7 +28,8 @@ class VoteHandler(webapp2.RequestHandler):
                                                'end_date': 'Mon January 21, 2013 11:55 PM'},
                                               {'name' : 'Rice CS Club Officers',
                                                'end_date': 'Mon January 21, 2013 11:55 PM'}]}
-        voter = database.get_voter('wa1')
+        net_id = require_login(self)
+        voter = database.get_voter(net_id)
         if not voter:
             render_page(self, '/vote', page_data)
             return

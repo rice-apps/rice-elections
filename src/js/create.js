@@ -35,6 +35,10 @@ $(document).ready(function() {
  * Called when the submit button is clicked. Validates and makes an AJAX submission if form is valid. 
  */
 function submitForm() {
+    if ($('#election-submit').hasClass('disabled')) {
+        return false;
+    }
+    
 	var valid = true;
 	var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions()];
 	$.each(formData, function(index, value) {
@@ -58,8 +62,14 @@ function submitForm() {
 		    type: 'POST',
 		    data: {'formData': JSON.stringify(postData)},
 		    success: function(data) {
-		        console.log('Success');
-		        console.log(data);
+		        $('html, body').animate({
+                    scrollTop : $('#server-response').offset().top
+                }, 500);
+                $('#server-response').addClass('alert');
+                $('#server-response').addClass('alert-success');
+                $('#server-response').append(data);
+                $('#server-response').hide().slideDown(1000);
+                $('#election-submit').addClass('disabled');
 		    },
 		});
 	} else {

@@ -44,6 +44,8 @@ class CreateElectionHandler(webapp2.RequestHandler):
         database.add_eligible_voters(election, electionData['voters'])
         logging.info(electionData)
         
+        self.response.out.write('Election successfully created!')
+        
         
 app = webapp2.WSGIApplication([
         ('/createElection', CreateElectionHandler)

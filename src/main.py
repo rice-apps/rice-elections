@@ -5,7 +5,9 @@ The Rice Elections App.
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
 import jinja2
+import logging
 import os
+import pycas
 import webapp2
 
 MAIN_DIR = os.path.dirname(__file__)
@@ -13,6 +15,8 @@ PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
 
 JINJA_ENV = jinja2.Environment(
     loader=jinja2.FileSystemLoader(PAGES_DIR))
+
+CAS_SERVER  = "https://netid.rice.edu"
 
 NAV_BAR = [
     {'text': 'Home', 'link': 'home'},
@@ -24,6 +28,29 @@ class StaticHandler(webapp2.RequestHandler):
     """Handles GET requests for static pages."""
     def get(self):
         render_page(self, self.request.path, {})
+
+
+def require_login(request_handler):
+    """
+    Requires the user to be logged in through NetID authentication.
+    
+    Args:
+        request_handler: webapp2 request handler of the user request
+    
+    Returns:
+        net_id: the NetID of the user
+    """
+    service_url = request_handler.request.url
+    if '?ticket=' in service_url:
+        ticket_i = service_url.index('?ticket')
+        remaining_i = service_url[ticket_i:].index('?')
+        if remaining_i > 0:
+            service_url = service_url[0:ticket_i] + service_url[remaining_i:]
+        else:
+            service_url = service_url[0:ticket_i]
+    status, net_id, cookie = pycas.login(CAS_SERVER, service_url, request_handler)
+    logging.info('CAS Authentication Status: %s NetID: %s Cookie:%s', status, net_id, cookie)
+    return net_id
 
 
 def render_page(handler, page_name, page_data):
