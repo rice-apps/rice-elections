@@ -26,7 +26,7 @@ class VoteHandler(webapp2.RequestHandler):
             render_page(self, '/vote', page_data)
             return
 
-        elections = voter.get_elections().run()
+        elections = voter.get_elections()
         logging.info(elections)
 
         for election in elections:

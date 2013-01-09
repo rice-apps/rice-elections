@@ -27,25 +27,35 @@ class CreateElectionHandler(webapp2.RequestHandler):
     def post(self):
         logging.info('Received new create election submission')
         logging.info(self.request.POST)
+        error = False
+        response = {}
         
-        formData = self.request.get('formData')
-        if not formData:
-            self.response.out.write('No Form Data Sent!')
-            return
-        
-        electionData = json.loads(formData)
-        organization = database.get_organization('Brown College')
-        if not organization:
-            logging.info('Organization not found')
-            return
-        
-        election = database.put_election(electionData['name'], electionData['start'],
-                                         electionData['end'], organization)
-        database.add_eligible_voters(election, electionData['voters'])
-        logging.info(electionData)
-        
-        self.response.out.write('Election successfully created!')
-        
+        try:
+            formData = self.request.get('formData')
+            if not formData:
+                self.response.out.write('No Form Data Sent!')
+                return
+            
+            electionData = json.loads(formData)
+            organization = database.get_organization('Brown College')
+            if not organization:
+                logging.info('Organization not found')
+                return
+            
+            election = database.put_election(electionData['name'], electionData['start'],
+                                             electionData['end'], organization)
+            database.add_eligible_voters(election, electionData['voters'])
+            logging.info(electionData)
+        except Exception as e:
+            response['status'] = 'ERROR'
+            response['msg'] = 'Sorry! An error occurred: %s' % str(e)
+            error = True
+
+        if not error:
+            response['status'] = 'OK'
+            response['msg'] = 'Election successfully created!'
+
+        self.response.write(json.dumps(response))
         
 app = webapp2.WSGIApplication([
         ('/createElection', CreateElectionHandler)

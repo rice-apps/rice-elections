@@ -3,6 +3,7 @@
  */
 
 // Contains the positions added in the election where each position is a literal object
+var debug = true;
 var positions = [];
 
 /**
@@ -57,19 +58,26 @@ function submitForm() {
 	
 	console.log(postData);
 	if (valid) {
+	    if (!debug) {
+	       $('#election-submit').addClass('disabled');
+	    }
 		$.ajax({
 		    url: '/createElection',
 		    type: 'POST',
 		    data: {'formData': JSON.stringify(postData)},
 		    success: function(data) {
+		        var response = JSON.parse(data);
 		        $('html, body').animate({
                     scrollTop : $('#server-response').offset().top
                 }, 500);
                 $('#server-response').addClass('alert');
-                $('#server-response').addClass('alert-success');
-                $('#server-response').append(data);
+                if (response['status'] == 'OK') {
+                    $('#server-response').addClass('alert-success');
+                } else {
+                    $('#server-response').addClass('alert-error');
+                }
+                $('#server-response').html(response['msg']);
                 $('#server-response').hide().slideDown(1000);
-                $('#election-submit').addClass('disabled');
 		    },
 		});
 	} else {
@@ -204,6 +212,9 @@ function getEligibleVoters() {
  * @return {Object} list of position objects, null if there are no positions
  */
 function getPositions() {
+    if (debug) {
+        return [];
+    }
 	var pos = $('#positions-list');
 	var posContainer = pos.parent().parent();
 
