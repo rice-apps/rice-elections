@@ -25,8 +25,7 @@ class VoteHandler(webapp2.RequestHandler):
         if not voter:
             render_page(self, '/vote', page_data)
             return
-
-        elections = voter.get_elections()
+        elections = voter.elections()
         logging.info(elections)
 
         for election in elections:
@@ -44,7 +43,7 @@ class VoteHandler(webapp2.RequestHandler):
                     data['status'] = 'Voting begins at %s' % start_str
                 else:
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p')
-                    data['status'] = 'Voting ends at %s', end_str
+                    data['status'] = 'Voting ends at %s' % end_str
                 page_data['open_elections'].append(data)
 
         render_page(self, '/vote', page_data)

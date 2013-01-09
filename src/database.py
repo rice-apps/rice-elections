@@ -19,6 +19,93 @@ class Organization(db.Model):
     description = db.TextProperty()
     website = db.StringProperty()
 
+
+class Election(db.Model):
+    """
+    An election that users may vote for.
+    """
+    name = db.StringProperty()
+    start = db.DateTimeProperty()       # Time when voting begins
+    end = db.DateTimeProperty()         # Time when voting ends
+    organization = db.ReferenceProperty(Organization,
+                                        collection_name='elections')
+    eligible_voters = db.ListProperty(db.Key)
+
+
+class Voter(db.Model):
+    """
+    A voter that uses the application.
+    """
+    net_id = db.StringProperty()
+    _election_keys = db.ListProperty(db.Key)     # List of elections user is eligible to vote in
+    
+    @property
+    def elections(self):
+        """
+        Returns:
+            election_list: a list of Elections the Voter is eligible to vote for.
+        """
+        election_list = []
+        for election_key in self._election_keys:
+            election_list.append(db.get(election_key))
+        return election_list
+
+    def add_election(self, election):
+        """
+        Makes the Voter eligible to vote in the specified election.
+        
+        Args:
+            election: Election to add.
+        """
+        self._election_keys.append(election.key())
+        self.put()
+
+class Position(db.Model):
+    """
+    A position within an organization for which elections are held.
+    """
+    name = db.StringProperty()
+    organization = db.ReferenceProperty(Organization,
+                                        collection_name='positions')
+
+class ElectionPosition(db.Model):
+    """
+    A position for a specific election within an organization.
+    """
+    _position = db.ReferenceProperty(Position,
+                                    collection_name='election_positions')
+    slots = db.IntegerProperty()
+    write_in = db.BooleanProperty()
+    type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
+    _candidate_keys = db.ListProperty(db.Key)
+    
+    @property
+    def position(self):
+        """
+        Returns:
+            position: The Position associated with this.
+        """
+        return db.get(self._position)
+    
+    @property
+    def candidates(self):
+        """
+        Returns:
+            candidates: A list of Candidates who are running for this.
+        """
+        candidate_list = []
+        for candidate_key in self._candidate_keys:
+            candidate_list.append(db.get(candidate_key))
+        return candidate_list
+    
+class Candidate(db.Model):
+    """
+    A candidate for any election.
+    """
+    name = db.StringProperty()
+    net_id = db.StringProperty()
+    
+    
 def get_organization(name):
     """
     Returns the organization the election data is referring to.
@@ -52,16 +139,6 @@ def get_organization(name):
     
     return None
 
-class Election(db.Model):
-    """
-    An election that users may vote for.
-    """
-    name = db.StringProperty()
-    start = db.DateTimeProperty()       # Time when voting begins
-    end = db.DateTimeProperty()         # Time when voting ends
-    organization = db.ReferenceProperty(Organization,
-                                        collection_name='elections')
-    eligible_voters = db.ListProperty(db.Key)
 
 def put_election(name, start, end, organization):
     """
@@ -91,40 +168,6 @@ def put_election(name, start, end, organization):
     return election
 
 
-class Voter(db.Model):
-    """
-    A voter that uses the application.
-    """
-    net_id = db.StringProperty()
-    _election_keys = db.ListProperty(db.Key)     # List of elections user is eligible to vote in
-    
-    def get_elections(self):
-        """
-        Returns:
-            election_list: a list of Elections the Voter is eligible to vote for.
-        """
-        election_list = []
-        for election_key in self._election_keys:
-            election_list.append(db.get(election_key))
-        return election_list
-
-    def add_election(self, election):
-        """
-        Makes the Voter eligible to vote in the specified election.
-        
-        Args:
-            election: Election to add.
-        """
-        self._election_keys.append(election.key())
-        self.put()
-
-class EligibleVoter(db.Model):
-    """
-    An entity that represents an election that an individual voter is eligible to vote for.
-    """
-    voter = db.ReferenceProperty(Voter)
-    election = Election()
-    
 def add_eligible_voters(election, net_id_list):
     """
     Adds the specified people as eligible voters for the election provided. Creates and stores a
@@ -137,6 +180,7 @@ def add_eligible_voters(election, net_id_list):
     for net_id in net_id_list:
         voter = get_voter(net_id, create=True)
         voter.add_election(election)
+
 
 def get_voter(net_id, create=False):
     """
@@ -162,23 +206,3 @@ def get_voter(net_id, create=False):
     
     return None
 
-def get_elections_for_voter(voter):
-    """
-    Returns the Elections the Voter is eligible for voting in.
-    
-    Args:
-        voter: The Voter.
-    
-    Returns:
-        elections: A list of Election entries the voter is eligible to vote in.
-    """
-    logging.info('Requested elections for voter: %s', voter.net_id)
-    
-    elections = []
-#    query = db.GqlQuery('SELECT * FROM EligibleVoter WHERE voter=:1', voter)
-#    for eligible_voter in query:
-#        elections.append(eligible_voter.election)
-    for election in voter.elections:
-        elections.append(election)
-    logging.info(elections)
-    return elections
