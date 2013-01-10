@@ -9,15 +9,24 @@ import json
 import logging
 import webapp2
 
-TEST_DATA = {u'start': 1358898900,
-             u'end': 1359071700,
-             u'organization': 'Brown College',
-             u'name': u'Round 1',
-             u'voters': [u'wa1', u'sa27', u'nfa11', u'srt6'],
+TEST_DATA = {u'start': 1357659600, 
              u'positions': [
-                    {u'candidates': [u'Candidate A', u'Candidate B'], u'slots': 1, u'writeIn': True, u'type': u'Ranked-Choice', u'name': u'President'}, 
-                    {u'candidates': [u'Candidate 1', u'Candidate 2'], u'slots': 1, u'writeIn': False, u'type': u'Ranked-Choice', u'name': u'Chief Justice'}
-             ]}
+                {u'candidates': [{u'name': u'Waseem Ahmad', u'netId': u'wa1'}, 
+                                 {u'name': u'Sal Testa', u'netId': u'srt6'}], 
+                     u'slots': 1, 
+                     u'writeIn': False, 
+                     u'type': u'Ranked-Choice', 
+                     u'name': u'President'}, 
+                {u'candidates': [{u'name': u'Sal Testa', u'netId': u'srt6'}, 
+                                 {u'name': u'Andrew Capshaw', u'netId': u'apc3'}],
+                 u'slots': 1,
+                 u'writeIn': True,
+                 u'type': u'Ranked-Choice',
+                 u'name': u'Chief Justice'}],
+             u'end': 1357832100,
+             u'name': u'Round One',
+             u'voters': [u'wa1', u'srt6', u'apc3']}
+
 
 class CreateElectionHandler(webapp2.RequestHandler):
     """

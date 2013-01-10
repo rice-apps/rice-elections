@@ -3,7 +3,7 @@
  */
 
 // Contains the positions added in the election where each position is a literal object
-var debug = true;
+var debug = false;
 var positions = [];
 
 /**
@@ -237,7 +237,7 @@ function displayPosition(position) {
     var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] +
             '<br /><ul>';
     $.each(position['candidates'], function(index, value) {
-        html += '<li>' + value + '</li>';
+        html += '<li>' + value['name'] + '</li>';
     });
     if (position['writeIn']) {
         html += '<li><em>Write-in</em></li>';
@@ -332,6 +332,7 @@ var addPositionModal = function() {
         candidateInput.hide().fadeIn(500);
         candidatesIDs.push(index);
 
+        // Delete candidate button
         $('#' + id).click(function() {
             var indexPtr = candidatesIDs.indexOf(index);
             if (indexPtr != -1) {
@@ -394,13 +395,14 @@ var addPositionModal = function() {
     }
 
     /**
-     * Validates and returns a list of candidate name strings that the user has input.
+     * Validates and returns a list of candidates that the user has input.
+     * Where each candidate is an object literal with keys name and netId.
      * TODO: Trim input
      */
-    var getCandidateNames = function() {
+    var getCandidates = function() {
         var missingInformation = false;
-        var candidateNameContainer = $('#position-candidates').parent().parent();
-        var candidateNames = [];        // Function output
+        var candidatesContainer = positionCandidates.parent().parent();
+        var candidates = [];        // Function output
 
         // Make sure the candidate name is defined for all candidates
         $.each(candidatesIDs, function(index, value) {
@@ -409,21 +411,22 @@ var addPositionModal = function() {
             if (candidateNameInput.val() == '' || candidateNetIDInput.val() == '') {
                 missingInformation = true;
             } else {
-                candidateNames.push(candidateNameInput.val());
+                candidates.push({'name': candidateNameInput.val(),
+                                 'netId': candidateNetIDInput.val()});
             }
         });
 
         // Remove existing errors
         $('.errorMsgCandidateName').remove();
-        candidateNameContainer.removeClass('error');
+        candidatesContainer.removeClass('error');
         if (missingInformation) {
-            candidateNameContainer.addClass('error');
+            candidatesContainer.addClass('error');
             $('<span class="help-inline errorMsgCandidateName">' +
                     'Missing information.</span>').insertAfter(positionCandidates);
             return null;
         }
 
-        return candidateNames;
+        return candidates;
     }
 
     /**
@@ -441,7 +444,7 @@ var addPositionModal = function() {
      */
     positionAddSubmit.click(function() {
         var valid = true;
-        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidateNames(), hasWriteIn()];
+        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidates(), hasWriteIn()];
         $.each(formData, function(index, value) {
             if (value == null) {
                 valid = false;
