@@ -237,7 +237,7 @@ function displayPosition(position) {
     var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] +
             '<br /><ul>';
     $.each(position['candidates'], function(index, value) {
-        html += '<li>' + value['name'] + '</li>';
+        html += '<li>' + value['name'] + ' - ' + value['netId'] + '</li>';
     });
     if (position['writeIn']) {
         html += '<li><em>Write-in</em></li>';
