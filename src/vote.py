@@ -25,7 +25,7 @@ class VoteHandler(webapp2.RequestHandler):
         if not voter:
             render_page(self, '/vote', page_data)
             return
-        elections = voter.elections()
+        elections = voter.elections
         logging.info(elections)
 
         for election in elections:

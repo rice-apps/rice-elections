@@ -9,6 +9,8 @@ import json
 import logging
 import webapp2
 
+from google.appengine.ext import db
+
 TEST_DATA = {u'start': 1357659600, 
              u'positions': [
                 {u'candidates': [{u'name': u'Waseem Ahmad', u'netId': u'wa1'}, 
@@ -62,8 +64,26 @@ class CreateElectionHandler(webapp2.RequestHandler):
                                              electionData['end'], organization)
             database.add_eligible_voters(election, electionData['voters'])
             
+            # Store positions
+            for position in electionData['positions']:
+                position_name = position['name']
+                position_entry = database.get_position(position_name, organization, create=True)
+                election_position_entry = database.put_election_position(
+                                                election,
+                                                position_entry,
+                                                position['slots'],
+                                                position['writeIn'],
+                                                position['type'])
+                for candidate in position['candidates']:
+                    candidate_entry = database.get_candidate(candidate['name'], candidate['netId'], create=True)
+                    database.put_candidate_for_election_position(candidate_entry, election_position_entry)
+            
+                for c in election_position_entry.candidates:
+                    can = db.get(c)
+                    logging.info('Candidate %s running for %s', can.name, election_position_entry.position.name)
+            
             logging.info(electionData)
-        except Exception as e:
+        except NameError as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
             logging.error(msg)
             self.respond('ERROR', msg)

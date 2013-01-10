@@ -78,31 +78,13 @@ class ElectionPosition(db.Model):
     """
     A position for a specific election within an organization.
     """
-    _position = db.ReferenceProperty(Position,
+    election = db.ReferenceProperty(Election,
                                     collection_name='election_positions')
+    position = db.ReferenceProperty(Position)
     slots = db.IntegerProperty()
     write_in = db.BooleanProperty()
     type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
-    _candidate_keys = db.ListProperty(db.Key)
-    
-    @property
-    def position(self):
-        """
-        Returns:
-            position: The Position associated with this.
-        """
-        return db.get(self._position)
-    
-    @property
-    def candidates(self):
-        """
-        Returns:
-            candidates: A list of Candidates who are running for this.
-        """
-        candidate_list = []
-        for candidate_key in self._candidate_keys:
-            candidate_list.append(db.get(candidate_key))
-        return candidate_list
+    candidates = db.ListProperty(db.Key)
     
 class Candidate(db.Model):
     """
@@ -147,7 +129,7 @@ def get_organization(name):
 
 def put_election(name, start, end, organization):
     """
-    Creates and stores an election in the database.
+    Creates and stores an Election in the database.
     
     Args:
         name: election name.
@@ -192,8 +174,8 @@ def get_voter(net_id, create=False):
     Returns the Voter entry for the NetID specified.
     
     Args:
-        net_id: NetID of the Voter.
-        create(optional): Creates and stores a Voter entry if one doesn't exist.
+        net_id {String}: NetID of the Voter.
+        create {Boolean, optional}: Creates and stores a Voter entry if one doesn't exist.
     
     Returns:
         voter: The Voter entry corresponding to net_id, None if one doesn't exist and create is False.
@@ -210,3 +192,78 @@ def get_voter(net_id, create=False):
     
     return None
 
+
+def get_position(name, organization, create=False):
+    """
+    Returns the named Position from the specified organization.
+    
+    Args:
+        name {String}: the name of the position
+        organization {db.Model}: Organization of the position
+        create {Boolean, optional}: Creates and stores a Position if one doesn't exist.
+        
+    Returns:
+        position {db.Model}: The Position entry in the database, None if one doesn't exist and create is False.
+    """
+    position = db.GqlQuery('SELECT * FROM Position WHERE organization=:1 AND name=:2', organization, name).get()
+    if not position and create:
+        position = Position(name=name, organization=organization.key())
+        position.put()
+        logging.info('Position created with name: %s for organization: %s', name, organization.name)
+    return position
+
+
+def get_candidate(name, net_id, create=False):
+    """
+    Returns the candidate with the specified net_id.
+    
+    Args:
+        name {String}: the name of the candidate
+        net_id {String}: the NetID of the candidate
+    
+    Returns:
+        Candidate {db.Model}: The Candidate entry in the database, None if one doesn't exist and create is False.
+    """
+    candidate = db.GqlQuery('SELECT * FROM Candidate WHERE net_id=:1', net_id).get()
+    if not candidate and create:
+        candidate = Candidate(name=name, net_id=net_id)
+        candidate.put()
+        logging.info('Candidate created with name: %s NetID: %s', name, net_id)
+    return candidate
+
+
+def put_election_position(election, position, slots, write_in, position_type):
+    """
+    Creates and stores an ElectionPosition in the database.
+    
+    Args:
+        election {db.Model}: the Election for which this ElectionPosition is being created.
+        position {db.Model}: the Position entry corresponding to the ElectionPosition.
+        slots {Integer}: the number of slots for this position.
+        write_in {Boolean}: whether a write-in is allowed.
+        position_type {String}: the position type, see entity definition for choices.
+    
+    Returns:
+        election_position {db.Model}: the ElectionPosition that was stored in the database.
+    """
+    election_position = ElectionPosition(election=election.key(),
+                                         position=position.key(),
+                                         slots=slots,
+                                         write_in=write_in,
+                                         type=position_type)
+    election_position.put()
+    logging.info('ElectionPosition created for %s in organization: %s', 
+                        election_position.position.name, election_position.position.organization.name)
+    return election_position
+
+
+def put_candidate_for_election_position(candidate, election_position):
+    """
+    Adds a candidate as a runner for the specified election_position.
+    
+    Args:
+        candidate {db.Model}: the Candidate
+        election_position {db.Model}: the ElectionPosition the Candidate is running for
+    """
+    election_position.candidates.append(candidate.key())
+    election_position.put()
