@@ -7,7 +7,7 @@ var debug = true;
 var positions = [];
 
 /**
- * Initializes JS plug-ins and event listeners on the page. 
+ * Initializes JS plug-ins and event listeners on the page.
  */
 $(document).ready(function() {
 	// Initialize the date / time pickers.
@@ -29,17 +29,17 @@ $(document).ready(function() {
 	});
 
 	$('label[rel="tooltip"]').tooltip();
-	
+
 });
 
 /**
- * Called when the submit button is clicked. Validates and makes an AJAX submission if form is valid. 
+ * Called when the submit button is clicked. Validates and makes an AJAX submission if form is valid.
  */
 function submitForm() {
     if ($('#election-submit').hasClass('disabled')) {
         return false;
     }
-    
+
 	var valid = true;
 	var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions()];
 	$.each(formData, function(index, value) {
@@ -47,7 +47,7 @@ function submitForm() {
 			valid = false;
 		}
 	});
-	
+
 	var postData = {
 	    'name': formData[0],
 	    'start': formData[1]['start'],
@@ -55,7 +55,7 @@ function submitForm() {
 	    'voters': formData[2],
 	    'positions': formData[3]
 	};
-	
+
 	console.log(postData);
 	if (valid) {
 	    if (!debug) {
@@ -91,7 +91,7 @@ function submitForm() {
 
 /**
  * Returns the election name.
- * @return {String} election name, null if input is invalid. 
+ * @return {String} election name, null if input is invalid.
  */
 function getElectionName() {
 	var name = $('#name');
@@ -117,7 +117,7 @@ function getElectionName() {
 
 /**
  * Returns the start and end times in time since epoch.
- * @return {Object} start and end times keyed by 'start' and 'end'. null if input is invalid. 
+ * @return {Object} start and end times keyed by 'start' and 'end'. null if input is invalid.
  */
 function getElectionTimes() {
 	var startDate = $('#startDate');
@@ -234,7 +234,7 @@ function getPositions() {
  * @param {Object} position a valid position
  */
 function displayPosition(position) {
-    var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] + 
+    var html = '<div style="margin: 5px 0 5px;"><strong>' + position['type'] + ': </strong>' + position['name'] +
             '<br /><ul>';
     $.each(position['candidates'], function(index, value) {
         html += '<li>' + value + '</li>';
@@ -250,7 +250,7 @@ function displayPosition(position) {
 
 function createSuccessResponse(data, status) {
     alert('\n\nresponseText: \n' + responseText + '\nstatus: ' + statusText);
-    
+
     console.log('Form Reset');
     resetPositionForm();
     positions = [];
@@ -258,7 +258,7 @@ function createSuccessResponse(data, status) {
 }
 
 /**
- * Add Position Modal Pop-up 
+ * Add Position Modal Pop-up
  */
 var addPositionModal = function() {
     var modal = this;                                             // Out of scope reference
@@ -275,9 +275,9 @@ var addPositionModal = function() {
     var positionCandidates = $('#position-candidates');           // Div: list of candidates
     var positionWriteIn = $('#position-write-in');                // Checkbox: whether the position has a write-in
     var positionAddSubmit = $('#position-add-submit');            // Button: Add position
-    
+
     /**
-     * Resets the HTML form in the modal box on the page. 
+     * Resets the HTML form in the modal box on the page.
      */
     this.resetForm = function() {
         console.log('Reset Form');
@@ -288,31 +288,39 @@ var addPositionModal = function() {
         positionName.val('').change();
         positionWriteIn.attr('checked', false);
     };
-    
+
     /**
-     * Updates the form when the position type is changed from the drop-down. 
+     * Updates the form when the position type is changed from the drop-down.
      */
     positionSelectType.change(function() {
         positionSelectionContent.hide();    // Hide all of the other selection content
         var selectedId = $(this).val();
         $('#' + selectedId).show();
     });
-    
+
     /**
-     * Adds an input field for a candidate to the form when add candidate button is clicked. 
+     * Adds an input field for a candidate to the form when add candidate button is clicked.
      */
     positionAddCandidate.click(function() {
         var index = candidateIDGen++;
         var id = candidateIDPrefix + index;
-    
+
         var candidateInput = $('<div/>', {
             class : 'input-append'
         }).append($('<input>', {
             type : 'text',
-            class : 'input-xlarge',
+            class : 'input-xlarge, input-margin-right',
             id : id + '-name',
             name : id + '-name',
-            placeholder : "Candidate Name"
+            width : '200px',
+            placeholder : "Full Name"
+        })).append($('<input>', {
+            type : 'text',
+            class : 'input-xlarge',
+            id : id + '-net-id',
+            width : '50px',
+            name : id + '-net-id',
+            placeholder : "NetID"
         })).append($('<span/>', {
             class : 'add-on',
             id : id
@@ -320,10 +328,10 @@ var addPositionModal = function() {
             class : 'icon-remove'
         })));
         $('#position-candidates').append(candidateInput);
-    
+
         candidateInput.hide().fadeIn(500);
         candidatesIDs.push(index);
-    
+
         $('#' + id).click(function() {
             var indexPtr = candidatesIDs.indexOf(index);
             if (indexPtr != -1) {
@@ -332,9 +340,9 @@ var addPositionModal = function() {
             $(this).parent().fadeOut(500);
         });
     });
-    
+
     /**
-     * Returns the position type selected. 
+     * Returns the position type selected.
      */
     var getPositionType = function() {
         if (rankedChoice.attr('selected') == 'selected') {
@@ -343,9 +351,9 @@ var addPositionModal = function() {
             return 'Single-Choice';
         }
     }
-    
+
     /**
-     * Validates and returns the position name typed. 
+     * Validates and returns the position name typed.
      * TODO: Trim input
      */
     var getPositionName = function() {
@@ -360,9 +368,9 @@ var addPositionModal = function() {
         }
         return positionName.val();
     }
-    
+
     /**
-     * Validates and returns the slot input number. 
+     * Validates and returns the slot input number.
      */
     var getSlots = function() {
         var slotsContainer = positionSlots.parent().parent();
@@ -378,32 +386,33 @@ var addPositionModal = function() {
             return null;
         } else if (slotsVal > candidatesIDs.length && !hasWriteIn()) {
             slotsContainer.addClass('error');
-            $('<span class="help-inline errorMsgSlots">Number of ' + 
+            $('<span class="help-inline errorMsgSlots">Number of ' +
                         'slots exceed number of candidates.</span>').insertAfter(positionSlots);
             return null;
         }
         return slotsVal;
     }
-    
+
     /**
-     * Validates and returns a list of candidate name strings that the user has input. 
+     * Validates and returns a list of candidate name strings that the user has input.
      * TODO: Trim input
      */
     var getCandidateNames = function() {
         var missingInformation = false;
         var candidateNameContainer = $('#position-candidates').parent().parent();
         var candidateNames = [];        // Function output
-    
+
         // Make sure the candidate name is defined for all candidates
         $.each(candidatesIDs, function(index, value) {
             var candidateNameInput = $('#position-candidate-' + value + '-name');
-            if (candidateNameInput.val() == '') {
+            var candidateNetIDInput = $('#position-candidate-' + value + '-net-id');
+            if (candidateNameInput.val() == '' || candidateNetIDInput.val() == '') {
                 missingInformation = true;
             } else {
                 candidateNames.push(candidateNameInput.val());
             }
         });
-    
+
         // Remove existing errors
         $('.errorMsgCandidateName').remove();
         candidateNameContainer.removeClass('error');
@@ -413,12 +422,12 @@ var addPositionModal = function() {
                     'Missing information.</span>').insertAfter(positionCandidates);
             return null;
         }
-    
+
         return candidateNames;
     }
-    
+
     /**
-     * Returns whether the user specified a write-in for this position. 
+     * Returns whether the user specified a write-in for this position.
      */
     var hasWriteIn = function() {
         if (positionWriteIn.attr('checked') == 'checked') {
@@ -426,9 +435,9 @@ var addPositionModal = function() {
         }
         return false;
     }
-    
+
     /**
-     * Validates all position form entries and adds to the main election form. 
+     * Validates all position form entries and adds to the main election form.
      */
     positionAddSubmit.click(function() {
         var valid = true;

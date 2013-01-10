@@ -1,4 +1,8 @@
 .input-append {
-	margin-top:3px; 
+	margin-top:3px;
 	margin-bottom:3px;
+}
+
+.input-margin-right {
+    margin-right: 0.5em;
 }
