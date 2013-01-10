@@ -27,35 +27,53 @@ class CreateElectionHandler(webapp2.RequestHandler):
     def post(self):
         logging.info('Received new create election submission')
         logging.info(self.request.POST)
-        error = False
-        response = {}
         
         try:
+            # Get form data
             formData = self.request.get('formData')
             if not formData:
-                self.response.out.write('No Form Data Sent!')
+                msg = 'No Form Data Sent!'
+                self.respond('ERROR', msg)
+                logging.error(msg)
                 return
             
+            # Parse form data
             electionData = json.loads(formData)
+
+            # Get organization
             organization = database.get_organization('Brown College')
             if not organization:
-                logging.info('Organization not found')
+                msg = 'Organization not found!'
+                self.respond('ERROR', msg)
+                logging.error(msg)
                 return
             
+            # Store election
             election = database.put_election(electionData['name'], electionData['start'],
                                              electionData['end'], organization)
             database.add_eligible_voters(election, electionData['voters'])
+            
             logging.info(electionData)
         except Exception as e:
-            response['status'] = 'ERROR'
-            response['msg'] = 'Sorry! An error occurred: %s' % str(e)
-            error = True
+            msg = 'Sorry! An error occurred: %s' % str(e)
+            logging.error(msg)
+            self.respond('ERROR', msg)
+            
+        
+        # Success
+        msg = 'Election successfully created!'
+        self.respond('OK', msg)
+        logging.info(msg)
 
-        if not error:
-            response['status'] = 'OK'
-            response['msg'] = 'Election successfully created!'
-
-        self.response.write(json.dumps(response))
+    def respond(self, status, message):
+        """
+        Sends a response to the front-end.
+        
+        Args:
+            status: response status
+            message: response message
+        """
+        self.response.write(json.dumps({'status': status, 'msg': message}))
         
 app = webapp2.WSGIApplication([
         ('/createElection', CreateElectionHandler)

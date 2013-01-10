@@ -9,6 +9,11 @@ import logging
 from datetime import datetime
 from google.appengine.ext import db
 
+# Temporary look-up table until NetID input for candidates is implemented in the frontend
+net_id_lookup = {'Waseem Ahmad': 'wa1',
+                 'Sal Testa': 'srt6',
+                 'Andrew Capshaw': 'apc3'}
+
 
 class Organization(db.Model):
     """
@@ -59,6 +64,7 @@ class Voter(db.Model):
         """
         self._election_keys.append(election.key())
         self.put()
+
 
 class Position(db.Model):
     """
@@ -130,10 +136,9 @@ def get_organization(name):
     
     # Create Brown College organization
     if temp_hard_code:
-        brown = Organization()
-        brown.name = name
-        brown.description = 'The best residential college.'
-        brown.website = 'http://brown.rice.edu'
+        brown = Organization(name=name,
+                             description='The best residential college.',
+                             website='http://brown.rice.edu')
         brown.put()
         return brown
     
@@ -162,7 +167,7 @@ def put_election(name, start, end, organization):
     election.name = name
     election.start = datetime.fromtimestamp(start)
     election.end = datetime.fromtimestamp(end)
-    election.organization = organization
+    election.organization = organization.key()
     election.put()
     logging.info('Election stored.')
     return election
@@ -198,8 +203,7 @@ def get_voter(net_id, create=False):
         return voter
     
     if create:
-        voter = Voter()
-        voter.net_id = net_id
+        voter = Voter(net_id=net_id)
         voter.put()
         logging.info('Voter with NetID: %s created and stored.', net_id)
         return voter
