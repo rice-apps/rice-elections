@@ -62,7 +62,7 @@ function submitForm() {
 	       $('#election-submit').addClass('disabled');
 	    }
 		$.ajax({
-		    url: '/createElection',
+		    url: '/create-election',
 		    type: 'POST',
 		    data: {'formData': JSON.stringify(postData)},
 		    success: function(data) {

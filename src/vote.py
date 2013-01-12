@@ -20,11 +20,14 @@ class VoteHandler(webapp2.RequestHandler):
     def get(self):
         page_data = {'open_elections': [], 'election_results': []}
 
+        # Authenticate user
         net_id = require_login(self)
         voter = database.get_voter(net_id)
         if not voter:
             render_page(self, '/vote', page_data)
             return
+        
+        # Elections the user is eligible to vote for
         elections = voter.elections
         logging.info(elections)
 

@@ -16,8 +16,11 @@ handlers:
 
 - url: /vote
   script: vote.app  
+  
+- url: /cast-ballot
+  script: castballot.app
 
-- url: /createElection
+- url: /create-election
   script: createelection.app
 
 - url: /.*

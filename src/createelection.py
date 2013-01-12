@@ -108,5 +108,5 @@ class CreateElectionHandler(webapp2.RequestHandler):
         self.response.write(json.dumps({'status': status, 'msg': message}))
         
 app = webapp2.WSGIApplication([
-        ('/createElection', CreateElectionHandler)
+        ('/create-election', CreateElectionHandler)
 ], debug=True)
