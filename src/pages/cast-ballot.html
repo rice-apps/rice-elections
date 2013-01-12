@@ -23,27 +23,40 @@ TEST_DATA = {u'start': 1357659600,
              u'name': u'Round One',
              u'voters': [u'wa1', u'srt6', u'apc3']} -->
 
-  <!-- Print the ballot. -->
   <h2>{{ election.name }}</h2>
   <p>
     Below is the ballot for this election. You are voting as <strong>netid</strong> but your choices will not be tied to your netID in any way.
   </p>
+
+  <!-- Print each election by position. -->
   {% for position in election.positions %}
     <h3>{{ position.name }}</h3>
     {% if position.type equals "Ranked-Choice" %}
+
+      <!-- Instructions for ranked-choice ballots. -->
+      <p>Please rank the following candidates from 1 to {{ position.candidates|count }}, with 1 being your first choice. <em>You must rank every candidate.</em></p>
+
+      <!-- Candidate listing for this position. -->
       <ul>
         {% for candidate in position.candidates %}
-          <li><input name='{{ candidate.netId }}' class='input-small'> {{ candidate.name }}</li>
+          <li>
+            <input data-candidate-name='{{ candidate.name }}'
+                   data-netid='{{ candidate.netId }}'
+                   class='input-small'>
+              {{ candidate.name }}
+          </li>
         {% endfor %}
         {% if position.writeIn %}
           <li><input name='write_in_rank' class='input-small'>
-              <input name='write_in_name' class='input-medium'></li>
+              <input name='write_in_name' class='input-medium' placeholder='Write-In Candidate Name'></li>
         {% endif }
       </ul>
     {% else %}
+
+      <!-- Other types of voting have yet to be implemented. -->
       <p class='error'>This has not been implemented. Complain to waseem.</p>
+
     {% endif %}
   {% endfor %}
-
   <a href='#' class='btn btn-primary disabled'>Cast Ballot</a>
 </section>
