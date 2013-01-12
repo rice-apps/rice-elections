@@ -49,6 +49,7 @@ class VoteHandler(webapp2.RequestHandler):
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p')
                     data['status'] = 'Voting ends at %s' % end_str
                 page_data['open_elections'].append(data)
+            logging.info(data)
 
         render_page(self, '/vote', page_data)
 

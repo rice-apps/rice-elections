@@ -57,7 +57,7 @@ def render_page(handler, page_name, page_data):
     # Get the page name being requested assume home.html if none specified
     if page_name == '/':
         page_name += NAV_BAR[0]['link']
-
+        
     # Get page info
     try:
         page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
