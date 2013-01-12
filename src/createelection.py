@@ -80,9 +80,10 @@ class CreateElectionHandler(webapp2.RequestHandler):
                     candidate_entry = database.get_candidate(candidate['name'], candidate['netId'], create=True)
                     database.put_candidate_for_election_position(candidate_entry, election_position_entry)
             
-                for c in election_position_entry.candidates:
-                    can = db.get(c)
-                    logging.info('Candidate %s running for %s', can.name, election_position_entry.position.name)
+                for candidate in election_position_entry.candidates:
+                    candidate_entry = db.get(candidate)
+                    logging.info('Candidate %s running for %s', candidate_entry.name, 
+                                 election_position_entry.position.name)
             
             logging.info(electionData)
         except Exception as e:
