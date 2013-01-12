@@ -33,10 +33,10 @@ class StaticHandler(webapp2.RequestHandler):
 def require_login(request_handler):
     """
     Requires the user to be logged in through NetID authentication.
-    
+
     Args:
         request_handler: webapp2 request handler of the user request
-    
+
     Returns:
         net_id: the NetID of the user
     """
@@ -57,12 +57,12 @@ def render_page(handler, page_name, page_data):
     # Get the page name being requested assume home.html if none specified
     if page_name == '/':
         page_name += NAV_BAR[0]['link']
-        
+
     # Get page info
     try:
         page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
     except Exception:
-        page = JINJA_ENV.get_template('not_found.html').render()
+        page = JINJA_ENV.get_template('not-found.html').render()
 
     # Mark all links in the nav bar as inactive except the page open
     for item in NAV_BAR:
