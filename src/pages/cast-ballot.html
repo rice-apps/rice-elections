@@ -16,6 +16,7 @@
 
     <!-- Print each election by position. -->
     {% for position in positions %}
+    <div class='well'>
       <h3>{{ position.name }}</h3>
 
       {% if position.type == "Ranked-Choice" %}
@@ -27,15 +28,15 @@
         <ul>
           {% for candidate in position.candidates %}
             <li>
-              <input data-candidate-name='{{ candidate.name }}'
-                     data-netid='{{ candidate.netId }}'
-                     class='input-small'>
-                {{ candidate.name }}
+              <input type='text'
+                     data-candidate-name='{{ candidate }}'
+                     class='input-mini'>
+                {{ candidate }}
             </li>
           {% endfor %}
-          {% if position.writeIn %}
-            <li><input name='write_in_rank' class='input-small'>
-                <input name='write_in_name' class='input-medium' placeholder='Write-In Candidate Name'></li>
+          {% if position.write_in %}
+            <li><input type='text' name='write_in_rank' class='input-small'>
+                <input type='text' name='write_in_name' class='input-large' placeholder='Write-In Candidate Name'></li>
           {% endif %}
         </ul>
 
@@ -46,6 +47,7 @@
 
       {% endif %}
 
+    </div>
     {% endfor %}
 
     <a href='#' class='btn btn-primary disabled'>Cast Ballot</a>
