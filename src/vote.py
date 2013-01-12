@@ -34,6 +34,7 @@ class VoteHandler(webapp2.RequestHandler):
         for election in elections:
             logging.info('Found election')
             data = {}
+            data['id'] = str(election.key())
             data['name'] = election.name
             now = datetime.datetime.now()
             if now > election.end:
