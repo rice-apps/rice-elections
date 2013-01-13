@@ -10,6 +10,7 @@ $(document).ready(function() {
     /* Submit the ballot when the user clicks the cast ballot button. */
     $('#cast-ballot-button').click(function(){
         submitForm();
+        return false;
     });
 });
 
@@ -76,6 +77,7 @@ function submitForm() {
 function getBallot() {
 
     var ballot = {}
+    ballot['positions'] = []
 
     /* For each position, get the position and the data. */
     $('.position').each(function(i, obj) {
@@ -86,14 +88,16 @@ function getBallot() {
 
         /* Ranked Choice info gathering. */
         if (type == 'Ranked-Choice') {
-            ballot[name] = {};
-            ballot[name]['front_end_id'] = id;
-            ballot[name]['candidates'] = {}
-            ballot[name]['candidate_count'] = 0
+            var position = {};
+            position['id'] = id;
+            position['name'] = name;
+            position['type'] = type;
+            position['candidate_rankings'] = []
 
             /* Get the data from each of the children running for office. */
             $('.'+id).each(function(i, obj) {
 
+                var candidate_id   = $(this).attr('data-candidate-id')
                 var candidate_name = $(this).attr('data-candidate-name')
                 var candidate_rank = parseInt($(this).val())
 
@@ -104,13 +108,20 @@ function getBallot() {
 
                 /* Ignore blank write-ins. */
                 if (candidate_name != '') {
-                    ballot[name]['candidates'][candidate_name] = candidate_rank
-                    ballot[name]['candidate_count']++;
+                    var candidate = {
+                        'name' : candidate_name,
+                        'id'   : candidate_id,
+                        'rank' : candidate_rank
+                    }
+                    position['candidate_rankings'].push(candidate)
                 }
             });
 
+            ballot['positions'].push(position)
+
         } else {
             // TODO: non-ranked elections
+            console.log("This has yet to be implemented yet.")
         }
     });
 
@@ -127,10 +138,11 @@ function ballotValidates(ballot) {
     $('.error-texts').removeClass('text-error')
     var valid = true;
 
-    $.each(ballot, function(name, choices) {
-        var id = ballot[name]['front_end_id']
-        var candidates = ballot[name]['candidates']
-        var candidate_count = ballot[name]['candidate_count'];
+    /* Check each position to see if the candidates were ranked correctly. */
+    $.each(ballot['positions'], function(i, position) {
+        var id         = position['id']
+        var candidates = position['candidate_rankings']
+        var candidate_count = candidates.length;
 
         /* We want to check for the ranks 1-(candidates.length+1). */
         var rank_check = []
@@ -139,7 +151,9 @@ function ballotValidates(ballot) {
         }
 
         /* For each candidate, check their rank. */
-        $.each(candidates, function(name, rank) {
+        $.each(candidates, function(i, candidate) {
+
+            var rank = candidate['rank'];
 
             /* Do not accept empty ranks or non number ranks. */
             if (!$.isNumeric(rank)) {

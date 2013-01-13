@@ -11,7 +11,8 @@
     <p class='text-error'> {{ error_msg }}</p>
   {% else %}
 
-  <div id="server-response"></div>
+  <div id='server-response'></div>
+  <div id='election-information' data-election-id='{{ id }}'>
 
   <div class='well'>
     <legend>{{ name }} ({{ organization }})</legend>
@@ -21,7 +22,6 @@
 
     <!-- Print each election by position. -->
     {% for position in positions %}
-      {% set outer_loop = loop %}
 
       <h4>{{ position.name }}</h4>
 
@@ -32,7 +32,7 @@
         {% if position.write_in %}
           {% set count = count + 1 %}
         {% endif %}
-        <p id='position-{{outer_loop.index}}-error' class='error-texts'>
+        <p id='{{position.id}}-error' class='error-texts'>
           Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
           <em>You must rank every candidate.</em>
           {% if position.write_in %}
@@ -41,21 +41,29 @@
         </p>
 
         <!-- Candidate listing for this position. -->
-        <ul class='position unstyled' style='margin-left:30px;' data-name='{{ position.name }}' data-type='{{ position.type }}' data-id='position-{{outer_loop.index}}'>
+        <ul class='position unstyled'
+            style='margin-left:30px;'
+            data-name='{{ position.name }}'
+            data-type='{{ position.type }}'
+            data-id='{{position.id}}'> <!-- TODO: style/css -->
           {% for candidate in position.candidates %}
             <li>
               <input type='text'
                      data-candidate-name='{{ candidate.name }}'
-                     class='input-mini position-{{outer_loop.index}}'
-                     style='width: 2em; text-align:center;'><!-- TODO -->
+                     data-candidate-id='{{ candidate.id }}'
+                     class='input-mini {{position.id}}'
+                     style='width: 2em; text-align:center;'>
+                     <!-- TODO: style/css -->
                 <span class="help-inline">{{ candidate.name }}</span>
             </li>
           {% endfor %}
           {% if position.write_in %}
             <li><input type='text'
                        data-candidate-name='write-in'
-                       class='input-mini position-{{outer_loop.index}}'
-                       style='width: 2em; text-align:center;'><!-- TODO -->
+                       data-candidate-id='write-in'
+                       class='input-mini {{position.id}}'
+                       style='width: 2em; text-align:center;'>
+                       <!-- TODO: style/css -->
                 <input type='text' id='write-in-name' class='input-large' placeholder='Write-In Candidate Name'></li>
           {% endif %}
         </ul>
