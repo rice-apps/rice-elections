@@ -6,6 +6,7 @@ __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.e
 
 import database
 import logging
+import random
 import webapp2
 
 from main import render_page, require_login
@@ -24,7 +25,7 @@ class BallotHandler(webapp2.RequestHandler):
 
         # Authenticate user
         net_id = require_login(self)
-        
+
         # Serve the election the user has requested
         election_id = self.request.get('id')
         if not election_id:
@@ -32,26 +33,27 @@ class BallotHandler(webapp2.RequestHandler):
             render_page(self, PAGE_NAME, page_data)
             return
         logging.info('%s requested election: %s', net_id, election_id)
-        
+
         # Get the election from the database
         election = db.get(election_id)
         if not election:
             page_data['error_msg'] = 'Election not found.'
             render_page(self, PAGE_NAME, page_data)
             return
-        
+
         # Make sure user is eligible to vote
         voter = database.get_voter(net_id)
         if not voter or election.key() not in voter._election_keys:
             page_data['error_msg'] = 'You are not eligible to vote for this election.'
             render_page(self, PAGE_NAME, page_data)
             return
-        
+
         # Write election information
         page_data['name'] = election.name
         page_data['organization'] = election.organization.name
         page_data['positions'] = []
-        
+        page_data['voter_net_id'] = net_id
+
         # Write position information
         election_positions = election.election_positions
         for election_position in election_positions:
@@ -64,10 +66,11 @@ class BallotHandler(webapp2.RequestHandler):
             for candidate_key in election_position.candidates:
                 candidate = db.get(candidate_key)
                 position['candidates'].append(candidate.name)
+            random.shuffle(position['candidates'])
             page_data['positions'].append(position)
-        
+
         logging.info(page_data)
-        
+
         render_page(self, PAGE_NAME, page_data)
 
 
