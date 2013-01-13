@@ -25,15 +25,15 @@ function submitForm() {
     }
 
     /* Immediately disable the button. */
-    $('#election-submit').addClass('disabled');
+    $('#cast-ballot-button').addClass('disabled');
 
     /* Get the ballot before validating it, not the other way around. */
 	var ballot = getBallot();
     console.log(ballot);
 
-    /* Don't submit a ballot that does not validate. */
+    /* Don't submit a ballot that does not validate, but let a user fix it. */
     if (! ballotValidates(ballot)) {
-        $('#election-submit').removeClass('disabled');
+        $('#cast-ballot-button').removeClass('disabled');
         return false;
     }
 
@@ -43,6 +43,7 @@ function submitForm() {
         data: {'formData': JSON.stringify(ballot)},
         success: function(data) {
             var response = JSON.parse(data);
+            // TODO: make better / more modular error / success handlers
             $('html, body').animate({
                 scrollTop : $('#server-response').offset().top
             }, 500);
@@ -55,6 +56,16 @@ function submitForm() {
             $('#server-response').html(response['msg']);
             $('#server-response').hide().slideDown(1000);
         },
+        error: function(data) {
+            // TODO: make better / more modular error / success handlers
+            $('html, body').animate({
+                scrollTop : $('#server-response').offset().top
+            }, 500);
+            $('#server-response').addClass('alert');
+            $('#server-response').addClass('alert-error');
+            $('#server-response').html("An error occurred when your data was submitted. Please refresh the page and try to vote again. If that doesn't fix your problem, please <a href='/contact'> contact us</a>.");
+            $('#server-response').hide().slideDown(1000);
+        }
     });
 }
 
