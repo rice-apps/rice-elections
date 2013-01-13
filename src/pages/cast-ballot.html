@@ -45,10 +45,10 @@
           {% for candidate in position.candidates %}
             <li>
               <input type='text'
-                     data-candidate-name='{{ candidate }}'
+                     data-candidate-name='{{ candidate.name }}'
                      class='input-mini position-{{outer_loop.index}}'
                      style='width: 2em; text-align:center;'><!-- TODO -->
-                <span class="help-inline">{{ candidate }}</span>
+                <span class="help-inline">{{ candidate.name }}</span>
             </li>
           {% endfor %}
           {% if position.write_in %}

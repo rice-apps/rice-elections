@@ -7,7 +7,6 @@ __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.e
 import datetime
 import database
 import logging
-import random
 import webapp2
 
 from main import render_page, require_login
@@ -41,7 +40,7 @@ class VoteHandler(webapp2.RequestHandler):
                 data['end_date'] = election.end.strftime("%a, %B %d, %Y")
                 page_data['election_results'].append(data)
             else:
-                data['user_voted'] = True if random.random() > 0.5 else False   # LOL
+                data['user_voted'] = False # TODO: Temp hardcode
                 if election.start > now:
                     start_str = election.start.strftime('%a, %B %d, %Y, %I:%M %p')
                     data['status'] = 'Voting begins at %s' % start_str
