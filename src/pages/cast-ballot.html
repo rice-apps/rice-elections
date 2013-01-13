@@ -28,7 +28,17 @@
       {% if position.type == "Ranked-Choice" %}
 
         <!-- Instructions for ranked-choice ballots. -->
-        <p id='position-{{outer_loop.index}}-error' class='error-texts'>Please rank the following candidates with a unique whole number from 1 to {{ position.candidates|count }} (with 1 being your first choice, {{ position.candidates|count }} being your last). <em>You must rank every candidate.</em></p>
+        {% set count = position.candidates|count %}
+        {% if position.write_in %}
+          {% set count = count + 1 %}
+        {% endif %}
+        <p id='position-{{outer_loop.index}}-error' class='error-texts'>
+          Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
+          <em>You must rank every candidate.</em>
+          {% if position.write_in %}
+            <em>Note: You don't have to rank the write-in if you leave it blank.</em>
+          {% endif %}
+        </p>
 
         <!-- Candidate listing for this position. -->
         <ul class='position unstyled' style='margin-left:30px;' data-name='{{ position.name }}' data-type='{{ position.type }}' data-id='position-{{outer_loop.index}}'>
