@@ -22,6 +22,12 @@ handlers:
 
 - url: /create-election
   script: createelection.app
+  
+- url: /login-response
+  script: authentication.app
+
+- url: /logout
+  script: authentication.app
 
 - url: /.*
   script: main.app

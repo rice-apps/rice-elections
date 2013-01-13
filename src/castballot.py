@@ -89,8 +89,8 @@ class BallotHandler(webapp2.RequestHandler):
         logging.info('Received new ballot submission.')
         
         # Authenticate user
-        net_id = require_login(self)
-        logging.info('User: %s', net_id)
+#        net_id = require_login(self)
+#        logging.info('User: %s', net_id)
         
         
         logging.info(self.request.POST)

@@ -5,11 +5,13 @@ Back-end for the vote page.
 __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
 
 import datetime
-import database
 import logging
 import webapp2
 
-from main import render_page, require_login
+from authentication import require_login
+from gaesessions import get_current_session
+from main import render_page
+
 
 class VoteHandler(webapp2.RequestHandler):
     """
@@ -20,8 +22,11 @@ class VoteHandler(webapp2.RequestHandler):
         page_data = {'open_elections': [], 'election_results': []}
 
         # Authenticate user
-        net_id = require_login(self)
-        voter = database.get_voter(net_id)
+        session = get_current_session()
+        if not session.has_key('voter'):
+            require_login(self)
+        
+        voter = session['voter']
         if not voter:
             render_page(self, '/vote', page_data)
             return
