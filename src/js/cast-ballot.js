@@ -37,9 +37,6 @@ function submitForm() {
         return false;
     }
 
-    console.log("It validated. TODO!")
-    return false; // todo
-
     $.ajax({
         url: '/submit-ballot',
         type: 'POST',
