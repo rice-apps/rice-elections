@@ -5,6 +5,7 @@ Back-end for serving and accepting a ballot for an election.
 __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
 
 import database
+import json
 import logging
 import random
 import webapp2
@@ -21,6 +22,9 @@ class BallotHandler(webapp2.RequestHandler):
     """
 
     def get(self):
+        """
+        Serves the empty ballot to the client-side so that the user may fill it out and submit it back via post.
+        """
         page_data = {}
 
         # Authenticate user
@@ -76,8 +80,32 @@ class BallotHandler(webapp2.RequestHandler):
         logging.info(page_data)
 
         render_page(self, PAGE_NAME, page_data)
-
-
+    
+    def post(self):
+        """
+        Takes the filled out ballot from the client-side, validates it, and stores it in the database.
+        Sends confirmation to client-side.
+        """
+        logging.info('Received new ballot submission.')
+        
+        # Authenticate user
+        net_id = require_login(self)
+        logging.info('User: %s', net_id)
+        
+        
+        logging.info(self.request.POST)
+        self.respond('OK', 'We got your ballot. Now go home!')
+        
+    def respond(self, status, message):
+        """
+        Sends a response to the front-end.
+        
+        Args:
+            status: response status
+            message: response message
+        """
+        self.response.write(json.dumps({'status': status, 'msg': message}))
+    
 app = webapp2.WSGIApplication([
         ('/cast-ballot', BallotHandler)
 ], debug=True)

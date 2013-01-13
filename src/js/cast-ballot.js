@@ -39,7 +39,7 @@ function submitForm() {
     }
 
     $.ajax({
-        url: '/submit-ballot',
+        url: '/cast-ballot',
         type: 'POST',
         data: {'formData': JSON.stringify(ballot)},
         success: function(data) {
