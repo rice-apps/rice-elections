@@ -38,6 +38,9 @@
           {% if position.write_in %}
             <em>Note: You don't have to rank the write-in if you leave it blank.</em>
           {% endif %}
+          {% if position.vote_required == True %}
+            <em>You are required to vote for this position.</em>
+          {% endif %}
         </p>
 
         <!-- Candidate listing for this position. -->
@@ -45,6 +48,7 @@
             style='margin-left:30px;'
             data-name='{{ position.name }}'
             data-type='{{ position.type }}'
+            data-vote-required='{{ position.vote_required }}'
             data-id='{{position.id}}'> <!-- TODO: style/css -->
           {% for candidate in position.candidates %}
             <li>
