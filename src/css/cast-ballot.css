@@ -5,3 +5,12 @@ h4 {
 .help-inline {
     margin-top: -10px;
 }
+
+.position {
+    margin-left: 30px;
+}
+
+.rank-input {
+    width: 2em;
+    text-align:center;
+}

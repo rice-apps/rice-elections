@@ -45,19 +45,16 @@
 
         <!-- Candidate listing for this position. -->
         <ul class='position unstyled'
-            style='margin-left:30px;'
             data-name='{{ position.name }}'
             data-type='{{ position.type }}'
             data-vote-required='{{ position.vote_required }}'
-            data-id='{{position.id}}'> <!-- TODO: style/css -->
+            data-id='{{position.id}}'>
           {% for candidate in position.candidates %}
             <li>
               <input type='text'
                      data-candidate-name='{{ candidate.name }}'
                      data-candidate-id='{{ candidate.id }}'
-                     class='input-mini {{position.id}}'
-                     style='width: 2em; text-align:center;'>
-                     <!-- TODO: style/css -->
+                     class='rank-input input-mini {{position.id}}'>
                 <span class="help-inline">{{ candidate.name }}</span>
             </li>
           {% endfor %}
@@ -65,9 +62,7 @@
             <li><input type='text'
                        data-candidate-name='write-in'
                        data-candidate-id='write-in'
-                       class='input-mini {{position.id}}'
-                       style='width: 2em; text-align:center;'>
-                       <!-- TODO: style/css -->
+                       class='rank-input input-mini {{position.id}}'>
                 <input type='text' id='write-in-name' class='input-large' placeholder='Write-In Candidate Name'></li>
           {% endif %}
         </ul>
