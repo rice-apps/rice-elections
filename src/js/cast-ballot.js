@@ -82,9 +82,10 @@ function getBallot() {
     /* For each position, get the position and the data. */
     $('.position').each(function(i, obj) {
 
-        var name = $(this).attr('data-name')
-        var type = $(this).attr('data-type')
-        var id   = $(this).attr('data-id')
+        var name     = $(this).attr('data-name')
+        var type     = $(this).attr('data-type')
+        var id       = $(this).attr('data-id')
+        var required = ($(this).attr('data-vote-required') == 'True') ? true : false
 
         /* Ranked Choice info gathering. */
         if (type == 'Ranked-Choice') {
@@ -92,6 +93,7 @@ function getBallot() {
             position['id'] = id;
             position['name'] = name;
             position['type'] = type;
+            position['required'] = required;
             position['candidate_rankings'] = []
 
             /* Get the data from each of the children running for office. */
@@ -155,10 +157,15 @@ function ballotValidates(ballot) {
             }
         }
 
-        if (! position['skipped']) {
-            /* For each candidate, check their rank. */
-            $.each(candidates, function(i, candidate) {
+        /* If the position requires a vote and the user skipped it, error. */
+        if(position['skipped'] && position['required']) {
+            valid = false;
+            $('#' + id + '-error').addClass('text-error');
+        }
 
+        /* Make sure ranks are unique and complete. */
+        if (!position['skipped']) {
+            $.each(candidates, function(i, candidate) {
                 var rank = candidate['rank'];
 
                 /* Do not accept empty ranks or non number ranks. */
