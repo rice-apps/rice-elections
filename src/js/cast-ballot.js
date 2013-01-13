@@ -99,7 +99,7 @@ function getBallot() {
 
                 var candidate_id   = $(this).attr('data-candidate-id')
                 var candidate_name = $(this).attr('data-candidate-name')
-                var candidate_rank = parseInt($(this).val())
+                var candidate_rank = $(this).val() ? parseInt($(this).val()) : ''
 
                 /* Get the real name if this is a write-in candidate. */
                 if (candidate_name == 'write-in') {
@@ -144,32 +144,38 @@ function ballotValidates(ballot) {
         var candidates = position['candidate_rankings']
         var candidate_count = candidates.length;
 
-        /* We want to check for the ranks 1-(candidates.length+1). */
-        var rank_check = []
+        /* We want to check for the ranks 1-(candidates.length+1). Either they
+         * must all be ranked or none of them must be ranked. */
+        var rank_check = [];
+        position['skipped'] = true;
         for (var i = 0; i < candidate_count; i++) {
             rank_check[i] = false;
+            if (candidates[i]['rank'] != '') {
+                position['skipped'] = false;
+            }
         }
 
-        /* For each candidate, check their rank. */
-        $.each(candidates, function(i, candidate) {
+        if (! position['skipped']) {
+            /* For each candidate, check their rank. */
+            $.each(candidates, function(i, candidate) {
 
-            var rank = candidate['rank'];
+                var rank = candidate['rank'];
 
-            /* Do not accept empty ranks or non number ranks. */
-            if (!$.isNumeric(rank)) {
-                valid = false;
-                $('#' + id + '-error').addClass('text-error');
-            }
+                /* Do not accept empty ranks or non number ranks. */
+                if (!$.isNumeric(rank)) {
+                    valid = false;
+                    $('#' + id + '-error').addClass('text-error');
+                }
 
-            /* Keep track of which ranks we have seen. */
-            rank_check[rank-1] = true;
-        });
+                rank_check[rank-1] = true;
+            });
 
-        /* If any rank was missing, the person tied at least two candidates. */
-        for (var i = 0; i < rank_check.length; i++) {
-            if (rank_check[i] != true) {
-                valid = false;
-                $('#' + id + '-error').addClass('text-error');
+            /* Ensure all ranks were used exactly once. */
+            for (var i = 0; i < rank_check.length; i++) {
+                if (rank_check[i] != true) {
+                    valid = false;
+                    $('#' + id + '-error').addClass('text-error');
+                }
             }
         }
 
