@@ -1,18 +1,17 @@
 <!-- Load JS / CSS
 ================================================== -->
 <script src="js/cast-ballot.js"></script>
+<link href="css/cast-ballot.css" rel="stylesheet">
 
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== -->
 
-  <!-- TODO:
-        Put all styling into a css page with tags. Just quicker for now.
-    -->
-
   {% if error_msg %}
     <p class='text-error'> {{ error_msg }}</p>
   {% else %}
+
+  <div id="server-response"></div>
 
   <div class='well'>
     <legend>{{ name }} ({{ organization }})</legend>
@@ -24,12 +23,12 @@
     {% for position in positions %}
       {% set outer_loop = loop %}
 
-      <h4 style='margin-top:20px'>{{ position.name }}</h4>
+      <h4>{{ position.name }}</h4>
 
       {% if position.type == "Ranked-Choice" %}
 
         <!-- Instructions for ranked-choice ballots. -->
-        <p id='position-{{outer_loop.index}}-error' class='error-texts'>Please rank the following candidates with a unique integer from 1 to {{ position.candidates|count }} (with 1 being your first choice, {{ position.candidates|count }} being your last). <em>You must rank every candidate.</em></p>
+        <p id='position-{{outer_loop.index}}-error' class='error-texts'>Please rank the following candidates with a unique whole number from 1 to {{ position.candidates|count }} (with 1 being your first choice, {{ position.candidates|count }} being your last). <em>You must rank every candidate.</em></p>
 
         <!-- Candidate listing for this position. -->
         <ul class='position unstyled' style='margin-left:30px;' data-name='{{ position.name }}' data-type='{{ position.type }}' data-id='position-{{outer_loop.index}}'>
@@ -62,7 +61,6 @@
 
     <a id='cast-ballot-button' href='#' class='btn btn-primary'>Cast Ballot</a>
 
-    <div id="server-response"></div>
     </div>
 
     {% endif %}
