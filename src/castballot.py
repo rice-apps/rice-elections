@@ -64,6 +64,7 @@ class BallotHandler(webapp2.RequestHandler):
             position['slots'] = election_position.slots
             position['type'] = election_position.type
             position['write_in'] = election_position.write_in
+            position['vote_required'] = election_position.vote_required
             position['candidates'] = []
             for candidate_key in election_position.candidates:
                 candidate = db.get(candidate_key)

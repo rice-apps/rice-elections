@@ -83,6 +83,7 @@ class ElectionPosition(db.Model):
     position = db.ReferenceProperty(Position)
     slots = db.IntegerProperty()
     write_in = db.BooleanProperty()
+    vote_required = db.BooleanProperty()
     type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
     candidates = db.ListProperty(db.Key)
     
@@ -232,7 +233,7 @@ def get_candidate(name, net_id, create=False):
     return candidate
 
 
-def put_election_position(election, position, slots, write_in, position_type):
+def put_election_position(election, position, slots, write_in, position_type, vote_required):
     """
     Creates and stores an ElectionPosition in the database.
     
@@ -242,6 +243,7 @@ def put_election_position(election, position, slots, write_in, position_type):
         slots {Integer}: the number of slots for this position.
         write_in {Boolean}: whether a write-in is allowed.
         position_type {String}: the position type, see entity definition for choices.
+        vote_required {Boolean}: whether a voter is required to vote for this position.
     
     Returns:
         election_position {db.Model}: the ElectionPosition that was stored in the database.
@@ -250,7 +252,8 @@ def put_election_position(election, position, slots, write_in, position_type):
                                          position=position.key(),
                                          slots=slots,
                                          write_in=write_in,
-                                         type=position_type)
+                                         type=position_type,
+                                         vote_required=vote_required)
     election_position.put()
     logging.info('ElectionPosition created for %s in organization: %s', 
                         election_position.position.name, election_position.position.organization.name)

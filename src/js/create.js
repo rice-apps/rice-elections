@@ -239,8 +239,11 @@ function displayPosition(position) {
     $.each(position['candidates'], function(index, value) {
         html += '<li>' + value['name'] + ' - ' + value['netId'] + '</li>';
     });
-    if (position['writeIn']) {
+    if (position['write_in']) {
         html += '<li><em>Write-in</em></li>';
+    }
+    if (position['vote_required']) {
+        html += '<li><em>Vote required</em></li>';
     }
     html += '</ul>';
     var newPos = $(html);
@@ -274,6 +277,7 @@ var addPositionModal = function() {
     var positionAddCandidate = $('#position-add-candidate');      // Button: Add candidate
     var positionCandidates = $('#position-candidates');           // Div: list of candidates
     var positionWriteIn = $('#position-write-in');                // Checkbox: whether the position has a write-in
+    var positionVoteRequired = $('#position-required');           // Checkbox: whether a vote from the user is required
     var positionAddSubmit = $('#position-add-submit');            // Button: Add position
 
     /**
@@ -287,6 +291,7 @@ var addPositionModal = function() {
         positionSlots.val('1').change();
         positionName.val('').change();
         positionWriteIn.attr('checked', false);
+        positionVoteRequired.attr('checked', false);
     };
 
     /**
@@ -438,13 +443,24 @@ var addPositionModal = function() {
         }
         return false;
     }
+    
+    /**
+     * Returns whether the user specified a voting requirement for this position.
+     */
+    var hasVoteRequirement = function() {
+        if (positionVoteRequired.attr('checked') == 'checked') {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Validates all position form entries and adds to the main election form.
      */
     positionAddSubmit.click(function() {
         var valid = true;
-        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidates(), hasWriteIn()];
+        var formData = [getPositionType(), getPositionName(), getSlots(), getCandidates(), hasWriteIn(),
+                        hasVoteRequirement()];
         $.each(formData, function(index, value) {
             if (value == null) {
                 valid = false;
@@ -456,7 +472,8 @@ var addPositionModal = function() {
                 'name' : formData[1],
                 'slots' : formData[2],
                 'candidates' : formData[3],
-                'writeIn': formData[4]
+                'write_in': formData[4],
+                'vote_required': formData[5]
             };
             positions.push(position);
             displayPosition(position);

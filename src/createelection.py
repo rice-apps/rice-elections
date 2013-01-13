@@ -72,8 +72,9 @@ class CreateElectionHandler(webapp2.RequestHandler):
                                                 election,
                                                 position_entry,
                                                 position['slots'],
-                                                position['writeIn'],
-                                                position['type'])
+                                                position['write_in'],
+                                                position['type'],
+                                                position['vote_required'])
                 
                 # Store candidates
                 for candidate in position['candidates']:
