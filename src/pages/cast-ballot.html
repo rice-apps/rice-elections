@@ -5,19 +5,23 @@
  <!-- PUT CONTENT IN HERE
 ================================================== -->
 
+  <!-- TODO:
+        Put all styling into a css page with tags. Just quicker for now.
+    -->
+
   {% if error_msg %}
     <p class='text-error'> {{ error_msg }}</p>
   {% else %}
 
-    <h2>{{ name }}</h2>
+  <div class='well'>
+    <legend>{{ name }} ({{ organization }})</legend>
     <p>
-      Below is the ballot for this election. You are voting as <strong>netid</strong> but your choices will not be tied to your netID in any way.
+      Below is the ballot for this election. You are voting as <strong>{{ voter_net_id }}</strong> but your choices will not be tied to your netID in any way.
     </p>
 
     <!-- Print each election by position. -->
     {% for position in positions %}
-    <div class='well'>
-      <h3>{{ position.name }}</h3>
+      <h4 style='margin-top:20px'>{{ position.name }}</h4>
 
       {% if position.type == "Ranked-Choice" %}
 
@@ -25,17 +29,21 @@
         <p>Please rank the following candidates from 1 to X, with 1 being your first choice. <em>You must rank every candidate.</em></p>
 
         <!-- Candidate listing for this position. -->
-        <ul>
+        <ul class='unstyled' style='margin-left:30px;'>
           {% for candidate in position.candidates %}
             <li>
               <input type='text'
                      data-candidate-name='{{ candidate }}'
-                     class='input-mini'>
-                {{ candidate }}
+                     class='input-mini'
+                     style='width: 2em; text-align:center;'><!-- TODO -->
+                <span class="help-inline">{{ candidate }}</span>
             </li>
           {% endfor %}
           {% if position.write_in %}
-            <li><input type='text' name='write_in_rank' class='input-small'>
+            <li><input type='text'
+                       name='write_in_rank'
+                       class='input-mini'
+                       style='width: 2em; text-align:center;'><!-- TODO -->
                 <input type='text' name='write_in_name' class='input-large' placeholder='Write-In Candidate Name'></li>
           {% endif %}
         </ul>
@@ -47,10 +55,10 @@
 
       {% endif %}
 
-    </div>
     {% endfor %}
 
     <a href='#' class='btn btn-primary disabled'>Cast Ballot</a>
+    </div>
 
     {% endif %}
 </section>
