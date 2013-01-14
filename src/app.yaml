@@ -29,6 +29,9 @@ handlers:
 - url: /logout
   script: authentication.app
 
+- url: /logout-response
+  script: authentication.app
+
 - url: /.*
   script: main.app
 

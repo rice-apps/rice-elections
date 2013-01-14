@@ -17,7 +17,7 @@ from main import render_page
 CAS_SERVER  = "https://netid.rice.edu"
 
 
-class LoginHandler(webapp2.RequestHandler):
+class LoginResponseHandler(webapp2.RequestHandler):
     """Receive the response from CAS after the user authentication."""
     
     def get(self):
@@ -107,8 +107,17 @@ class LoginHandler(webapp2.RequestHandler):
             {String}: url with ticket parameter removed.
         """
         return re.sub('&%s(=[^&]*)?|%s(=[^&]*)?&?' % (parameter, parameter), '', url)
-        
+
+
 class LogoutHandler(webapp2.RequestHandler):
+    def get(self):
+        """Logs out the user from CAS."""
+        app_url = self.request.headers.get('host', 'no host')    # URL of the app itself
+        service_url = 'http://%s/logout-response' % app_url
+        self.redirect(CAS_SERVER + '/cas/logout?service=' + service_url)
+
+        
+class LogoutResponseHandler(webapp2.RequestHandler):
     def get(self):
         """Logs out the user."""
         session = get_current_session()
@@ -137,6 +146,7 @@ def require_login(request_handler):
     request_handler.redirect(cas_url, abort=True)
     
 app = webapp2.WSGIApplication([
-        ('/login-response', LoginHandler),
-        ('/logout', LogoutHandler)
+        ('/login-response', LoginResponseHandler),
+        ('/logout', LogoutHandler),
+        ('/logout-response', LogoutResponseHandler)
 ], debug=True)
