@@ -4,14 +4,15 @@ Back-end for serving and accepting a ballot for an election.
 
 __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
 
-import database
 import json
 import logging
 import random
 import webapp2
 
-from main import render_page, require_login
+from authentication import require_login
+from gaesessions import get_current_session
 from google.appengine.ext import db
+from main import render_page
 
 PAGE_NAME = '/cast-ballot'
 
@@ -28,8 +29,13 @@ class BallotHandler(webapp2.RequestHandler):
         page_data = {}
 
         # Authenticate user
-        net_id = require_login(self)
-
+        session = get_current_session()
+        if not session.has_key('voter'):
+            require_login(self)
+        
+        voter = session['voter']
+        net_id = voter.net_id
+        
         # Serve the election the user has requested
         election_id = self.request.get('id')
         if not election_id:
@@ -46,7 +52,6 @@ class BallotHandler(webapp2.RequestHandler):
             return
 
         # Make sure user is eligible to vote
-        voter = database.get_voter(net_id)
         if not voter or election.key() not in voter._election_keys:
             page_data['error_msg'] = 'You are not eligible to vote for this election.'
             render_page(self, PAGE_NAME, page_data)
@@ -57,7 +62,7 @@ class BallotHandler(webapp2.RequestHandler):
         page_data['name'] = election.name
         page_data['organization'] = election.organization.name
         page_data['positions'] = []
-        page_data['voter_net_id'] = net_id
+        page_data['voter_net_id'] = voter.net_id
 
         # Write position information
         election_positions = election.election_positions
