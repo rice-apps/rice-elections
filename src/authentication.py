@@ -41,7 +41,7 @@ class LoginResponseHandler(webapp2.RequestHandler):
         voter = database.get_voter(net_id, create=True)
             
         # Start a session for the user
-        session['voter'] = voter
+        session['net_id'] = voter.net_id
         
         destination_url = str(self.request.get('destination'))
         if not destination_url:
@@ -121,7 +121,7 @@ class LogoutResponseHandler(webapp2.RequestHandler):
     def get(self):
         """Logs out the user."""
         session = get_current_session()
-        if session.has_key('voter'):
+        if session.has_key('net_id'):
             session.terminate()
             render_page(self, '/message', {'status': 'Done', 'msg': 'Logout complete.'})
         else:
@@ -144,7 +144,20 @@ def require_login(request_handler):
     service_url = 'http://%s/login-response' % app_url
     cas_url = CAS_SERVER + '/cas/login?service=' + service_url + '?destination=' + destination_url
     request_handler.redirect(cas_url, abort=True)
+
+def get_voter():
+    """
+    Returns the voter from user session.
     
+    Returns:
+        voter: the Voter if authenticated. None otherwise.
+    """
+    session = get_current_session()
+    if session.has_key('net_id'):
+        return database.get_voter(session['net_id'])
+    else:
+        return None
+
 app = webapp2.WSGIApplication([
         ('/login-response', LoginResponseHandler),
         ('/logout', LogoutHandler),

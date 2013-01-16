@@ -10,7 +10,6 @@ import webapp2
 
 from gaesessions import get_current_session
 
-
 MAIN_DIR = os.path.dirname(__file__)
 PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
 
@@ -53,9 +52,8 @@ def render_page(handler, page_name, page_data):
     
     # If logged in, display NetID with logout option
     session = get_current_session()
-    if session.has_key('voter'):
-        voter = session['voter']
-        template_vals['net_id'] = voter.net_id
+    if session.has_key('net_id'):
+        template_vals['net_id'] = session['net_id']
     
     handler.response.out.write(template.render(template_vals))
 

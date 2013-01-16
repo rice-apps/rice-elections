@@ -9,8 +9,7 @@ import logging
 import random
 import webapp2
 
-from authentication import require_login
-from gaesessions import get_current_session
+from authentication import require_login, get_voter
 from google.appengine.ext import db
 from main import render_page
 
@@ -29,11 +28,9 @@ class BallotHandler(webapp2.RequestHandler):
         page_data = {}
 
         # Authenticate user
-        session = get_current_session()
-        if not session.has_key('voter'):
+        voter = get_voter()
+        if not voter:
             require_login(self)
-        
-        voter = session['voter']
         net_id = voter.net_id
         
         # Serve the election the user has requested
@@ -94,9 +91,10 @@ class BallotHandler(webapp2.RequestHandler):
         logging.info('Received new ballot submission.')
         
         # Authenticate user
-#        net_id = require_login(self)
-#        logging.info('User: %s', net_id)
-        
+        voter = get_voter()
+        if not voter:
+            self.respond('ERROR', 'You\'re not logged in!')
+            return
         
         logging.info(self.request.POST)
         self.respond('OK', 'We got your ballot. Now go home!')

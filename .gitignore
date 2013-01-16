@@ -1,9 +1,14 @@
 #################
+## Owlections
+#################
+secretparams.py
+
+#################
 ## Eclipse
 #################
 
-#*.pydevproject
-#.project
+*.pydevproject
+.project
 .metadata
 bin/
 tmp/
