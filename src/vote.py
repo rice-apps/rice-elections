@@ -12,7 +12,6 @@ import webapp2
 from authentication import require_login
 from main import render_page
 
-
 class VoteHandler(webapp2.RequestHandler):
     """
     Handles GET requests for the Vote page.
@@ -43,10 +42,10 @@ class VoteHandler(webapp2.RequestHandler):
                 data['user_voted'] = False # TODO: Temp hardcode
                 if election.start > now:
                     start_str = election.start.strftime('%a, %B %d, %Y, %I:%M %p')
-                    data['status'] = 'Voting begins at %s' % start_str
+                    data['status'] = {'text': 'Voting begins at', 'date': start_str}
                 else:
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p')
-                    data['status'] = 'Voting ends at %s' % end_str
+                    data['status'] = {'text': 'Voting ends at', 'date': end_str}
                 page_data['open_elections'].append(data)
             logging.info(data)
 

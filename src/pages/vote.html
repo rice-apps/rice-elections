@@ -1,6 +1,6 @@
 <!-- Load JS / CSS
 ================================================== -->
-
+<script src="js/timezone.js"></script>
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== -->
@@ -29,7 +29,7 @@
           {{ open_election.name }}
         </td>
         <td>
-          {{ open_election.status }}
+          {{ open_election.status.text }}<div class='date'>{{ open_election.status.date }}</div>
         </td>
         <td>
           {% if open_election.user_voted %}
