@@ -77,14 +77,15 @@ function submitForm() {
 function getBallot() {
 
     var ballot = {}
-    ballot['positions'] = []
+    ballot['election_id'] = $('#election-information').attr('data-election-id');
+    ballot['positions'] = [];
 
     /* For each position, get the position and the data. */
     $('.position').each(function(i, obj) {
 
-        var name     = $(this).attr('data-name')
-        var type     = $(this).attr('data-type')
-        var id       = $(this).attr('data-id')
+        var name     = $(this).attr('data-name');
+        var type     = $(this).attr('data-type');
+        var id       = $(this).attr('data-id');
         var required = ($(this).attr('data-vote-required') == 'True') ? true : false
 
         /* Ranked Choice info gathering. */

@@ -29,13 +29,15 @@
           {{ open_election.name }}
         </td>
         <td>
-          {{ open_election.status.text }}<div class='date'>{{ open_election.status.date }}</div>
+          {{ open_election.status.text }} <span class='date'>{{ open_election.status.date }}</span>
         </td>
         <td>
-          {% if open_election.user_voted %}
+          {% if open_election.user_action == 'voted' %}
             <a class='btn btn-success disabled' href='#'>Voted</a>
-          {% else %}
+          {% elif open_election.user_action == 'vote' %}
             <a class='btn btn-primary' href='/cast-ballot?id={{ open_election.id }}'>Vote</a>
+          {% else %}
+            <a class='btn btn-primary disabled' href='#'>Vote</a>
           {% endif %}
         </td>
       </tr>
@@ -73,7 +75,7 @@
           {{ election.name }}
         </td>
         <td>
-          {{ election.end_date }}
+          <span class="date">{{ election.end_date }}</span>
         </td>
         <td>
           <a href='#'>View Results</a>

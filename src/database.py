@@ -34,7 +34,6 @@ class Election(db.Model):
     end = db.DateTimeProperty()         # Time when voting ends
     organization = db.ReferenceProperty(Organization,
                                         collection_name='elections')
-    eligible_voters = db.ListProperty(db.Key)
 
 
 class Voter(db.Model):
@@ -42,7 +41,6 @@ class Voter(db.Model):
     A voter that uses the application.
     """
     net_id = db.StringProperty()
-    _election_keys = db.ListProperty(db.Key)     # List of elections user is eligible to vote in
     
     @property
     def elections(self):
@@ -51,19 +49,21 @@ class Voter(db.Model):
             election_list: a list of Elections the Voter is eligible to vote for.
         """
         election_list = []
-        for election_key in self._election_keys:
-            election_list.append(db.get(election_key))
+        for election_voter in ElectionVoter.gql('WHERE voter=:1', self.key()):
+            election_list.append(election_voter.election)
         return election_list
 
-    def add_election(self, election):
-        """
-        Makes the Voter eligible to vote in the specified election.
-        
-        Args:
-            election: Election to add.
-        """
-        self._election_keys.append(election.key())
-        self.put()
+class ElectionVoter(db.Model):
+    """
+    A Voter that is eligible to vote for a specific election.
+    """
+    voter = db.ReferenceProperty(Voter,
+                                 required=True,
+                                 collection_name='election_voters')
+    election = db.ReferenceProperty(Election,
+                                    required=True,
+                                    collection_name='election_voters')
+    vote_time = db.DateTimeProperty()       # Time when user casted a vote
 
 
 class Position(db.Model):
@@ -167,7 +167,8 @@ def add_eligible_voters(election, net_id_list):
     """
     for net_id in net_id_list:
         voter = get_voter(net_id, create=True)
-        voter.add_election(election)
+        ElectionVoter(voter=voter,
+                      election=election).put()
 
 
 def get_voter(net_id, create=False):
@@ -265,8 +266,46 @@ def put_candidate_for_election_position(candidate, election_position):
     Adds a candidate as a runner for the specified election_position.
     
     Args:
-        candidate {db.Model}: the Candidate
-        election_position {db.Model}: the ElectionPosition the Candidate is running for
+        candidate {Candidate}: the Candidate
+        election_position {ElectionPosition}: the ElectionPosition the Candidate is running for
     """
     election_position.candidates.append(candidate.key())
     election_position.put()
+
+
+def voter_status(voter, election):
+    """
+    Tells the voter status for a specific election.
+    
+    Args:
+        voter {Voter}: the Voter
+        election {Election}: the Election
+    
+    Returns:
+        status {String}: 'not_eligible', 'eligible', 'invalid_time', or 'voted'
+    """
+    election_voter = ElectionVoter.gql('WHERE voter=:1 AND election=:2', voter, election).get()
+    if not election_voter:
+        return 'not_eligible'
+    elif election_voter.vote_time:
+        return 'voted'
+    elif datetime.now() < election.start or datetime.now() > election.end:
+        return 'invalid_time'
+    else:
+        return 'eligible'
+    
+
+def mark_voted(voter, election):
+    """
+    Marks the voter as having voted for a specific election.
+    
+    Args:
+        voter {Voter}: the Voter
+        election {Election}: the Election
+    
+    Returns:
+        status {Boolean}: True if marked as voted successfully, False otherwise.
+    """
+    election_voter = ElectionVoter.gql('WHERE voter=:1 AND election=:2', voter, election).get()
+    election_voter.vote_time = datetime.now()
+    election_voter.put()

@@ -4,6 +4,7 @@ Back-end for serving and accepting a ballot for an election.
 
 __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
 
+import database
 import json
 import logging
 import random
@@ -49,8 +50,14 @@ class BallotHandler(webapp2.RequestHandler):
             return
 
         # Make sure user is eligible to vote
-        if not voter or election.key() not in voter._election_keys:
+        status = database.voter_status(voter, election)
+        if status == 'voted':
+            page_data['error_msg'] = 'You have already voted for this election.'
+        elif status == 'not_eligible':
             page_data['error_msg'] = 'You are not eligible to vote for this election.'
+        elif status == 'invalid_time':
+            page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
+        if status != 'eligible':
             render_page(self, PAGE_NAME, page_data)
             return
 
@@ -89,6 +96,10 @@ class BallotHandler(webapp2.RequestHandler):
         Sends confirmation to client-side.
         """
         logging.info('Received new ballot submission.')
+        logging.info(self.request.POST)
+        
+        formData = json.loads(self.request.get('formData'))
+        logging.info(formData)
         
         # Authenticate user
         voter = get_voter()
@@ -96,7 +107,29 @@ class BallotHandler(webapp2.RequestHandler):
             self.respond('ERROR', 'You\'re not logged in!')
             return
         
-        logging.info(self.request.POST)
+        # Get the election from the database
+        election_id = formData['election_id']
+        election = db.get(election_id)
+        if not election:
+            self.respond('ERROR', 'Invalid election!')
+        
+        # Make sure user is eligible to vote
+        status = database.voter_status(voter, election)
+        if status == 'voted':
+            self.respond('ERROR', 'You have already voted for this election.')
+            return
+        elif status == 'not_eligible':
+            self.respond('ERROR', 'You are not eligible to vote for this election.')
+            return
+        elif status == 'invalid_time':
+            self.respond('ERROR', 'You are not in the eligible voting time for this election.')
+            return
+        if status != 'eligible':
+            self.respond('ERROR', 'You are not eligible to vote for this election.')
+            return
+        
+        database.mark_voted(voter, election)
+        
         self.respond('OK', 'We got your ballot. Now go home!')
         
     def respond(self, status, message):
