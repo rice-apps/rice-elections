@@ -59,9 +59,9 @@ class Admin(db.Model):
     """
     An election administrator for the application.
     """
-    email = db.StringProperty()
-    net_id = db.StringProperty()
-
+    email = db.StringProperty(required=True)
+    voter = db.ReferenceProperty(Voter,
+                                 required=True)
 
 class OrganizationAdmin(db.Model):
     """
@@ -149,6 +149,44 @@ def get_organization(name):
         return brown
     
     return None
+
+
+def put_admin(voter, email, organization):
+    """
+    Makes a Voter an Admin of the specified organization.
+    
+    Args:
+        voter {Voter}: the user of the website
+        email {String}: the email address of the admin
+        organization {Organization}: the organization to make Admin of.
+    
+    Returns:
+        {OrganizationAdmin}: the OrganizationAdmin entity.
+    """
+    admin = Admin(voter=voter, email=email).put()
+    return OrganizationAdmin(admin=admin, organization=organization).put()
+
+
+def get_admin_status(voter, organization=None):
+    """
+    Returns whether the voter is an Admin. If organization specified, will check to see if voter is an Admin for the
+    organization.
+    
+    Args:
+        voter {Voter}: the user of the website
+        organization {Organization, optional}: the organization to check against
+        
+    Returns:
+        True if Admin, False otherwise.
+    """
+    admin = Admin.gql('WHERE voter=:1', voter).get()
+    if not admin:
+        return False
+    if organization:
+        organization_admin = OrganizationAdmin.gql('WHERE admin=:1 AND organization=:2', admin, organization).get()
+        if not organization_admin:
+            return False
+    return True
 
 
 def put_election(name, start, end, organization):

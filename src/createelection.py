@@ -27,17 +27,15 @@ class CreateElectionHandler(webapp2.RequestHandler):
         voter = get_voter()
         if not voter:
             require_login(self)
-        net_id = voter.net_id
-        admin = database.Admin.gql('WHERE net_id=:1', net_id).get()
-        if not admin:
+        status = database.get_admin_status(voter)
+        if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             
             # TODO: Temp hard-code
             for new_net_id, new_email in {'wa1': 'wa1@rice.edu', 'jcc7': 'jcc7@rice.edu', 'apc1': 'apc1@rice.edu'}.items():
-                admin = database.Admin(net_id=new_net_id, email=new_email).put()
+                voter = database.get_voter(new_net_id, create=True)
                 organization = database.get_organization('Brown College')
-                database.OrganizationAdmin(admin=admin, organization=organization).put()
-                logging.info('Stored organization admin: %s, %s', new_net_id, admin)
+                database.put_admin(voter, new_email, organization)
             return
         
         render_page(self, PAGE_NAME, {})
@@ -68,13 +66,12 @@ class CreateElectionHandler(webapp2.RequestHandler):
             # Authenticate user
             voter = get_voter()
             if not voter:
-                require_login(self)
-            net_id = voter.net_id
+                self.respond('ERROR', 'You are not logged in!')
+                return
             
-            organization_admin = database.OrganizationAdmin.gql('WHERE net_id=:1 AND organization=:2', 
-                                                                net_id, organization).get()
+            status = database.get_admin_status(voter, organization)
             
-            if not organization_admin:
+            if not status:
                 self.respond('ERROR', MSG_NOT_AUTHORIZED)
                 return
             
