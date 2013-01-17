@@ -19,7 +19,7 @@ JINJA_ENV = jinja2.Environment(
 NAV_BAR = [
     {'text': 'Home', 'link': 'home'},
     {'text': 'Vote', 'link': 'vote'},
-    {'text': 'Create Election', 'link': 'create'},
+    {'text': 'Create Election', 'link': 'create-election'},
     {'text': 'Contact', 'link': 'contact'}]
 
 class StaticHandler(webapp2.RequestHandler):

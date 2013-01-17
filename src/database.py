@@ -36,6 +36,7 @@ class Election(db.Model):
                                         collection_name='elections')
 
 
+
 class Voter(db.Model):
     """
     A voter that uses the application.
@@ -52,6 +53,26 @@ class Voter(db.Model):
         for election_voter in ElectionVoter.gql('WHERE voter=:1', self.key()):
             election_list.append(election_voter.election)
         return election_list
+
+
+class Admin(db.Model):
+    """
+    An election administrator for the application.
+    """
+    email = db.StringProperty()
+    net_id = db.StringProperty()
+
+
+class OrganizationAdmin(db.Model):
+    """
+    An Admin that manages elections for an Organization.
+    """
+    admin = db.ReferenceProperty(Admin,
+                                 required=True,
+                                 collection_name='organization_admins')
+    organization = db.ReferenceProperty(Organization,
+                                        required=True,
+                                        collection_name='organization_admins')
 
 class ElectionVoter(db.Model):
     """
@@ -74,6 +95,7 @@ class Position(db.Model):
     organization = db.ReferenceProperty(Organization,
                                         collection_name='positions')
 
+
 class ElectionPosition(db.Model):
     """
     A position for a specific election within an organization.
@@ -86,15 +108,16 @@ class ElectionPosition(db.Model):
     vote_required = db.BooleanProperty()
     type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
     candidates = db.ListProperty(db.Key)
-    
+
+
 class Candidate(db.Model):
     """
     A candidate for any election.
     """
-    name = db.StringProperty()
     net_id = db.StringProperty()
-    
-    
+    name = db.StringProperty()
+
+
 def get_organization(name):
     """
     Returns the organization the election data is referring to.
@@ -307,5 +330,8 @@ def mark_voted(voter, election):
         status {Boolean}: True if marked as voted successfully, False otherwise.
     """
     election_voter = ElectionVoter.gql('WHERE voter=:1 AND election=:2', voter, election).get()
+    if not election_voter:
+        return False
     election_voter.vote_time = datetime.now()
     election_voter.put()
+    return True

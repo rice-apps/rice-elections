@@ -14,6 +14,7 @@ from authentication import require_login, get_voter
 from google.appengine.ext import db
 from main import render_page
 
+
 PAGE_NAME = '/cast-ballot'
 
 

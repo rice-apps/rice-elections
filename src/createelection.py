@@ -9,32 +9,38 @@ import json
 import logging
 import webapp2
 
+from authentication import require_login, get_voter
 from google.appengine.ext import db
+from main import render_page
 
-TEST_DATA = {u'start': 1357659600, 
-             u'positions': [
-                {u'candidates': [{u'name': u'Waseem Ahmad', u'netId': u'wa1'}, 
-                                 {u'name': u'Sal Testa', u'netId': u'srt6'}], 
-                     u'slots': 1, 
-                     u'writeIn': False, 
-                     u'type': u'Ranked-Choice', 
-                     u'name': u'President'}, 
-                {u'candidates': [{u'name': u'Sal Testa', u'netId': u'srt6'}, 
-                                 {u'name': u'Andrew Capshaw', u'netId': u'apc3'}],
-                 u'slots': 1,
-                 u'writeIn': True,
-                 u'type': u'Ranked-Choice',
-                 u'name': u'Chief Justice'}],
-             u'end': 1357832100,
-             u'name': u'Round One',
-             u'voters': [u'wa1', u'srt6', u'apc3']}
-
+PAGE_NAME = '/create-election'
+MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an election administrator. Please contact the website administration '
+                     'if you are interested in conducting elections for your organization.')
 
 class CreateElectionHandler(webapp2.RequestHandler):
     """
     Handles POST submissions from the Create Election Form.
     """
     
+    def get(self):
+        # Authenticate user
+        voter = get_voter()
+        if not voter:
+            require_login(self)
+        net_id = voter.net_id
+        admin = database.Admin.gql('WHERE net_id=:1', net_id).get()
+        if not admin:
+            render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+            
+            # TODO: Temp hard-code
+            for new_net_id, new_email in {'wa1': 'wa1@rice.edu', 'jcc7': 'jcc7@rice.edu', 'apc1': 'apc1@rice.edu'}.items():
+                admin = database.Admin(net_id=new_net_id, email=new_email).put()
+                organization = database.get_organization('Brown College')
+                database.OrganizationAdmin(admin=admin, organization=organization).put()
+                logging.info('Stored organization admin: %s, %s', new_net_id, admin)
+            return
+        
+        render_page(self, PAGE_NAME, {})
     def post(self):
         logging.info('Received new create election submission')
         logging.info(self.request.POST)
@@ -57,6 +63,19 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 msg = 'Organization not found!'
                 self.respond('ERROR', msg)
                 logging.error(msg)
+                return
+            
+            # Authenticate user
+            voter = get_voter()
+            if not voter:
+                require_login(self)
+            net_id = voter.net_id
+            
+            organization_admin = database.OrganizationAdmin.gql('WHERE net_id=:1 AND organization=:2', 
+                                                                net_id, organization).get()
+            
+            if not organization_admin:
+                self.respond('ERROR', MSG_NOT_AUTHORIZED)
                 return
             
             # Store election

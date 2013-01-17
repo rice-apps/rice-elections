@@ -45,11 +45,11 @@ class VoteHandler(webapp2.RequestHandler):
                 # Check election times
                 if election.start > now:
                     start_str = election.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
-                    data['status'] = {'text': 'Voting begins at', 'date': start_str}
+                    data['status'] = {'text': 'Voting begins on', 'date': start_str}
                     data['user_action'] = 'not_started'
                 else:
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
-                    data['status'] = {'text': 'Voting ends at', 'date': end_str}
+                    data['status'] = {'text': 'Voting ends on', 'date': end_str}
                     data['user_action'] = 'vote'
                     
                 # Check to see if the user has already voted
