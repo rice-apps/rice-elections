@@ -15,14 +15,14 @@ handlers:
   static_dir: js
 
 - url: /vote
-  script: vote.app  
-  
+  script: vote.app
+
 - url: /cast-ballot
   script: castballot.app
 
 - url: /create-election
   script: createelection.app
-  
+
 - url: /login-response
   script: authentication.app
 
@@ -31,6 +31,9 @@ handlers:
 
 - url: /logout-response
   script: authentication.app
+
+- url: /view-results
+  script: viewresults.app
 
 - url: /.*
   script: main.app

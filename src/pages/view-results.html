@@ -1,0 +1,43 @@
+<!-- Load JS / CSS
+================================================== -->
+
+<section id="main">
+ <!-- PUT CONTENT IN HERE
+================================================== -->
+
+  {% if error_msg %}
+    <p class='text-error'> {{ error_msg }}</p>
+  {% else %}
+
+  <div id='server-response'></div>
+  <div id='election-information' data-election-id='{{ id }}'>
+
+  <div class='well'>
+    <legend>Results for {{ name }} ({{ organization }})</legend>
+
+    <!-- Print each election by position. -->
+    {% for position in positions %}
+
+      <h4>{{ position.name }}</h4>
+
+      {% if position.type == "Ranked-Choice" %}
+
+        <!-- Candidate listing for this position. -->
+        <ul>
+          {% for candidate in position.candidates %}
+            <li>{{ candidate.name }}</li>
+          {% endfor %}
+          {% if position.write_in %}
+            <!-- TODO: print write-ins as well. -->
+          {% endif %}
+        </ul>
+
+      {% else %}
+        <!-- Other types of voting have yet to be implemented. -->
+        <p class='text-error'>This has not been implemented. Complain to waseem.</p>
+      {% endif %}
+
+    {% endfor %}
+    </div>
+  {% endif %}
+</section>

@@ -78,7 +78,7 @@
           <span class="date">{{ election.end_date }}</span>
         </td>
         <td>
-          <a href='#'>View Results</a>
+          <a href='/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
         </td>
       </tr>
       {% endfor %}
