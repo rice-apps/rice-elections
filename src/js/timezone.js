@@ -9,7 +9,7 @@ $(document).ready(function() {
         var newTimeStr = dateOb.toLocaleTimeString();
         var len = dateOb.toString().length;
         var newTimeZoneStr = dateOb.toString().substring(len-4, len-1);
-        var out = newDateStr + ', ' + newTimeStr + ' ' + newTimeZoneStr;
+        var out = newDateStr + ', ' + newTimeStr;
         $(this).text(out);
     });
 });
