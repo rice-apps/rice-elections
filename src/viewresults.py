@@ -17,7 +17,6 @@ from main import render_page
 
 PAGE_NAME = '/view-results'
 
-
 class ResultsHandler(webapp2.RequestHandler):
     """
     Handles GET requests for the Results page.
@@ -52,14 +51,14 @@ class ResultsHandler(webapp2.RequestHandler):
 
         # Make sure user is eligible to view the results
         # TODO: connect this to the notion of who is able to view the results.
-        status = database.voter_status(voter, election)
-        if status == 'not_eligible':
-            page_data['error_msg'] = 'You are not eligible to vote for this election.'
-        elif status == 'invalid_time':
-            page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
-        if status != 'eligible':
-            render_page(self, PAGE_NAME, page_data)
-            return
+        # status = database.voter_status(voter, election)
+        # if status == 'not_eligible':
+        #     page_data['error_msg'] = 'You are not eligible to vote for this election.'
+        # elif status == 'invalid_time':
+        #     page_data['error_msg'] = 'Results are not a'
+        # if status != 'eligible':
+        #     render_page(self, PAGE_NAME, page_data)
+        #     return
 
         # Write election information
         page_data['id'] = str(election.key())
@@ -74,16 +73,12 @@ class ResultsHandler(webapp2.RequestHandler):
             position = {}
             position['id'] = str(election_position.key())
             position['name'] = election_position.position.name
-            position['slots'] = election_position.slots
-            position['type'] = election_position.type
-            position['write_in'] = election_position.write_in
-            position['vote_required'] = election_position.vote_required
             position['candidates'] = []
             for candidate_key in election_position.candidates:
                 candidate = db.get(candidate_key)
                 position['candidates'].append({'name': candidate.name,
-                                               'id': str(candidate_key)})
-            random.shuffle(position['candidates'])
+                                               'id': str(candidate_key),
+                                               'won': random.choice([True, False])}) # TODO: temp random
             page_data['positions'].append(position)
 
         logging.info(page_data)
