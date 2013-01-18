@@ -33,13 +33,10 @@
 
           <!-- Ranked Choice instructions -->
           {% if position.type == "Ranked-Choice" %}
-            {% if position.write_in %}
-              {% set count = count + 1 %}
-            {% endif %}
             Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
             <em>You must rank every candidate.</em>
             {% if position.write_in %}
-              <em>Note: You don't have to rank the write-in if you leave it blank.</em>
+              <em>Note: If you add a write-in you should rank from from 1 to {{ count + 1}}. </em>
             {% endif %}
           {% endif %}
 
