@@ -223,25 +223,20 @@ function ballotValidates(ballot) {
             var sum = 0;
 
             /* Make sure the total number of votes sum to the right number */
-            if (!position['skipped']) {
-                $.each(candidates, function(i, candidate) {
-                    var votes = candidate['votes'];
-
-                    /* Do not accept empty ranks or non number ranks. */
-                    if (!$.isNumeric(votes)) {
-                        valid = false;
-                        $('#' + id + '-error').addClass('text-error');
-                    }else {
-                        sum += votes;
-                    }
-                });
-
-                /* Any non-zero number of votes not equal to sum is invalid.*/
-                // TODO: perhaps [0, available] range is valid?
-                if (sum != available_votes && sum != 0) {
+            $.each(candidates, function(i, candidate) {
+                if (!$.isNumeric(votes)) {
                     valid = false;
                     $('#' + id + '-error').addClass('text-error');
+                }else {
+                    sum += candidate['votes'];
                 }
+            });
+
+            /* Any non-zero number of votes not equal to sum is invalid.*/
+            // TODO: perhaps [0, available] range is valid?
+            if (sum != available_votes && sum != 0) {
+                valid = false;
+                $('#' + id + '-error').addClass('text-error');
             }
 
             /* If the position requires a vote and it was skipped, error. */
