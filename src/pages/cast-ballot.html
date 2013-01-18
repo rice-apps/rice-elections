@@ -25,19 +25,29 @@
 
       <h4>{{ position.name }}</h4>
 
-      {% if position.type == "Ranked-Choice" %}
+      {% if position.type in ["Ranked-Choice", "Cumulative-Voting"] %}
 
         <!-- Instructions for ranked-choice ballots. -->
         {% set count = position.candidates|count %}
-        {% if position.write_in %}
-          {% set count = count + 1 %}
-        {% endif %}
         <p id='{{position.id}}-error' class='error-texts'>
-          Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
-          <em>You must rank every candidate.</em>
-          {% if position.write_in %}
-            <em>Note: You don't have to rank the write-in if you leave it blank.</em>
+
+          <!-- Ranked Choice instructions -->
+          {% if position.type == "Ranked-Choice" %}
+            {% if position.write_in %}
+              {% set count = count + 1 %}
+            {% endif %}
+            Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
+            <em>You must rank every candidate.</em>
+            {% if position.write_in %}
+              <em>Note: You don't have to rank the write-in if you leave it blank.</em>
+            {% endif %}
           {% endif %}
+
+          <!-- Cumulative Voting insturctions -->
+          {% if position.type == "Cumulative Voting" %}
+            You have {{ count }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ count }}.
+          {% endif %}
+
           {% if position.vote_required == True %}
             <em>You are required to vote for this position.</em>
           {% endif %}
