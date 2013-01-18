@@ -87,22 +87,30 @@ function getBallot() {
         var type     = $(this).attr('data-type');
         var id       = $(this).attr('data-id');
         var required = ($(this).attr('data-vote-required') == 'True') ? true : false
+        var available_votes = $(this).attr('data-available-votes');
 
-        /* Ranked Choice info gathering. */
-        if (type == 'Ranked-Choice') {
+        /* Ranked Choice and cumulative info gathering. */
+        if (type == 'Ranked-Choice' || type == 'Cumulative-Voting') {
             var position = {};
             position['id'] = id;
             position['name'] = name;
             position['type'] = type;
             position['required'] = required;
-            position['candidate_rankings'] = []
+
+            /* Initialize the containers for the votes and other type specific
+            *  information . */
+            if (type == 'Ranked-Choice') {
+                position['candidate_rankings'] = [];
+            }else if (type == 'Cumulative-Voting') {
+                position['candidate_votes'] = [];
+                position['available_votes'] = available_votes;
+            }
 
             /* Get the data from each of the children running for office. */
             $('.'+id).each(function(i, obj) {
 
                 var candidate_id   = $(this).attr('data-candidate-id')
                 var candidate_name = $(this).attr('data-candidate-name')
-                var candidate_rank = $(this).val() ? parseInt($(this).val()) : ''
 
                 /* Get the real name if this is a write-in candidate. */
                 if (candidate_name == 'write-in') {
@@ -111,19 +119,31 @@ function getBallot() {
 
                 /* Ignore blank write-ins. */
                 if (candidate_name != '') {
-                    var candidate = {
-                        'name' : candidate_name,
-                        'id'   : candidate_id,
-                        'rank' : candidate_rank
+                    if (type == 'Ranked-Choice') {
+                        var candidate_rank = $(this).val() ? parseInt($(this).val()) : ''
+                        var candidate = {
+                            'name' : candidate_name,
+                            'id'   : candidate_id,
+                            'rank' : candidate_rank
+                        }
+                        position['candidate_rankings'].push(candidate)
                     }
-                    position['candidate_rankings'].push(candidate)
+                    if (type == 'Cumulative-Voting') {
+                        var candidate_votes = $(this).val() ? parseInt($(this).val()) : 0
+                        var candidate = {
+                            'name' : candidate_name,
+                            'id'   : candidate_id,
+                            'votes' : candidate_votes
+                        }
+                        position['candidate_votes'].push(candidate)
+                    }
                 }
             });
 
             ballot['positions'].push(position)
 
         } else {
-            // TODO: non-ranked elections
+            // TODO: non-ranked / non-cumulative elections
             console.log("This has yet to be implemented yet.")
         }
     });
@@ -141,51 +161,97 @@ function ballotValidates(ballot) {
     $('.error-texts').removeClass('text-error')
     var valid = true;
 
+    /* TODO: make this code more modular if possible. */
+
     /* Check each position to see if the candidates were ranked correctly. */
     $.each(ballot['positions'], function(i, position) {
-        var id         = position['id']
-        var candidates = position['candidate_rankings']
-        var candidate_count = candidates.length;
+        var id    = position['id']
+        var type  = position['type']
 
-        /* We want to check for the ranks 1-(candidates.length+1). Either they
-         * must all be ranked or none of them must be ranked. */
-        var rank_check = [];
-        position['skipped'] = true;
-        for (var i = 0; i < candidate_count; i++) {
-            rank_check[i] = false;
-            if (candidates[i]['rank'] != '') {
-                position['skipped'] = false;
+        /* ----------------------------------------------------------------- */
+
+        if (type == 'Ranked-Choice') {
+            var candidates = position['candidate_rankings']
+            var candidate_count = candidates.length;
+
+            /* We want to check for the ranks 1-(candidates.length+1). Either
+             * they must all be ranked or none of them must be ranked. */
+            var rank_check = [];
+            position['skipped'] = true;
+            for (var i = 0; i < candidate_count; i++) {
+                rank_check[i] = false;
+                if (candidates[i]['rank'] != '') {
+                    position['skipped'] = false;
+                }
+            }
+
+            /* If the position requires a vote and the user skipped it, error. */
+            if(position['skipped'] && position['required']) {
+                valid = false;
+                $('#' + id + '-error').addClass('text-error');
+            }
+
+            /* Make sure ranks are unique and complete. */
+            if (!position['skipped']) {
+                $.each(candidates, function(i, candidate) {
+                    var rank = candidate['rank'];
+
+                    /* Do not accept empty ranks or non number ranks. */
+                    if (!$.isNumeric(rank)) {
+                        valid = false;
+                        $('#' + id + '-error').addClass('text-error');
+                    }
+
+                    rank_check[rank-1] = true;
+                });
+
+                /* Ensure all ranks were used exactly once. */
+                for (var i = 0; i < rank_check.length; i++) {
+                    if (rank_check[i] != true) {
+                        valid = false;
+                        $('#' + id + '-error').addClass('text-error');
+                    }
+                }
             }
         }
 
-        /* If the position requires a vote and the user skipped it, error. */
-        if(position['skipped'] && position['required']) {
-            valid = false;
-            $('#' + id + '-error').addClass('text-error');
-        }
+        /* ----------------------------------------------------------------- */
 
-        /* Make sure ranks are unique and complete. */
-        if (!position['skipped']) {
-            $.each(candidates, function(i, candidate) {
-                var rank = candidate['rank'];
+        if (type == 'Cumulative-Voting') {
+            var candidates = position['candidate_votes']
+            var available_votes = position['available_votes'];
+            var sum = 0;
 
-                /* Do not accept empty ranks or non number ranks. */
-                if (!$.isNumeric(rank)) {
-                    valid = false;
-                    $('#' + id + '-error').addClass('text-error');
-                }
+            /* Make sure the total number of votes sum to the right number */
+            if (!position['skipped']) {
+                $.each(candidates, function(i, candidate) {
+                    var votes = candidate['votes'];
 
-                rank_check[rank-1] = true;
-            });
+                    /* Do not accept empty ranks or non number ranks. */
+                    if (!$.isNumeric(votes)) {
+                        valid = false;
+                        $('#' + id + '-error').addClass('text-error');
+                    }else {
+                        sum += votes;
+                    }
+                });
 
-            /* Ensure all ranks were used exactly once. */
-            for (var i = 0; i < rank_check.length; i++) {
-                if (rank_check[i] != true) {
+                /* Any non-zero number of votes not equal to sum is invalid.*/
+                // TODO: perhaps [0, available] range is valid?
+                if (sum != available_votes && sum != 0) {
                     valid = false;
                     $('#' + id + '-error').addClass('text-error');
                 }
             }
+
+            /* If the position requires a vote and it was skipped, error. */
+            if(sum == 0 && position['required']) {
+                valid = false;
+                $('#' + id + '-error').addClass('text-error');
+            }
         }
+
+        /* ----------------------------------------------------------------- */
 
     });
 
