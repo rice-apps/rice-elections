@@ -272,6 +272,7 @@ var addPositionModal = function() {
     var positionSelectionContent = $('.selection-content');       // Divs: Content for selected position types
     var rankedChoice = $('#ranked-choice');                       // Select: ranked choice position type
     var singleChoice = $('#single-choice');                       // Select: single choice position type
+    var cumulativeVoting = $('#cumulative-voting');               // Select: cumulative voting position type
     var positionName = $('#position-name');                       // Text Input: Position name input
     var positionSlots = $('#position-slots');                     // Number Input: Position slots
     var positionAddCandidate = $('#position-add-candidate');      // Button: Add candidate
@@ -355,6 +356,8 @@ var addPositionModal = function() {
             return 'Ranked-Choice';
         } else if (singleChoice.attr('selected') == 'selected') {
             return 'Single-Choice';
+        } else if (cumulativeVoting.attr('selected') == 'selected') {
+            return 'Cumulative Voting';
         }
     }
 
@@ -443,7 +446,7 @@ var addPositionModal = function() {
         }
         return false;
     }
-    
+
     /**
      * Returns whether the user specified a voting requirement for this position.
      */

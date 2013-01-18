@@ -10,7 +10,7 @@
 <script src="js/jquery.form.js"></script>
 <section id="main">
  <!-- PUT CONTENT IN HERE
-================================================== --> 
+================================================== -->
   <div id="server-response"></div>
   <form class="form-horizontal well" id="createForm" action="createElection" method="post">
     <fieldset>
@@ -23,7 +23,7 @@
           </select>
         </div>
       </div>
-      
+
       <!-- Election Name -->
       <div class="control-group">
         <label class="control-label" for="name">Election Name</label>
@@ -68,7 +68,7 @@
           <textarea class="span5" id="eligible-voters" name="eligible-voters" rows="5" placeholder="Comma separated NetIDs"></textarea>
         </div>
       </div>
-      
+
       <!-- Add Positions -->
       <div class="control-group">
         <label class="control-label" for="positions">Positions</label>
@@ -77,7 +77,7 @@
           <div id="positions-list"></div>
         </div>
       </div>
-      
+
       <!-- Add Positions Modal -->
       <div id="addPositions" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addPositionsLabel" aria-hidden="true">
         <div class="modal-header">
@@ -91,22 +91,29 @@
               <select id="position-select-type" name="position-select-type">
                 <option id="ranked-choice" value="0">Ranked-Choice Voting Position</option>
                 <option id="single-choice" value="1">Single-Choice Voting Position</option>
+                <option id="cumulative-voting" value="2">Cumulative Voting Position</option>
               </select>
             </div>
           </div>
-          
+
           <!-- Single Person Position -->
           <div class="selection-content" id="0">
             <h4>Ranked-Choice Voting Position</h4>
             <p>Ranked-Choice Voting (also known as instant runoff voting) allows voters to rank a first, second, third (and onwards) choice candidate for a single position. This makes it possible to elect people by majority vote without the need for a separate run-off election.</p>
           </div>
-          
+
           <!-- Multiple People Position -->
           <div class="selection-content" id="1" style="display:none">
             <h4>Single-Choice Voting Position</h4>
             <p>Single-Choice voting allows voters to only vote for a single candidate for a position.</p>
           </div>
-          
+
+          <!-- Cumulative Voting Position -->
+          <div class="selection-content" id="2" style="display:none">
+            <h4>Cumulative Voting Position</h4>
+            <p>In cumulative voting, voters cast as many votes as there are positions available. But unlike winner-take-all systems, voters are not limited to giving only one vote to a candidate. Instead, they can put multiple votes on one or more candidates.</p>
+          </div>
+
           <hr>
             <form>
               <fieldset>
@@ -117,14 +124,14 @@
                     <input type="text" class="input-xlarge" id="position-name" name="position-name-txt">
                   </div>
                 </div>
-                
+
                 <div class="control-group">
                   <label class="control-label" for="position-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
                   <div class="controls">
                     <input type="number" class="input-mini" name="position-slots" min="1" max="10" id="position-slots" value="1">
                   </div>
                 </div>
-                
+
                 <div class="control-group">
                   <label class="control-label" for="position-candidates">Candidates<br /></label>
                   <div class="controls">
@@ -132,7 +139,7 @@
                     <div style="margin-bottom: 5px;" id="position-candidates"></div>
                   </div>
                 </div>
-                
+
                 <div class="control-group">
                   <label class="control-label">Write-in Option</label>
                   <div class="controls">
@@ -142,7 +149,7 @@
                   	</label>
                   </div>
                 </div>
-                
+
                 <div class="control-group">
                   <label class="control-label">Vote Required</label>
                   <div class="controls">
@@ -152,7 +159,7 @@
                     </label>
                   </div>
                 </div>
-                
+
               </fieldset>
             </form>
         </div>
@@ -161,7 +168,7 @@
           <span id="position-add-submit" class="btn btn-primary">Add Position</span>
         </div>
       </div>
-      
+
       <!-- Form Actions -->
       <div class="form-actions">
         <a type="submit" class="btn btn-primary" id="election-submit">Create</a>
