@@ -108,7 +108,7 @@ class BallotHandler(webapp2.RequestHandler):
             for election_position_candidate in election_position.election_position_candidates:
                 candidate = election_position_candidate.candidate
                 position['candidates'].append({'name': candidate.name,
-                                               'id': str(candidate.key())})
+                                               'id': str(election_position_candidate.key())})
             random.shuffle(position['candidates'])
             page_data['positions'].append(position)
 
@@ -168,9 +168,12 @@ class BallotHandler(webapp2.RequestHandler):
                 self.respond('ERROR', 'You have attempted to cast an invalid ballot. Please verify that you are following all instructions.')
                 return
         
-        
-        
-        logging.info(verified_positions)
+        # Record all of the votes
+        for position in formData['positions']:
+            for candidate_ranking in position['candidate_rankings']:
+                election_position_candidate = database.ElectionPositionCandidate.get(candidate_ranking['id'])
+                rank = candidate_ranking['rank']
+                database.put_ranked_vote_for_candidate(election_position_candidate, rank)
         
 #        database.mark_voted(voter, election)
         
@@ -198,8 +201,7 @@ class BallotHandler(webapp2.RequestHandler):
             ranks = []
             candidates_verified = {}
             for election_position_candidate in election_position.election_position_candidates:
-                candidate_key = election_position_candidate.candidate.key()
-                candidates_verified[str(candidate_key)] = False
+                candidates_verified[str(election_position_candidate.key())] = False
             for candidate_ranking in position['candidate_rankings']:
                 if not candidate_ranking['rank']:
                     if required: return False

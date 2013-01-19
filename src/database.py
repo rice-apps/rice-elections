@@ -345,17 +345,17 @@ def put_election_position(election, position, slots, write_in, position_type, vo
     return election_position
 
 
-#def get_candidates_for_election_position(election_position):
-#    """
-#    Gets the candidates running for an election position.
-#    
-#    Args:
-#        election_position {ElectionPosition}: the ElectionPosition
-#    
-#    Returns:
-#        candidates {Iterator<ElectionPositionCandidate>}: the candidates running
-#    """
-#    return ElectionPositionCandidate.gql('WHERE election_position=:1', election_position).run()
+def get_candidates_for_election_position(election_position):
+    """
+    Gets the candidates running for an election position.
+    
+    Args:
+        election_position {ElectionPosition}: the ElectionPosition
+    
+    Returns:
+        candidates {Iterator<ElectionPositionCandidate>}: the candidates running
+    """
+    return ElectionPositionCandidate.gql('WHERE election_position=:1', election_position).run()
     
 
 def put_candidate_for_election_position(candidate, election_position):
