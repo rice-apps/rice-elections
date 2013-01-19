@@ -29,19 +29,20 @@ class Election(db.Model):
     """
     An election that users may vote for.
     """
-    name = db.StringProperty()
-    start = db.DateTimeProperty()       # Time when voting begins
-    end = db.DateTimeProperty()         # Time when voting ends
+    name = db.StringProperty(required=True)
+    start = db.DateTimeProperty(required=True)       # Time when voting begins
+    end = db.DateTimeProperty(required=True)         # Time when voting ends
     organization = db.ReferenceProperty(Organization,
                                         collection_name='elections')
-
+    result_computed = db.BooleanProperty()
+    result_delay = db.IntegerProperty() # Results delay to public in seconds
 
 
 class Voter(db.Model):
     """
     A voter that uses the application.
     """
-    net_id = db.StringProperty()
+    net_id = db.StringProperty(required=True)
     
     @property
     def elections(self):
@@ -62,6 +63,7 @@ class Admin(db.Model):
     email = db.StringProperty(required=True)
     voter = db.ReferenceProperty(Voter,
                                  required=True)
+
 
 class OrganizationAdmin(db.Model):
     """

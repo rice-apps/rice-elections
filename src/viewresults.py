@@ -5,13 +5,11 @@ Back-end for serving the results of an election.
 __authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
 
 import database
-import json
 import logging
-import random
 import webapp2
 
 from authentication import require_login, get_voter
-from google.appengine.ext import db
+from datetime import datetime, timedelta
 from main import render_page
 
 
@@ -43,22 +41,35 @@ class ResultsHandler(webapp2.RequestHandler):
         logging.info('%s requested election: %s', net_id, election_id)
 
         # Get the election from the database
-        election = db.get(election_id)
+        election = database.Election.get(election_id)
         if not election:
             page_data['error_msg'] = 'Election not found.'
             render_page(self, PAGE_NAME, page_data)
             return
-
-        # Make sure user is eligible to view the results
-        # TODO: connect this to the notion of who is able to view the results.
-        # status = database.voter_status(voter, election)
-        # if status == 'not_eligible':
-        #     page_data['error_msg'] = 'You are not eligible to vote for this election.'
-        # elif status == 'invalid_time':
-        #     page_data['error_msg'] = 'Results are not a'
-        # if status != 'eligible':
-        #     render_page(self, PAGE_NAME, page_data)
-        #     return
+        
+        # Make sure user is eligible to vote
+        status = database.voter_status(voter, election)
+        if status != 'eligible' and not database.get_admin_status(voter, election.organization):
+            render_page(self, PAGE_NAME, page_data)
+            return
+        
+        if not election.result_computed:
+            page_data['error_msg'] = 'Election results are not available yet.'
+            render_page(self, PAGE_NAME, page_data)
+            return
+        
+        public_result_time = election.end
+        if election.result_delay:
+            public_result_time += timedelta(seconds=election.result_delay)
+            
+        if datetime.now() < public_result_time:
+            # Check to see if the user is an election admin
+            status = database.get_admin_status(voter, election.organization)
+            if not status:
+                page_data['error_msg'] = ('Election results are not available to the public yet. '
+                                         'Please wait for %s longer.' % (public_result_time - datetime.now()))
+                render_page(self, PAGE_NAME, page_data)
+                return
 
         # Write election information
         page_data['id'] = str(election.key())
@@ -74,11 +85,11 @@ class ResultsHandler(webapp2.RequestHandler):
             position['id'] = str(election_position.key())
             position['name'] = election_position.position.name
             position['candidates'] = []
-            for candidate_key in election_position.candidates:
-                candidate = db.get(candidate_key)
+            for election_position_candidate in election_position.election_position_candidates:
+                candidate = election_position_candidate.candidate
                 position['candidates'].append({'name': candidate.name,
-                                               'id': str(candidate_key),
-                                               'won': random.choice([True, False])}) # TODO: temp random
+                                               'id': str(election_position_candidate.key()),
+                                               'won': election_position_candidate.winner}) # TODO: temp random
             page_data['positions'].append(position)
 
         logging.info(page_data)
