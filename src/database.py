@@ -118,6 +118,29 @@ class Candidate(db.Model):
     name = db.StringProperty()
 
 
+class ElectionPositionCandidate(db.Model):
+    """
+    A candidate running for an election position.
+    """
+    election_position = db.ReferenceProperty(ElectionPosition,
+                                             required=True,
+                                             collection_name='election_position_candidates')
+    candidate = db.ReferenceProperty(Candidate,
+                                     required=True,
+                                     collection_name='election_position_candidates')
+    winner = db.BooleanProperty()
+
+
+class RankedVote(db.Model):
+    """
+    A single ranked vote for an election position candidate.
+    """
+    election_position_candidate = db.ReferenceProperty(ElectionPositionCandidate,
+                                                       required=True,
+                                                       collection_name='ranked_votes')
+    rank = db.IntegerProperty(required=True)
+
+
 def get_organization(name):
     """
     Returns the organization the election data is referring to.
@@ -322,6 +345,19 @@ def put_election_position(election, position, slots, write_in, position_type, vo
     return election_position
 
 
+#def get_candidates_for_election_position(election_position):
+#    """
+#    Gets the candidates running for an election position.
+#    
+#    Args:
+#        election_position {ElectionPosition}: the ElectionPosition
+#    
+#    Returns:
+#        candidates {Iterator<ElectionPositionCandidate>}: the candidates running
+#    """
+#    return ElectionPositionCandidate.gql('WHERE election_position=:1', election_position).run()
+    
+
 def put_candidate_for_election_position(candidate, election_position):
     """
     Adds a candidate as a runner for the specified election_position.
@@ -330,8 +366,18 @@ def put_candidate_for_election_position(candidate, election_position):
         candidate {Candidate}: the Candidate
         election_position {ElectionPosition}: the ElectionPosition the Candidate is running for
     """
-    election_position.candidates.append(candidate.key())
-    election_position.put()
+    ElectionPositionCandidate(election_position=election_position, candidate=candidate).put()
+
+
+def put_ranked_vote_for_candidate(election_position_candidate, rank):
+    """
+    Adds a ranked vote for an ElectionPositionCandidate.
+    
+    Args:
+        election_position_candidate {ElectionPositionCandidate}: the candidate
+        rank {Integer}: the rank for the vote
+    """
+    RankedVote(election_position_candidate=election_position_candidate, rank=rank).put()
 
 
 def voter_status(voter, election):

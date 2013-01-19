@@ -16,7 +16,32 @@ from main import render_page
 
 
 PAGE_NAME = '/cast-ballot'
-
+REF_DATA = {u'positions': [
+                {u'skipped': False, 
+                 u'name': u'President', 
+                 u'required': True, 
+                 u'candidate_rankings': [
+                        {u'name': u'Candidate B', 
+                         u'rank': 1, 
+                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBQM'}, 
+                        {u'name': u'Candidate A', 
+                         u'rank': 2, 
+                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBMM'}], 
+                 u'type': u'Ranked-Choice', 
+                 u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IWCxIQRWxlY3Rpb25Qb3NpdGlvbhgSDA'}, 
+                {u'skipped': True, 
+                 u'name': u'Chief Justice', 
+                 u'required': False, 
+                 u'candidate_rankings': [
+                        {u'name': u'Candidate A', 
+                         u'rank': u'', 
+                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBcM'}, 
+                        {u'name': u'Candidate B', 
+                         u'rank': u'', 
+                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBQM'}], 
+                 u'type': u'Ranked-Choice', 
+                 u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IWCxIQRWxlY3Rpb25Qb3NpdGlvbhgWDA'}], 
+            u'election_id': u'ag5kZXZ-b3dsZWN0aW9uc3IOCxIIRWxlY3Rpb24YCww'}
 
 class BallotHandler(webapp2.RequestHandler):
     """
@@ -80,10 +105,10 @@ class BallotHandler(webapp2.RequestHandler):
             position['write_in'] = election_position.write_in
             position['vote_required'] = election_position.vote_required
             position['candidates'] = []
-            for candidate_key in election_position.candidates:
-                candidate = db.get(candidate_key)
+            for election_position_candidate in election_position.election_position_candidates:
+                candidate = election_position_candidate.candidate
                 position['candidates'].append({'name': candidate.name,
-                                               'id': str(candidate_key)})
+                                               'id': str(candidate.key())})
             random.shuffle(position['candidates'])
             page_data['positions'].append(position)
 
@@ -129,9 +154,27 @@ class BallotHandler(webapp2.RequestHandler):
             self.respond('ERROR', 'You are not eligible to vote for this election.')
             return
         
-        database.mark_voted(voter, election)
+        # Verify that the user has voted correctly
+        verified_positions = {}           # Whether an election_position has been verified
+        for election_position in election.election_positions:
+            verified_positions[str(election_position.key())] = False
         
-        self.respond('OK', 'We got your ballot. Now go home!')
+        for position in formData['positions']:
+            if self.verify_position(position):
+                verified_positions[position['id']] = True
+        
+        for verified in verified_positions:
+            if not verified:
+                self.respond('ERROR', 'You have attempted to cast an invalid ballot. Please verify that you are following all instructions.')
+                return
+        
+        
+        
+        logging.info(verified_positions)
+        
+#        database.mark_voted(voter, election)
+        
+        self.respond('OK', 'Your ballot has been successfully cast!')
         
     def respond(self, status, message):
         """
@@ -143,6 +186,37 @@ class BallotHandler(webapp2.RequestHandler):
         """
         self.response.write(json.dumps({'status': status, 'msg': message}))
     
+    @staticmethod
+    def verify_position(position):
+        election_position = database.ElectionPosition.get(position['id'])
+        if not election_position:
+            return False
+        if election_position.type == 'Ranked-Choice':
+            required = election_position.vote_required
+            num_ranks_required = election_position.election_position_candidates.count()
+            write_in = election_position.write_in
+            ranks = []
+            candidates_verified = {}
+            for election_position_candidate in election_position.election_position_candidates:
+                candidate_key = election_position_candidate.candidate.key()
+                candidates_verified[str(candidate_key)] = False
+            for candidate_ranking in position['candidate_rankings']:
+                if not candidate_ranking['rank']:
+                    if required: return False
+                else:
+                    ranks.append(candidate_ranking['rank'])
+                    candidates_verified[candidate_ranking['id']] = True
+            for verified in candidates_verified.values():
+                if not verified: return False
+            ranks.sort()
+            if len(ranks) == 0 and not required:
+                return True
+            if ranks[0] != 1 or ranks[len(ranks)-1] != num_ranks_required:
+                return False
+        else:
+            return False        # Verification for other position types not supported
+        return True
+                
 app = webapp2.WSGIApplication([
         ('/cast-ballot', BallotHandler)
 ], debug=True)
