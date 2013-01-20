@@ -41,7 +41,7 @@ function submitForm() {
     }
 
 	var valid = true;
-	var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions()];
+	var formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions(), getPublicAvailabilityDelta()];
 	$.each(formData, function(index, value) {
 		if (value == null) {
 			valid = false;
@@ -53,7 +53,8 @@ function submitForm() {
 	    'start': formData[1]['start'],
 	    'end': formData[1]['end'],
 	    'voters': formData[2],
-	    'positions': formData[3]
+	    'positions': formData[3],
+        'result_delay' : formData[4]
 	};
 
 	console.log(postData);
@@ -175,6 +176,15 @@ function getElectionTimes() {
 }
 
 /**
+ * Returns the currently selected amount of time for public availability of the
+ * election's results.
+ * @return {Integer} The time delta in seconds
+ */
+function getPublicAvailabilityDelta() {
+    return parseInt($('#election-select-results-availability-delta').val())
+}
+
+/**
  * Returns the list of eligible voters the user has entered.
  * @return {Object} list of voters, null if input is invalid.
  */
@@ -223,7 +233,7 @@ function getPositions() {
 	$('.errorMsgPositions').remove();
 	if (positions.length == 0) {
 		posContainer.addClass('error');
-		$('<span class="help-inline errorMsgPositions">Need atleast one position.</span>').insertAfter(pos);
+		$('<span class="help-inline errorMsgPositions">Need at least one position.</span>').insertAfter(pos);
 		return null;
 	}
 	return positions;
@@ -264,22 +274,25 @@ function createSuccessResponse(data, status) {
  * Add Position Modal Pop-up
  */
 var addPositionModal = function() {
-    var modal = this;                                             // Out of scope reference
-    var candidatesIDs = [];                                       // List of HTML IDs of candidates added to the form
-    var candidateIDGen = 0;                                       // Generator for candidate IDs
-    var candidateIDPrefix = 'position-candidate-';                // HTML ID prefix for candidates
-    var positionSelectType = $('#position-select-type');          // Drop-down: Position type
-    var positionSelectionContent = $('.selection-content');       // Divs: Content for selected position types
-    var rankedChoice = $('#ranked-choice');                       // Select: ranked choice position type
-    var singleChoice = $('#single-choice');                       // Select: single choice position type
-    var cumulativeVoting = $('#cumulative-voting');               // Select: cumulative voting position type
-    var positionName = $('#position-name');                       // Text Input: Position name input
-    var positionSlots = $('#position-slots');                     // Number Input: Position slots
-    var positionAddCandidate = $('#position-add-candidate');      // Button: Add candidate
-    var positionCandidates = $('#position-candidates');           // Div: list of candidates
-    var positionWriteIn = $('#position-write-in');                // Checkbox: whether the position has a write-in
-    var positionVoteRequired = $('#position-required');           // Checkbox: whether a vote from the user is required
-    var positionAddSubmit = $('#position-add-submit');            // Button: Add position
+
+    // TODO: redo these bottom comments.
+
+    var modal = this;                                        // Out of scope reference
+    var candidatesIDs = [];                                  // List of HTML IDs of candidates added to the form
+    var candidateIDGen = 0;                                  // Generator for candidate IDs
+    var candidateIDPrefix = 'position-candidate-';           // HTML ID prefix for candidates
+    var positionSelectType = $('#position-select-type');     // Drop-down: Position type
+    var positionSelectionContent = $('.selection-content');  // Divs: Content for selected position types
+    var rankedChoice = $('#ranked-choice');                  // Select: ranked choice position type
+    var singleChoice = $('#single-choice');                  // Select: single choice position type
+    var cumulativeVoting = $('#cumulative-voting');          // Select: cumulative voting position type
+    var positionName = $('#position-name');                  // Text Input: Position name input
+    var positionSlots = $('#position-slots');                // Number Input: Position slots
+    var positionAddCandidate = $('#position-add-candidate'); // Button: Add candidate
+    var positionCandidates = $('#position-candidates');      // Div: list of candidates
+    var positionWriteIn = $('#position-write-in');           // Checkbox: whether the position has a write-in
+    var positionVoteRequired = $('#position-required');      // Checkbox: whether a vote from the user is required
+    var positionAddSubmit = $('#position-add-submit');       // Button: Add position
 
     /**
      * Resets the HTML form in the modal box on the page.
