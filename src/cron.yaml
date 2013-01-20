@@ -1,4 +1,9 @@
 cron:
 - description: daily session cleanup
-  url: /cleanup_sessions
+  url: /cleanup-sessions
   schedule: every 24 hours
+
+cron:
+- description: compute election results
+  url: /compute-results
+  schedule: every minute

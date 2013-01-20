@@ -232,11 +232,11 @@ def put_election(name, start, end, organization):
             raise Exception('One or more args missing')
     logging.info('Storing new election: %s, start: %s, end: %s, organization: %s',
                  name, start, end, organization.name)
-    election = Election()
-    election.name = name
-    election.start = datetime.fromtimestamp(start)
-    election.end = datetime.fromtimestamp(end)
-    election.organization = organization.key()
+    election = Election(name=name,
+                        start=datetime.fromtimestamp(start),
+                        end=datetime.fromtimestamp(end),
+                        organization=organization.key(),
+                        result_computed=False)
     election.put()
     logging.info('Election stored.')
     return election

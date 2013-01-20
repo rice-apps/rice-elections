@@ -1,4 +1,4 @@
-[Rice Elections]
+Rice Elections
 =================
 A web application for holding automated and verified elections for organizations at Rice University.
 

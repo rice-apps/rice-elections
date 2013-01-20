@@ -78,6 +78,9 @@ class CreateElectionHandler(webapp2.RequestHandler):
             # Store election
             election = database.put_election(electionData['name'], electionData['start'],
                                              electionData['end'], organization)
+            logging.info('Result Delay: %s', electionData['result_delay'])
+            election.result_delay = electionData['result_delay']
+            election.put()
             database.add_eligible_voters(election, electionData['voters'])
             
             # Store positions

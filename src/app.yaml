@@ -31,9 +31,15 @@ handlers:
 
 - url: /logout-response
   script: authentication.app
+  
+- url: /cleanup-sessions
+  script: cleanupsessions.app
 
 - url: /view-results
   script: viewresults.app
+
+- url: /compute-results
+  script: computeresults.app
 
 - url: /.*
   script: main.app

@@ -47,7 +47,7 @@ function submitForm() {
 			valid = false;
 		}
 	});
-
+	
 	var postData = {
 	    'name': formData[0],
 	    'start': formData[1]['start'],

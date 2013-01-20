@@ -67,7 +67,8 @@ class ResultsHandler(webapp2.RequestHandler):
             status = database.get_admin_status(voter, election.organization)
             if not status:
                 page_data['error_msg'] = ('Election results are not available to the public yet. '
-                                         'Please wait for %s longer.' % (public_result_time - datetime.now()))
+                                         'Please wait for %s longer.' % 
+                                         str(public_result_time - datetime.now())[:4])
                 render_page(self, PAGE_NAME, page_data)
                 return
 
