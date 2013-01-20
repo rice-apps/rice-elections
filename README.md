@@ -15,5 +15,5 @@ Have a bug? Please create an issue here on GitHub! Also, when filing please make
 
 Authors
 -------
-**[Waseem Ahmad](http://www.waseemahmad.com/)**
-**[Andrew Capshaw](http://capshaw.me/)**
+*[Waseem Ahmad](http://www.waseemahmad.com/)
+*[Andrew Capshaw](http://capshaw.me/)
