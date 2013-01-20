@@ -275,22 +275,24 @@ function createSuccessResponse(data, status) {
  */
 var addPositionModal = function() {
 
-    var modal = this;
-    var candidatesIDs = [];
-    var candidateIDGen = 0;
-    var candidateIDPrefix = 'position-candidate-';
-    var positionSelectType = $('#position-select-type');
-    var positionSelectionContent = $('.selection-content');
-    var rankedChoice = $('#ranked-choice');
-    var singleChoice = $('#single-choice');
-    var cumulativeVoting = $('#cumulative-voting');
-    var positionName = $('#position-name');
-    var positionSlots = $('#position-slots');
-    var positionAddCandidate = $('#position-add-candidate');
-    var positionCandidates = $('#position-candidates');
-    var positionWriteIn = $('#position-write-in');
-    var positionVoteRequired = $('#position-required');
-    var positionAddSubmit = $('#position-add-submit');
+    // TODO: redo these bottom comments.
+
+    var modal = this;                                        // Out of scope reference
+    var candidatesIDs = [];                                  // List of HTML IDs of candidates added to the form
+    var candidateIDGen = 0;                                  // Generator for candidate IDs
+    var candidateIDPrefix = 'position-candidate-';           // HTML ID prefix for candidates
+    var positionSelectType = $('#position-select-type');     // Drop-down: Position type
+    var positionSelectionContent = $('.selection-content');  // Divs: Content for selected position types
+    var rankedChoice = $('#ranked-choice');                  // Select: ranked choice position type
+    var singleChoice = $('#single-choice');                  // Select: single choice position type
+    var cumulativeVoting = $('#cumulative-voting');          // Select: cumulative voting position type
+    var positionName = $('#position-name');                  // Text Input: Position name input
+    var positionSlots = $('#position-slots');                // Number Input: Position slots
+    var positionAddCandidate = $('#position-add-candidate'); // Button: Add candidate
+    var positionCandidates = $('#position-candidates');      // Div: list of candidates
+    var positionWriteIn = $('#position-write-in');           // Checkbox: whether the position has a write-in
+    var positionVoteRequired = $('#position-required');      // Checkbox: whether a vote from the user is required
+    var positionAddSubmit = $('#position-add-submit');       // Button: Add position
 
     /**
      * Resets the HTML form in the modal box on the page.
