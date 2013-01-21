@@ -97,19 +97,17 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 
                 # Store candidates
                 for candidate in position['candidates']:
-                    candidate_entry = database.get_candidate(candidate['name'], candidate['netId'], create=True)
-                    database.put_candidate_for_election_position(candidate_entry, election_position_entry)
-            
-                for candidate in election_position_entry.candidates:
-                    candidate_entry = db.get(candidate)
-                    logging.info('Candidate %s running for %s', candidate_entry.name, 
-                                 election_position_entry.position.name)
+                    database.put_candidate_for_election_position(election_position_entry,
+                                                                 candidate['name'], 
+                                                                 candidate['netId'])
+                    logging.info('%s running for %s', candidate['name'], election_position_entry.position.name)
             
             logging.info(electionData)
         except Exception as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
             logging.error(msg)
             self.respond('ERROR', msg)
+            return
             
         
         # Success

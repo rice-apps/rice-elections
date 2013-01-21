@@ -33,11 +33,11 @@
         </td>
         <td>
           {% if open_election.user_action == 'voted' %}
-            <a class='btn btn-success disabled' href='#'>Voted</a>
+            <a class='btn btn-success disabled'>Voted</a>
           {% elif open_election.user_action == 'vote' %}
             <a class='btn btn-primary' href='/cast-ballot?id={{ open_election.id }}'>Vote</a>
           {% else %}
-            <a class='btn btn-primary disabled' href='#'>Vote</a>
+            <a class='btn btn-primary disabled'>Vote</a>
           {% endif %}
         </td>
       </tr>

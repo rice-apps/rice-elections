@@ -105,10 +105,9 @@ class BallotHandler(webapp2.RequestHandler):
             position['write_in'] = election_position.write_in
             position['vote_required'] = election_position.vote_required
             position['candidates'] = []
-            for election_position_candidate in election_position.election_position_candidates:
-                candidate = election_position_candidate.candidate
-                position['candidates'].append({'name': candidate.name,
-                                               'id': str(election_position_candidate.key())})
+            for epc in election_position.election_position_candidates:
+                position['candidates'].append({'name': epc.name,
+                                               'id': str(epc.key())})
             random.shuffle(position['candidates'])
             page_data['positions'].append(position)
 

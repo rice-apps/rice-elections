@@ -9,18 +9,13 @@ import logging
 from datetime import datetime
 from google.appengine.ext import db
 
-# Temporary look-up table until NetID input for candidates is implemented in the frontend
-net_id_lookup = {'Waseem Ahmad': 'wa1',
-                 'Sal Testa': 'srt6',
-                 'Andrew Capshaw': 'apc3'}
-
 
 class Organization(db.Model):
     """
     An organization that uses this application to host elections.
     Organizations are tied to individual Elections and OrganizationPositions.
     """
-    name = db.StringProperty()
+    name = db.StringProperty(required=True)
     description = db.TextProperty()
     website = db.StringProperty()
 
@@ -34,8 +29,10 @@ class Election(db.Model):
     end = db.DateTimeProperty(required=True)         # Time when voting ends
     organization = db.ReferenceProperty(Organization,
                                         collection_name='elections')
-    result_computed = db.BooleanProperty()
-    result_delay = db.IntegerProperty() # Results delay to public in seconds
+    result_computed = db.BooleanProperty(required=True,
+                                         default=False)
+    result_delay = db.IntegerProperty(required=True,
+                                      default=0) # Results delay to public in seconds
 
 
 class Voter(db.Model):
@@ -93,8 +90,9 @@ class Position(db.Model):
     """
     A position within an organization for which elections are held.
     """
-    name = db.StringProperty()
+    name = db.StringProperty(required=True)
     organization = db.ReferenceProperty(Organization,
+                                        required=True,
                                         collection_name='positions')
 
 
@@ -105,19 +103,11 @@ class ElectionPosition(db.Model):
     election = db.ReferenceProperty(Election,
                                     collection_name='election_positions')
     position = db.ReferenceProperty(Position)
-    slots = db.IntegerProperty()
-    write_in = db.BooleanProperty()
-    vote_required = db.BooleanProperty()
+    slots = db.IntegerProperty(required=True,
+                               default=1)
+    write_in = db.BooleanProperty(required=True)
+    vote_required = db.BooleanProperty(required=True)
     type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
-    candidates = db.ListProperty(db.Key)
-
-
-class Candidate(db.Model):
-    """
-    A candidate for any election.
-    """
-    net_id = db.StringProperty()
-    name = db.StringProperty()
 
 
 class ElectionPositionCandidate(db.Model):
@@ -127,10 +117,10 @@ class ElectionPositionCandidate(db.Model):
     election_position = db.ReferenceProperty(ElectionPosition,
                                              required=True,
                                              collection_name='election_position_candidates')
-    candidate = db.ReferenceProperty(Candidate,
-                                     required=True,
-                                     collection_name='election_position_candidates')
-    winner = db.BooleanProperty()
+    net_id = db.StringProperty()
+    name = db.StringProperty(required=True)
+    winner = db.BooleanProperty(required=True, default=False)
+    written_in = db.BooleanProperty(required=True, default=False)
 
 
 class RankedVote(db.Model):
@@ -235,8 +225,7 @@ def put_election(name, start, end, organization):
     election = Election(name=name,
                         start=datetime.fromtimestamp(start),
                         end=datetime.fromtimestamp(end),
-                        organization=organization.key(),
-                        result_computed=False)
+                        organization=organization.key())
     election.put()
     logging.info('Election stored.')
     return election
@@ -301,25 +290,6 @@ def get_position(name, organization, create=False):
     return position
 
 
-def get_candidate(name, net_id, create=False):
-    """
-    Returns the candidate with the specified net_id.
-    
-    Args:
-        name {String}: the name of the candidate
-        net_id {String}: the NetID of the candidate
-    
-    Returns:
-        Candidate {db.Model}: The Candidate entry in the database, None if one doesn't exist and create is False.
-    """
-    candidate = db.GqlQuery('SELECT * FROM Candidate WHERE net_id=:1', net_id).get()
-    if not candidate and create:
-        candidate = Candidate(name=name, net_id=net_id)
-        candidate.put()
-        logging.info('Candidate created with name: %s NetID: %s', name, net_id)
-    return candidate
-
-
 def put_election_position(election, position, slots, write_in, position_type, vote_required):
     """
     Creates and stores an ElectionPosition in the database.
@@ -360,15 +330,20 @@ def get_candidates_for_election_position(election_position):
     return ElectionPositionCandidate.gql('WHERE election_position=:1', election_position).run()
     
 
-def put_candidate_for_election_position(candidate, election_position):
+def put_candidate_for_election_position(election_position, name, net_id=None, written_in=False):
     """
     Adds a candidate as a runner for the specified election_position.
     
     Args:
-        candidate {Candidate}: the Candidate
         election_position {ElectionPosition}: the ElectionPosition the Candidate is running for
+        name {String}: the name of the candidate
+        net_id {String, optional}: the NetID of the candidate
+        written_in {Boolean, optional}: whether the candidate was written in.
     """
-    ElectionPositionCandidate(election_position=election_position, candidate=candidate).put()
+    ElectionPositionCandidate(election_position=election_position, 
+                              name=name,
+                              net_id=net_id,
+                              written_in=written_in).put()
 
 
 def put_ranked_vote_for_candidate(election_position_candidate, rank):
@@ -379,7 +354,7 @@ def put_ranked_vote_for_candidate(election_position_candidate, rank):
         election_position_candidate {ElectionPositionCandidate}: the candidate
         rank {Integer}: the rank for the vote
     """
-    RankedVote(election_position_candidate=election_position_candidate, rank=rank).put()
+    RankedVote(election_position_candidate=election_position_candidate.key(), rank=rank).put()
 
 
 def voter_status(voter, election):
