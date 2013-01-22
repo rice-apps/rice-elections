@@ -42,10 +42,11 @@ class ComputeResultsHandler(webapp2.RequestHandler):
         for ballot in election_position.ranked_ballots:
             ballots.append(ballot.preferences)
         
-        winner = irv.find_single_winner(ballots)
-        winner_candidate = database.ElectionPositionCandidate.get(winner)
-        winner_candidate.winner = True
-        winner_candidate.put()
+        winners = irv.run_irv(ballots, election_position.slots)
+        for winner in winners:
+            winner_candidate = database.ElectionPositionCandidate.get(winner)
+            winner_candidate.winner = True
+            winner_candidate.put()
         
             
 app = webapp2.WSGIApplication([

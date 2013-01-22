@@ -106,19 +106,37 @@ def remove_candidate(ballots, candidate):
     for ballot in ballots:
         ballot.remove(candidate)
 
-def find_single_winner(ballots):
-    while True:
+
+def run_irv(ballots, num_winners):
+    """
+    Runs the instant run-off voting algorithm to find the winners for the election.
+    
+    Args:
+        ballots {List<List<Object>>}: the ballots cast, will be modified by the algorithm
+        num_winners {Integer}: the number of winners to find, due to ties or too few candidates, the number
+                     of winners found may not be the same as this argument.
+    
+    Returns:
+        winners {List<Object>}: the winners of the election
+    """
+    winners = []
+    logging.info('Computing %d winners from %s ballots cast.', num_winners, len(ballots))
+    while len(winners) < num_winners:
         logging.info('Counts: %s', get_counts(ballots))
+        new_winners = get_winners(ballots)
+        if new_winners:
+            for new_winner in new_winners:
+                remove_candidate(ballots, new_winner)
         
-        winners = get_winners(ballots)
-        if winners:
-            logging.info('Found winner: %s', winners[0])
-            return winners[0]
-        
-        losers = get_losers(ballots)
-        logging.info('Losers: %s', losers)
-        for loser in losers:
-            remove_candidate(ballots, loser)
+        if not new_winners:
+            losers = get_losers(ballots)
+            if not losers:
+                break
+            
+            for loser in losers:
+                remove_candidate(ballots, loser)
+    logging.info('Found %d of %d winners requested', len(winners), num_winners)
+    return winners
 
 
 if __name__ == '__main__':
