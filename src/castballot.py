@@ -278,7 +278,7 @@ class BallotHandler(webapp2.RequestHandler):
         
         logging.info(preferences)
         assert None not in preferences
-        ballot = database.RankedBallot(election_position=election_position.key(),
+        ballot = database.RankedBallot(election_position=election_position,
                                        preferences=preferences)
         ballot.put()
         logging.info('Stored ballot in database with preferences %s', preferences)

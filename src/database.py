@@ -128,7 +128,8 @@ class RankedBallot(db.Model):
     A single ranked ballot for an election position.
     """
     election_position = db.ReferenceProperty(ElectionPosition,
-                                             required=True)
+                                             required=True,
+                                             collection_name='ranked_ballots')
     preferences = db.ListProperty(db.Key,
                                   required=True)
 

@@ -1,4 +1,5 @@
 import database
+import irv
 import logging
 import webapp2
 
@@ -24,6 +25,9 @@ class ComputeResultsHandler(webapp2.RequestHandler):
             else:
                 logging.info('Results for %s position type not supported', election_position.type)
                 continue
+            
+        election.result_computed = True
+        election.put()
     
     @staticmethod
     def ranked_choice_results(election_position):
@@ -34,22 +38,15 @@ class ComputeResultsHandler(webapp2.RequestHandler):
             election_position {ElectionPosition}: the ranked choice election position.
         """
         assert election_position.type == 'Ranked-Choice'
-        candidates = []
-        for epc in election_position.election_position_candidates:
-            epc_id = str(epc.key())
-            epc_name = epc.candidate.name
-            votes = {}
-            for rv in epc.ranked_votes:
-                rank = rv.rank
-                if rank not in votes:
-                    votes[rank] = 1
-                else:
-                    votes[rank] += 1
-            candidates.append({'id': epc_id,
-                               'name': epc_name,
-                               'votes': votes})
+        ballots = []
+        for ballot in election_position.ranked_ballots:
+            ballots.append(ballot.preferences)
         
-        logging.info(candidates)
+        winner = irv.find_single_winner(ballots)
+        winner_candidate = database.ElectionPositionCandidate.get(winner)
+        winner_candidate.winner = True
+        winner_candidate.put()
+        
             
 app = webapp2.WSGIApplication([
         ('/compute-results', ComputeResultsHandler)

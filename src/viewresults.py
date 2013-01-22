@@ -86,11 +86,12 @@ class ResultsHandler(webapp2.RequestHandler):
             position['id'] = str(election_position.key())
             position['name'] = election_position.position.name
             position['candidates'] = []
-            for election_position_candidate in election_position.election_position_candidates:
-                candidate = election_position_candidate.candidate
-                position['candidates'].append({'name': candidate.name,
-                                               'id': str(election_position_candidate.key()),
-                                               'won': election_position_candidate.winner}) # TODO: temp random
+            for epc in election_position.election_position_candidates:
+                if epc.written_in and not epc.winner:
+                    continue
+                position['candidates'].append({'name': epc.name,
+                                               'id': str(epc.key()),
+                                               'won': epc.winner})
             page_data['positions'].append(position)
 
         logging.info(page_data)
