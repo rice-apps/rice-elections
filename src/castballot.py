@@ -106,6 +106,8 @@ class BallotHandler(webapp2.RequestHandler):
             position['vote_required'] = election_position.vote_required
             position['candidates'] = []
             for epc in election_position.election_position_candidates:
+                if epc.written_in:
+                    continue
                 position['candidates'].append({'name': epc.name,
                                                'id': str(epc.key())})
             random.shuffle(position['candidates'])
@@ -159,21 +161,24 @@ class BallotHandler(webapp2.RequestHandler):
             verified_positions[str(election_position.key())] = False
         
         for position in formData['positions']:
-            if self.verify_position(position):
-                verified_positions[position['id']] = True
+            if position['type'] == 'Ranked-Choice':
+                verified_positions[position['id']] = self.verify_ranked_choice_ballot(position)
+            else:
+                logging.error('Encountered unknown position type: %s', position['type'])
+                verified_positions[position['id']] = False
         
-        for verified in verified_positions:
-            if not verified:
+        logging.info('Verified Positions: %s', verified_positions)
+        for verified in verified_positions.values():
+            if verified == False:
                 self.respond('ERROR', 'You have attempted to cast an invalid ballot. Please verify that you are following all instructions.')
                 return
         
         # Record all of the votes
         for position in formData['positions']:
-            for candidate_ranking in position['candidate_rankings']:
-                election_position_candidate = database.ElectionPositionCandidate.get(candidate_ranking['id'])
-                rank = candidate_ranking['rank']
-                database.put_ranked_vote_for_candidate(election_position_candidate, rank)
-        
+            if verified_positions[position['id']]:
+                if position['type'] == 'Ranked-Choice':
+                    self.cast_ranked_choice_ballot(position)
+            
 #        database.mark_voted(voter, election)
         
         self.respond('OK', 'Your ballot has been successfully cast!')
@@ -189,34 +194,95 @@ class BallotHandler(webapp2.RequestHandler):
         self.response.write(json.dumps({'status': status, 'msg': message}))
     
     @staticmethod
-    def verify_position(position):
+    def verify_ranked_choice_ballot(position):
+        """
+        Verifies the validity a ranked choice ballot.
+        
+        Args:
+            position{dictionary}: the position dictionary from the client
+        
+        Returns:
+            True if valid, False if invalid. None if empty ballot.
+        """
+        logging.info('Verifying ranked choice ballot.')
         election_position = database.ElectionPosition.get(position['id'])
         if not election_position:
+            logging.info('No election position found in database.')
             return False
-        if election_position.type == 'Ranked-Choice':
-            required = election_position.vote_required
-            num_ranks_required = election_position.election_position_candidates.count()
-            write_in = election_position.write_in
-            ranks = []
-            candidates_verified = {}
-            for election_position_candidate in election_position.election_position_candidates:
-                candidates_verified[str(election_position_candidate.key())] = False
-            for candidate_ranking in position['candidate_rankings']:
-                if not candidate_ranking['rank']:
-                    if required: return False
-                else:
-                    ranks.append(candidate_ranking['rank'])
-                    candidates_verified[candidate_ranking['id']] = True
-            for verified in candidates_verified.values():
-                if not verified: return False
-            ranks.sort()
-            if len(ranks) == 0 and not required:
-                return True
-            if ranks[0] != 1 or ranks[len(ranks)-1] != num_ranks_required:
-                return False
-        else:
-            return False        # Verification for other position types not supported
+        assert election_position.type == 'Ranked-Choice'
+        
+        required = election_position.vote_required
+        election_position_candidates = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND written_in=False',
+                                                                    election_position)
+        num_ranks_required = election_position_candidates.count()
+        write_in = election_position.write_in
+        ranks = []
+        candidates_verified = {}
+        for election_position_candidate in election_position_candidates:
+            candidates_verified[str(election_position_candidate.key())] = False
+        for candidate_ranking in position['candidate_rankings']:
+            if not candidate_ranking['rank']:
+                if required: 
+                    logging.info('Ranking required but not provided')
+                    return False   # Ranking required but not provided
+                else: return None           # Empty ballot
+            else:
+                ranks.append(candidate_ranking['rank'])
+                candidates_verified[candidate_ranking['id']] = True
+                if candidate_ranking['id'] == 'write-in':
+                    if not write_in:
+                        logging.info('Write-in not allowed.')
+                        return False        # Write in not allowed
+                    elif candidate_ranking['rank']:
+                        num_ranks_required += 1
+                    else:
+                        logging.info('Write in was specified but not ranked')
+                        return False        # Write in was specified but not ranked
+                    
+        for verified in candidates_verified.values():
+            if not verified: 
+                logging.info('Not all candidates verified')
+                return False   # Not all candidates verified
+        ranks.sort()
+        if len(ranks) == 0 and not required: return True
+        if ranks[0] != 1 or ranks[len(ranks)-1] != num_ranks_required: return False    # Number of rankings don't match
+        logging.info('Ballot for position %s verified.', election_position.position.name)
         return True
+    
+    @staticmethod
+    def cast_ranked_choice_ballot(position):
+        """
+        Records a ranked choice ballot in the database. Modifies write-in ids of the dictionary to reflect the 
+        written-in candidate's id.
+        
+        Args:
+            position{dictionary}: the verifies position dictionary from the client
+        """
+        election_position = database.ElectionPosition.get(position['id'])
+        preferences = [None] * len(position['candidate_rankings'])
+        for cr in position['candidate_rankings']:
+            
+            # Check for a write-in
+            if cr['id'] == 'write-in':
+                epc = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND name=:2',
+                                                             election_position, cr['name']).get()
+                if not epc:
+                    epc = database.ElectionPositionCandidate(election_position=election_position,
+                                                             net_id=None,
+                                                             name=cr['name'],
+                                                             written_in=True)
+                    epc.put()
+                cr['id'] = str(epc.key())
+            rank = cr['rank']
+            preferences[rank-1] = database.ElectionPositionCandidate.get(cr['id']).key()
+        
+        logging.info(preferences)
+        assert None not in preferences
+        ballot = database.RankedBallot(election_position=election_position.key(),
+                                       preferences=preferences)
+        ballot.put()
+        logging.info('Stored ballot in database with preferences %s', preferences)
+        
                 
 app = webapp2.WSGIApplication([
         ('/cast-ballot', BallotHandler)

@@ -123,14 +123,14 @@ class ElectionPositionCandidate(db.Model):
     written_in = db.BooleanProperty(required=True, default=False)
 
 
-class RankedVote(db.Model):
+class RankedBallot(db.Model):
     """
-    A single ranked vote for an election position candidate.
+    A single ranked ballot for an election position.
     """
-    election_position_candidate = db.ReferenceProperty(ElectionPositionCandidate,
-                                                       required=True,
-                                                       collection_name='ranked_votes')
-    rank = db.IntegerProperty(required=True)
+    election_position = db.ReferenceProperty(ElectionPosition,
+                                             required=True)
+    preferences = db.ListProperty(db.Key,
+                                  required=True)
 
 
 def get_organization(name):
@@ -340,21 +340,10 @@ def put_candidate_for_election_position(election_position, name, net_id=None, wr
         net_id {String, optional}: the NetID of the candidate
         written_in {Boolean, optional}: whether the candidate was written in.
     """
-    ElectionPositionCandidate(election_position=election_position, 
+    ElectionPositionCandidate(election_position=election_position.key(), 
                               name=name,
                               net_id=net_id,
                               written_in=written_in).put()
-
-
-def put_ranked_vote_for_candidate(election_position_candidate, rank):
-    """
-    Adds a ranked vote for an ElectionPositionCandidate.
-    
-    Args:
-        election_position_candidate {ElectionPositionCandidate}: the candidate
-        rank {Integer}: the rank for the vote
-    """
-    RankedVote(election_position_candidate=election_position_candidate.key(), rank=rank).put()
 
 
 def voter_status(voter, election):
