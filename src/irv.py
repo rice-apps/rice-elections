@@ -37,11 +37,12 @@ def get_counts(ballots):
 
     counts = dict()
     for ballot in ballots:
-        vote = ballot[0]
-        if vote in counts:
-            counts[vote] += 1
-        else:
-            counts[vote] = 1
+        if ballot:
+            vote = ballot[0]
+            if vote in counts:
+                counts[vote] += 1
+            else:
+                counts[vote] = 1
 
     # Python 2.7+ replacement for the above code:
     # counts = collections.Counter(ballot[0] for ballot in ballots)
@@ -64,8 +65,9 @@ def get_winners(ballots):
     A winner is a candidate with 50 % + 1 or more of the votes, or a
     candidate with as many votes as all the other candidates.
     """
-
     counts = get_counts(ballots)
+    if not counts:
+        return []
 
     max_count = max(counts.values())
     num_counts = sum(counts.values())
@@ -88,7 +90,9 @@ def get_losers(ballots):
     """
 
     counts = get_counts(ballots)
-
+    if not counts:
+        return []
+    
     min_count = min(counts.values())
 
     potential_losers = [candidate for (candidate, count) in counts.items()
@@ -104,38 +108,34 @@ def remove_candidate(ballots, candidate):
     Removes the given candidate from the ballots.
     """
     for ballot in ballots:
-        ballot.remove(candidate)
+        if candidate in ballot:
+            ballot.remove(candidate)
 
 
-def run_irv(ballots, num_winners):
+def run_irv(ballots):
     """
     Runs the instant run-off voting algorithm to find the winners for the election.
     
     Args:
         ballots {List<List<Object>>}: the ballots cast, will be modified by the algorithm
-        num_winners {Integer}: the number of winners to find, due to ties or too few candidates, the number
-                     of winners found may not be the same as this argument.
     
     Returns:
-        winners {List<Object>}: the winners of the election
+        winners {List<Object>}: the winners of the election, usually one. More than one in the case of a tie.
     """
-    winners = []
-    logging.info('Computing %d winners from %s ballots cast.', num_winners, len(ballots))
-    while len(winners) < num_winners:
+    logging.info('Computing winner from %s ballots cast.', len(ballots))
+    while True:
         logging.info('Counts: %s', get_counts(ballots))
-        new_winners = get_winners(ballots)
-        if new_winners:
-            for new_winner in new_winners:
-                remove_candidate(ballots, new_winner)
+        winners = get_winners(ballots)
+        if winners:
+            return winners
         
-        if not new_winners:
-            losers = get_losers(ballots)
-            if not losers:
-                break
+        losers = get_losers(ballots)
+        if not losers:
+            break
             
-            for loser in losers:
-                remove_candidate(ballots, loser)
-    logging.info('Found %d of %d winners requested', len(winners), num_winners)
+        for loser in losers:
+            remove_candidate(ballots, loser)
+    logging.info('Found %d winners requested', len(winners))
     return winners
 
 
