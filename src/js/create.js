@@ -47,7 +47,7 @@ function submitForm() {
 			valid = false;
 		}
 	});
-	
+
 	var postData = {
 	    'name': formData[0],
 	    'start': formData[1]['start'],
@@ -284,7 +284,7 @@ var addPositionModal = function() {
     var positionSelectType = $('#position-select-type');     // Drop-down: Position type
     var positionSelectionContent = $('.selection-content');  // Divs: Content for selected position types
     var rankedChoice = $('#ranked-choice');                  // Select: ranked choice position type
-    var singleChoice = $('#single-choice');                  // Select: single choice position type
+    // var singleChoice = $('#single-choice');                  // Select: single choice position type
     var cumulativeVoting = $('#cumulative-voting');          // Select: cumulative voting position type
     var positionName = $('#position-name');                  // Text Input: Position name input
     var positionSlots = $('#position-slots');                // Number Input: Position slots
@@ -367,8 +367,8 @@ var addPositionModal = function() {
     var getPositionType = function() {
         if (rankedChoice.attr('selected') == 'selected') {
             return 'Ranked-Choice';
-        } else if (singleChoice.attr('selected') == 'selected') {
-            return 'Single-Choice';
+        // } else if (singleChoice.attr('selected') == 'selected') {
+        //     return 'Single-Choice';
         } else if (cumulativeVoting.attr('selected') == 'selected') {
             return 'Cumulative Voting';
         }
