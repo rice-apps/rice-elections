@@ -4,10 +4,12 @@ Database for the app.
 
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
+import irv
 import logging
 
 from datetime import datetime
 from google.appengine.ext import db
+from google.appengine.ext.db import polymodel
 
 
 class Organization(db.Model):
@@ -96,18 +98,51 @@ class Position(db.Model):
                                         collection_name='positions')
 
 
-class ElectionPosition(db.Model):
+class ElectionPosition(polymodel.PolyModel):
     """
     A position for a specific election within an organization.
     """
     election = db.ReferenceProperty(Election,
                                     collection_name='election_positions')
     position = db.ReferenceProperty(Position)
-    slots = db.IntegerProperty(required=True,
-                               default=1)
-    write_in = db.BooleanProperty(required=True)
     vote_required = db.BooleanProperty(required=True)
-    type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
+    
+    def compute_winners(self):
+        """
+        Computes the winners of this election position.
+        """
+        assert datetime.now() > self.election.end
+        assert not self.election.result_computed
+
+
+class RankedVotingPosition(ElectionPosition):
+    """
+    A position that requires ranked voting.
+    """
+    winners = db.ListProperty(db.Key)
+    
+    def compute_winners(self):
+        ballots = []
+        for ballot in self.ballots:
+            ballots.append(ballot.preferences)
+        
+        winners = irv.run_irv(ballots)
+        for winner in winners:
+            self.winners.append(winner)
+    
+    
+class ElectionPositionOld(db.Model):
+    """
+    A position for a specific election within an organization.
+    """
+#    election = db.ReferenceProperty(Election,
+#                                    collection_name='election_positions')
+#    position = db.ReferenceProperty(Position)
+#    slots = db.IntegerProperty(required=True,
+#                               default=1)
+#    write_in = db.BooleanProperty(required=True)
+#    vote_required = db.BooleanProperty(required=True)
+#    type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
 
 
 class ElectionPositionCandidate(db.Model):
@@ -119,7 +154,6 @@ class ElectionPositionCandidate(db.Model):
                                              collection_name='election_position_candidates')
     net_id = db.StringProperty()
     name = db.StringProperty(required=True)
-    winner = db.BooleanProperty(required=True, default=False)
     written_in = db.BooleanProperty(required=True, default=False)
 
 
@@ -127,9 +161,9 @@ class RankedBallot(db.Model):
     """
     A single ranked ballot for an election position.
     """
-    election_position = db.ReferenceProperty(ElectionPosition,
-                                             required=True,
-                                             collection_name='ranked_ballots')
+    position = db.ReferenceProperty(RankedVotingPosition,
+                                    required=True,
+                                    collection_name='ballots')
     preferences = db.ListProperty(db.Key,
                                   required=True)
 

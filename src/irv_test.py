@@ -1,3 +1,9 @@
+"""
+Test cases for instant run-off voting.
+"""
+
+__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+
 import irv
 import unittest
 
