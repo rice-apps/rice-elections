@@ -103,10 +103,14 @@ class ElectionPosition(polymodel.PolyModel):
     A position for a specific election within an organization.
     """
     election = db.ReferenceProperty(Election,
-                                    collection_name='election_positions')
-    position = db.ReferenceProperty(Position)
+                                    collection_name='election_positions',
+                                    required=True)
+    position = db.ReferenceProperty(Position,
+                                    required=True)
     vote_required = db.BooleanProperty(required=True)
-    
+    write_in_slots = db.IntegerProperty(required=True)
+    winners = db.ListProperty(db.Key)
+
     def compute_winners(self):
         """
         Computes the winners of this election position.
@@ -119,8 +123,8 @@ class RankedVotingPosition(ElectionPosition):
     """
     A position that requires ranked voting.
     """
-    winners = db.ListProperty(db.Key)
-    
+    position_type = 'Ranked-Choice'
+
     def compute_winners(self):
         ballots = []
         for ballot in self.ballots:
@@ -129,12 +133,22 @@ class RankedVotingPosition(ElectionPosition):
         winners = irv.run_irv(ballots)
         for winner in winners:
             self.winners.append(winner)
-    
-    
-class ElectionPositionOld(db.Model):
+
+class CumulativeVotingPosition(ElectionPosition):
     """
-    A position for a specific election within an organization.
+    A position that requires cumulative voting.
     """
+    position_type = 'Cumulative'
+    points = db.IntegerProperty(required=True)
+    slots = db.IntegerProperty(required=True)
+
+    def compute_winners(self):
+        raise NotImplementedError('Later')
+    
+# class ElectionPositionOld(db.Model):
+#     """
+#     A position for a specific election within an organization.
+#     """
 #    election = db.ReferenceProperty(Election,
 #                                    collection_name='election_positions')
 #    position = db.ReferenceProperty(Position)

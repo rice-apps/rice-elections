@@ -223,7 +223,7 @@ Position = (type) ->
         self.candidateIDs.push(index)
         
         # Delete candidate button
-        $("##{@type}-#{id}").click ->
+        $("##{id}").click ->
             indexPtr = self.candidateIDs.indexOf(index)
             self.candidateIDs.splice(indexPtr, 1) if indexPtr != -1
             $(this).parent().fadeOut(500)
@@ -284,8 +284,7 @@ Position = (type) ->
         return val
 
     # Whether voting is required for this position
-    Position::hasVoteRequirement = ->
-        true if @voteRequired.attr('checked') == 'checked'
+    Position::hasVoteRequirement = -> @voteRequired.attr('checked') == 'checked'
 
     return # Stops compiler from returning last defined function
 
@@ -427,7 +426,3 @@ addPositionModal = ->
         @reset()
     
 currentModal = new addPositionModal()
-
-parent = ->
-
-

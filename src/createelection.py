@@ -46,6 +46,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
         try:
             # Get form data
             formData = self.request.get('formData')
+            logging.info(formData)
             if not formData:
                 msg = 'No Form Data Sent!'
                 self.respond('ERROR', msg)
@@ -86,24 +87,38 @@ class CreateElectionHandler(webapp2.RequestHandler):
             # Store positions
             for position in electionData['positions']:
                 position_name = position['name']
-                position_entry = database.get_position(position_name, organization, create=True)
-                election_position_entry = database.put_election_position(
-                                                election,
-                                                position_entry,
-                                                position['slots'],
-                                                position['write_in'],
-                                                position['type'],
-                                                position['vote_required'])
-                
+                position_entry = database.get_position(position_name,
+                                                       organization,
+                                                       create=True)
+                if position['type'] == 'Ranked-Choice':
+                    ep = database.RankedVotingPosition(
+                        election=election,
+                        position=position_entry,
+                        vote_required=position['vote_required'],
+                        write_in_slots=position['write_in'])
+                    ep.put()
+                elif position['type'] == 'Cumulative':
+                    ep = database.CumulativeVotingPosition(
+                        election=election,
+                        position=position_entry,
+                        vote_required=position['vote_required'],
+                        write_in_slots=position['write_in'],
+                        points=position['points'],
+                        slots=position['slots'])
+                    ep.put()
+                else:
+                    raise Exception('Unknown position type')
+
                 # Store candidates
                 for candidate in position['candidates']:
-                    database.put_candidate_for_election_position(election_position_entry,
-                                                                 candidate['name'], 
-                                                                 candidate['netId'])
-                    logging.info('%s running for %s', candidate['name'], election_position_entry.position.name)
+                    database.ElectionPositionCandidate(
+                        election_position=ep,
+                        net_id=candidate['netId'],
+                        name=candidate['name']).put()
+                    logging.info('%s running for %s', candidate['name'], ep.position.name)
             
             logging.info(electionData)
-        except Exception as e:
+        except NameError as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
             logging.error(msg)
             self.respond('ERROR', msg)
