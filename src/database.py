@@ -230,7 +230,7 @@ class RankedBallot(db.Model):
     preferences = db.ListProperty(db.Key,
                                   required=True)
 
-class CumulativeVotingBallot(db.Model)
+class CumulativeVotingBallot(db.Model):
     """
     A single cumulative voting ballot for a cumulate voting position.
     """
@@ -238,7 +238,7 @@ class CumulativeVotingBallot(db.Model)
                                     required=True,
                                     collection_name='ballots')
 
-class CumulativeVotingChoice(db.Model)
+class CumulativeVotingChoice(db.Model):
     """
     A single choice within a cumulative voting ballot.
     """
