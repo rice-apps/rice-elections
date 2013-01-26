@@ -118,7 +118,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
                     logging.info('%s running for %s', candidate['name'], ep.position.name)
             
             logging.info(electionData)
-        except NameError as e:
+        except Exception as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
             logging.error(msg)
             self.respond('ERROR', msg)

@@ -379,7 +379,7 @@ CumulativeVotingPosition = function() {
   CumulativeVotingPosition.prototype.toJson = function() {
     var key, position, value;
     position = {
-      'type': 'Cumulative',
+      'type': 'Cumulative-Voting',
       'name': this.getName(),
       'candidates': this.getCandidates(),
       'write_in': this.getWriteInSlots(),

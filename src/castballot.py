@@ -152,6 +152,8 @@ class BallotHandler(webapp2.RequestHandler):
         for position in formData['positions']:
             if position['type'] == 'Ranked-Choice':
                 verified_positions[position['id']] = self.verify_ranked_choice_ballot(position)
+            elif position['type'] == 'Cumulative-Voting':
+                verified_positions[position['id']] = self.verify_cumulative_voting_ballot(position)
             else:
                 logging.error('Encountered unknown position type: %s', position['type'])
                 verified_positions[position['id']] = False
@@ -194,7 +196,7 @@ class BallotHandler(webapp2.RequestHandler):
             True if valid, False if invalid. None if empty ballot.
         """
         logging.info('Verifying ranked choice ballot.')
-        election_position = database.ElectionPosition.get(position['id'])
+        election_position = database.RankedVotingPosition.get(position['id'])
         if not election_position:
             logging.info('No election position found in database.')
             return False
@@ -235,9 +237,10 @@ class BallotHandler(webapp2.RequestHandler):
         ranks.sort()
         if len(ranks) == 0 and not required: return True
         if ranks[0] != 1 or ranks[len(ranks)-1] != num_ranks_required: return False    # Number of rankings don't match
+        if num_ranks_required > election_position.write_in_slots: return False
         logging.info('Ballot for position %s verified.', election_position.position.name)
         return True
-    
+
     @staticmethod
     def cast_ranked_choice_ballot(position):
         """
@@ -271,7 +274,38 @@ class BallotHandler(webapp2.RequestHandler):
                                        preferences=preferences)
         ballot.put()
         logging.info('Stored ballot in database with preferences %s', preferences)
+
+    def verify_cumulative_voting_ballot(position):
+        """
+        Verifies the validity a cumulative voting ballot.
         
+        Args:
+            position{dictionary}: the position dictionary from the client
+        
+        Returns:
+            True if valid, False if invalid. None if empty ballot.
+        """
+        logging.info('Verifying cumulative choice ballot.')
+        election_position = database.CumulativeVotingPosition.get(
+            position['id'])
+        if not election_position:
+            logging.info('No election position found in database.')
+            return False
+        assert election_position.type == 'Cumulative-Voting'
+
+        required = election_position.vote_required
+        election_position_candidates = database.ElectionPositionCandidate.gql(
+            'WHERE election_position=:1 AND written_in=False',
+            election_position)
+        points_required = election_position.points
+        points_used = 0
+        for epc in election_position_candidates:
+            candidates_verified[str(epc.key())] = False
+        for cp in position['candidate_points']:
+            points_used += cp['points']
+            
+
+
                 
 app = webapp2.WSGIApplication([
         ('/cast-ballot', BallotHandler)
