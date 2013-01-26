@@ -147,7 +147,7 @@ displayPosition = (position) ->
 
 
 # Abstract base class different position types, replace type in subclasses
-position = (type) ->
+Position = (type) ->
     # Closure reference
     self = this
 
@@ -176,11 +176,11 @@ position = (type) ->
     @voteRequired = $('#position-required')
 
     # Gives the contents of the form in json form if valid, otherwise null
-    position::toJson = ->
+    Position::toJson = ->
         throw new Error("Not implemented.")
 
     # Resets the HTML form
-    position::reset = ->
+    Position::reset = ->
         @candidateIDs = []
         @candidates.children().remove()
         @name.val('').change()
@@ -223,7 +223,7 @@ position = (type) ->
             $(this).parent().fadeOut(500)
 
     # Validates and returns the position name typed.
-    position::getName = ->
+    Position::getName = ->
         nameContainer = @name.parent().parent()
         nameContainer.removeClass('error')
         $('.errorMsgPositionName').remove()
@@ -235,7 +235,7 @@ position = (type) ->
         return @name.val()
 
     # Validates and returns a list of candidates
-    position::getCandidates = ->
+    Position::getCandidates = ->
         missing = false
         container = @candidates.parent().parent()
         canList = []    # Function output
@@ -263,7 +263,7 @@ position = (type) ->
         return canList
 
     # Validates and returns the write-in slots input number.
-    position::getWriteInSlots = ->
+    Position::getWriteInSlots = ->
         slotsContainer = @writeInSlots.parent().parent()
         val = parseInt(@writeInSlots.val())
         min = parseInt(@writeInSlots.attr('min'))
@@ -283,36 +283,34 @@ position = (type) ->
         return val
 
     # Whether voting is required for this position
-    position::hasVoteRequirement = ->
+    Position::hasVoteRequirement = ->
         true if @voteRequired.attr('checked') == 'checked'
 
     return # Stops compiler from returning last defined function
 
 RankedVotingPosition = ->
-    # Inherit from position
-    @:: = new position("ranked")
-
-    # Resets the HTML form
-    RankedVotingPosition::reset = ->
-        @::reset()      # Call to super
+    Position.call(this, "ranked")
 
     # Gives the contents of the form in json form if valid, otherwise null
     RankedVotingPosition::toJson = ->
         position =
             'type': 'Ranked-Choice'
-            'name': @::getName()
-            'candidates': @::getCandidates()
-            'write_in': @::getWriteInSlots()
-            'vote_required': @::hasVoteRequirement()
+            'name': @getName()
+            'candidates': @getCandidates()
+            'write_in': @getWriteInSlots()
+            'vote_required': @hasVoteRequirement()
         for key, value of position
             return null if value == null
         return position
 
     return # Stops compiler from returning last defined function
 
+# Inherit from Position
+RankedVotingPosition:: = new Position
+RankedVotingPosition::constructor = RankedVotingPosition
+
 CumulativeVotingPosition = ->
-    # Inherit from position
-    @:: = new position("cumulative")
+    Position.call(this, "cumulative")
 
     # Number Input: Position slots
     @slots = $('#position-cumulative-slots')
@@ -339,17 +337,17 @@ CumulativeVotingPosition = ->
 
     # Resets the HTML form
     CumulativeVotingPosition::reset = ->
-        @::reset()      # Call to super
+        Position::reset.call(this)      # Call to super
         @slots.val('1').change()
 
     # Gives the contents of the form in json form if valid, otherwise null
     CumulativeVotingPosition::toJson = ->
         position =
             'type': 'Cumulative'
-            'name': @::getName()
-            'candidates': @::getCandidates()
-            'write_in': @::getWriteInSlots()
-            'vote_required': @::hasVoteRequirement()
+            'name': @getName()
+            'candidates': @getCandidates()
+            'write_in': @getWriteInSlots()
+            'vote_required': @hasVoteRequirement()
             'slots': @getSlots()
         for key, value of position
             return null if value == null
@@ -357,6 +355,11 @@ CumulativeVotingPosition = ->
 
     return # Stops compiler from returning last defined function
 
+# Inherit from Position
+CumulativeVotingPosition:: = new Position
+CumulativeVotingPosition::constructor = CumulativeVotingPosition
+
+# A modal that guides the user through creating a position
 addPositionModal = ->
     # Closure reference
     self = this
@@ -390,7 +393,7 @@ addPositionModal = ->
         self.selectionContent.hide()
         selectionId = $(this).val()
         $("##{selectionId}").show()
-        if selectionId == 0
+        if selectionId == '0'
             self.positionSelected = self.rankedVotingPosition
         else
             self.positionSelected = self.cumulativeVotingPosition
@@ -405,5 +408,6 @@ addPositionModal = ->
     
 currentModal = new addPositionModal()
 
+parent = ->
 
 
