@@ -132,16 +132,17 @@ getPositions = ->
     return all_positions
 
 displayPosition = (position) ->
-    console.log(position)
     html = "<div style='margin: 5px 0 5px;'><strong>#{position['type']}: " +
             "</strong>#{position['name']}<br /><ul>"
     for candidate in position['candidates']
-        html += "<li>#{candidate['name']} = #{candidate['netId']}</li>"
+        html += "<li>#{candidate['name']}: #{candidate['netId']}</li>"
     if position['vote_required']
         html += "<li><em>Vote required</em></li>"
     if position['slots']
-        html += "<li><em>Position Slots = #{position['slots']}</em></li>"
-    html += "<li><em>Write-in Slots = #{position['write_in']}</em></li>"
+        html += "<li><em>Position slots: #{position['slots']}</em></li>"
+    if position['points']
+        html += "<li><em>Points per voter: #{position['points']}</em></li>"
+    html += "<li><em>Write-in Slots: #{position['write_in']}</em></li>"
     html += "</ul>"
     newPos = $(html)
     $('#positions-list').append(newPos)
@@ -312,8 +313,26 @@ RankedVotingPosition::constructor = RankedVotingPosition
 CumulativeVotingPosition = ->
     Position.call(this, "cumulative")
 
+    # Number Input: Points
+    @points = $('#position-cumulative-points')
+
     # Number Input: Position slots
     @slots = $('#position-cumulative-slots')
+
+    # Validates and returns the points input number
+    CumulativeVotingPosition::getPoints = ->
+        pointsContainer = @points.parent().parent()
+        val = parseInt(@points.val())
+        min = parseInt(@points.attr('min'))
+        max = parseInt(@points.attr('max'))
+        pointsContainer.removeClass('error')
+        $('.errorMsgSlots').remove()
+        if not (min <= val and val <= max)
+            pointsContainer.addClass('error')
+            $('<span class="help-inline errorMsgSlots">Out of valid range.' +
+                '</span>').insertAfter(@points)
+            return null
+        return val
 
     # Validates and returns the slot input number
     CumulativeVotingPosition::getSlots = ->
@@ -349,6 +368,7 @@ CumulativeVotingPosition = ->
             'write_in': @getWriteInSlots()
             'vote_required': @hasVoteRequirement()
             'slots': @getSlots()
+            'points': @getPoints()
         for key, value of position
             return null if value == null
         return position

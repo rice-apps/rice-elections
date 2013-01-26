@@ -173,15 +173,18 @@ displayPosition = function(position) {
   _ref = position['candidates'];
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     candidate = _ref[_i];
-    html += "<li>" + candidate['name'] + " = " + candidate['netId'] + "</li>";
+    html += "<li>" + candidate['name'] + ": " + candidate['netId'] + "</li>";
   }
   if (position['vote_required']) {
     html += "<li><em>Vote required</em></li>";
   }
   if (position['slots']) {
-    html += "<li><em>Position Slots = " + position['slots'] + "</em></li>";
+    html += "<li><em>Position slots: " + position['slots'] + "</em></li>";
   }
-  html += "<li><em>Write-in Slots = " + position['write_in'] + "</em></li>";
+  if (position['points']) {
+    html += "<li><em>Points per voter: " + position['points'] + "</em></li>";
+  }
+  html += "<li><em>Write-in Slots: " + position['write_in'] + "</em></li>";
   html += "</ul>";
   newPos = $(html);
   $('#positions-list').append(newPos);
@@ -336,7 +339,23 @@ RankedVotingPosition.prototype.constructor = RankedVotingPosition;
 
 CumulativeVotingPosition = function() {
   Position.call(this, "cumulative");
+  this.points = $('#position-cumulative-points');
   this.slots = $('#position-cumulative-slots');
+  CumulativeVotingPosition.prototype.getPoints = function() {
+    var max, min, pointsContainer, val;
+    pointsContainer = this.points.parent().parent();
+    val = parseInt(this.points.val());
+    min = parseInt(this.points.attr('min'));
+    max = parseInt(this.points.attr('max'));
+    pointsContainer.removeClass('error');
+    $('.errorMsgSlots').remove();
+    if (!(min <= val && val <= max)) {
+      pointsContainer.addClass('error');
+      $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.points);
+      return null;
+    }
+    return val;
+  };
   CumulativeVotingPosition.prototype.getSlots = function() {
     var max, min, slotsContainer, val;
     slotsContainer = this.slots.parent().parent();
@@ -368,7 +387,8 @@ CumulativeVotingPosition = function() {
       'candidates': this.getCandidates(),
       'write_in': this.getWriteInSlots(),
       'vote_required': this.hasVoteRequirement(),
-      'slots': this.getSlots()
+      'slots': this.getSlots(),
+      'points': this.getPoints()
     };
     for (key in position) {
       value = position[key];

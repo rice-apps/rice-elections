@@ -184,10 +184,18 @@
 
                 <!-- Candidates -->
                 <div class="control-group">
-                  <label class="control-label" for="position-candidates">Candidates<br /></label>
+                  <label class="control-label" for="position-cumulative-candidates">Candidates<br /></label>
                   <div class="controls">
                     <div class="add-on btn btn-success" id="position-cumulative-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
                     <div style="margin-bottom: 5px;" id="position-cumulative-candidates"></div>
+                  </div>
+                </div>
+
+                <!-- Points -->
+                <div class="control-group">
+                  <label class="control-label" for="position-cumulative-points" rel="tooltip" data-placement="right" data-original-title="Number of points each voter has to assign to candidates.">Points per voter</label>
+                  <div class="controls">
+                    <input type="number" class="input-mini" name="position-cumulative-points" min="1" max="100" id="position-cumulative-points" value="1">
                   </div>
                 </div>
 
