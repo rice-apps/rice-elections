@@ -66,13 +66,13 @@
                 <span class="help-inline">{{ candidate.name }}</span>
             </li>
           {% endfor %}
-          {% if position.write_in %}
+          {% for number in range(0, position.write_in_slots) %}
             <li><input type='text'
                        data-candidate-name='write-in'
-                       data-candidate-id='write-in'
+                       data-candidate-id='write-in-{{position.id}}-{{number}}'
                        class='rank-input input-mini {{position.id}}'>
-                <input type='text' id='write-in-name' class='input-large' placeholder='Write-In Candidate Name'></li>
-          {% endif %}
+                <input type='text' id='write-in-{{position.id}}-{{number}}-name' class='input-large' placeholder='Write-In Candidate Name'></li>
+          {% endfor %}
         </ul>
 
       {% else %}

@@ -114,7 +114,7 @@ function getBallot() {
 
                 /* Get the real name if this is a write-in candidate. */
                 if (candidate_name == 'write-in') {
-                    candidate_name = $('#write-in-name').val()
+                    candidate_name = $("#" + candidate_id + "-name").val()
                 }
 
                 /* Ignore blank write-ins. */
@@ -224,11 +224,13 @@ function ballotValidates(ballot) {
 
             /* Make sure the total number of votes sum to the right number */
             $.each(candidates, function(i, candidate) {
-                if (!$.isNumeric(votes)) {
+                var votes = candidate['votes'];
+
+                if (!$.isNumeric(votes) || votes < 0) {
                     valid = false;
                     $('#' + id + '-error').addClass('text-error');
                 }else {
-                    sum += candidate['votes'];
+                    sum += votes;
                 }
             });
 
