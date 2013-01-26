@@ -23,8 +23,6 @@ submitForm = function() {
   if ($('#election-submit').hasClass('disabled')) {
     return false;
   }
-  getElectionName();
-  getElectionTimes();
   valid = true;
   formData = [getElectionName(), getElectionTimes(), getEligibleVoters(), getPositions(), getResultDelay()];
   $.each(formData, function(index, value) {
@@ -160,7 +158,7 @@ getPositions = function() {
   posContainer = pos.parent().parent();
   posContainer.removeClass('error');
   $('.errorMsgPositions').remove();
-  if (!all_positions) {
+  if (all_positions.length === 0) {
     posContainer.addClass('error');
     $("<span class='help-inline errorMsgPositions'>Need at least one " + "position.</span>").insertAfter(pos);
     return null;
@@ -170,6 +168,7 @@ getPositions = function() {
 
 displayPosition = function(position) {
   var candidate, html, newPos, _i, _len, _ref;
+  console.log(position);
   html = ("<div style='margin: 5px 0 5px;'><strong>" + position['type'] + ": ") + ("</strong>" + position['name'] + "<br /><ul>");
   _ref = position['candidates'];
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -179,6 +178,10 @@ displayPosition = function(position) {
   if (position['vote_required']) {
     html += "<li><em>Vote required</em></li>";
   }
+  if (position['slots']) {
+    html += "<li><em>Position Slots = " + position['slots'] + "</em></li>";
+  }
+  html += "<li><em>Write-in Slots = " + position['write_in'] + "</em></li>";
   html += "</ul>";
   newPos = $(html);
   $('#positions-list').append(newPos);
@@ -188,13 +191,14 @@ displayPosition = function(position) {
 Position = function(type) {
   var self;
   self = this;
+  this.type = type;
   this.candidateIDGen = 0;
   this.candidateIDs = [];
-  this.candidateIDPrefix = "position-" + type + "-candidate-";
-  this.addCandidate = $("#position-" + type + "-add-candidate");
-  this.candidates = $("#position-" + type + "-candidates");
-  this.name = $("#position-" + type + "-name");
-  this.writeInSlots = $("#position-" + type + "-write-in");
+  this.candidateIDPrefix = "position-" + this.type + "-candidate-";
+  this.addCandidate = $("#position-" + this.type + "-add-candidate");
+  this.candidates = $("#position-" + this.type + "-candidates");
+  this.name = $("#position-" + this.type + "-name");
+  this.writeInSlots = $("#position-" + this.type + "-write-in");
   this.voteRequired = $('#position-required');
   Position.prototype.toJson = function() {
     throw new Error("Not implemented.");
@@ -214,27 +218,27 @@ Position = function(type) {
     }).append($('<input>', {
       type: 'text',
       "class": 'input-xlarge, input-margin-right',
-      id: "" + type + "-" + id + "-name",
-      name: "" + type + "-" + id + "-name",
+      id: "" + id + "-name",
+      name: "" + id + "-name",
       width: '200px',
       placeholder: 'Full Name'
     })).append($('<input>', {
       type: 'text',
       "class": 'input-xlarge',
-      id: "" + type + "-" + id + "-net-id",
-      name: "" + type + "-" + id + "-net-id",
+      id: "" + id + "-net-id",
+      name: "" + id + "-net-id",
       width: '50px',
       placeholder: 'NetID'
     })).append($('<span/>', {
       "class": 'add-on',
-      id: "" + type + "-" + id
+      id: "" + id
     }).append($('<i/>', {
       "class": 'icon-remove'
     })));
     self.candidates.append(candidateInput);
     candidateInput.hide().fadeIn(500);
     self.candidateIDs.push(index);
-    return $("#" + type + "-" + id).click(function() {
+    return $("#" + this.type + "-" + id).click(function() {
       var indexPtr;
       indexPtr = self.candidateIDs.indexOf(index);
       if (indexPtr !== -1) {
@@ -263,8 +267,8 @@ Position = function(type) {
     _ref = this.candidateIDs;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       can = _ref[_i];
-      nameInput = $("#position-candidate-" + can + "-name");
-      netIdInput = $("#position-candidate-" + can + "-net-id");
+      nameInput = $("#position-" + this.type + "-candidate-" + can + "-name");
+      netIdInput = $("#position-" + this.type + "-candidate-" + can + "-net-id");
       if (nameInput.val() === '' || netIdInput.val() === '') {
         missing = true;
       } else {
@@ -294,10 +298,6 @@ Position = function(type) {
     if (!(min <= val && val <= max)) {
       slotsContainer.addClass('error');
       $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.writeInSlots);
-      return null;
-    } else if (val > this.candidateIDs.length && !hasWriteIn()) {
-      slotsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Number of slots exceed' + ' number of candidates.</span>').insertAfter(this.writeInSlots);
       return null;
     }
     return val;
@@ -349,7 +349,7 @@ CumulativeVotingPosition = function() {
       slotsContainer.addClass('error');
       $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.slots);
       return null;
-    } else if (false) {
+    } else if (val > this.candidateIDs.length && this.getWriteInSlots() < 1) {
       slotsContainer.addClass('error');
       $('<span class="help-inline errorMsgSlots">Number of ' + 'slots exceed number of candidates.</span>').insertAfter(this.slots);
       return null;
@@ -404,12 +404,9 @@ addPositionModal = function() {
     self.selectionContent.hide();
     selectionId = $(this).val();
     $("#" + selectionId).show();
-    console.log("SelectionID: " + selectionId);
     if (selectionId === '0') {
-      console.log("Current selection: ranked");
       return self.positionSelected = self.rankedVotingPosition;
     } else {
-      console.log("Current selection: cumulative");
       return self.positionSelected = self.cumulativeVotingPosition;
     }
   });

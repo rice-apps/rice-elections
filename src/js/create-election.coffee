@@ -24,8 +24,6 @@ all_positions = []
 submitForm = ->
     # Validate
     return false if $('#election-submit').hasClass('disabled')
-    getElectionName()
-    getElectionTimes()
     valid = true
     formData = [getElectionName(), getElectionTimes(), getEligibleVoters(),
         getPositions(), getResultDelay()]
@@ -126,7 +124,7 @@ getPositions = ->
     posContainer = pos.parent().parent()
     posContainer.removeClass('error')
     $('.errorMsgPositions').remove()
-    if not all_positions
+    if all_positions.length == 0
         posContainer.addClass('error')
         $("<span class='help-inline errorMsgPositions'>Need at least one " +
             "position.</span>").insertAfter(pos);
@@ -134,12 +132,16 @@ getPositions = ->
     return all_positions
 
 displayPosition = (position) ->
+    console.log(position)
     html = "<div style='margin: 5px 0 5px;'><strong>#{position['type']}: " +
             "</strong>#{position['name']}<br /><ul>"
     for candidate in position['candidates']
         html += "<li>#{candidate['name']} = #{candidate['netId']}</li>"
     if position['vote_required']
         html += "<li><em>Vote required</em></li>"
+    if position['slots']
+        html += "<li><em>Position Slots = #{position['slots']}</em></li>"
+    html += "<li><em>Write-in Slots = #{position['write_in']}</em></li>"
     html += "</ul>"
     newPos = $(html)
     $('#positions-list').append(newPos)
@@ -151,6 +153,9 @@ Position = (type) ->
     # Closure reference
     self = this
 
+    # Position type
+    @type = type
+
     # Generator for candidate IDs
     @candidateIDGen = 0
     
@@ -158,19 +163,19 @@ Position = (type) ->
     @candidateIDs = []
     
     # Generator for candidate IDs
-    @candidateIDPrefix = "position-#{type}-candidate-"
+    @candidateIDPrefix = "position-#{@type}-candidate-"
     
     # HTML ID prefix for candidates, 
-    @addCandidate = $("#position-#{type}-add-candidate")
+    @addCandidate = $("#position-#{@type}-add-candidate")
     
     # Div: list of candidates
-    @candidates = $("#position-#{type}-candidates")
+    @candidates = $("#position-#{@type}-candidates")
 
     # Text input: Position name input
-    @name = $("#position-#{type}-name")
+    @name = $("#position-#{@type}-name")
 
     # Number input: Write-in slots
-    @writeInSlots = $("#position-#{type}-write-in")
+    @writeInSlots = $("#position-#{@type}-write-in")
 
     # Checkbox: Whether voting is required
     @voteRequired = $('#position-required')
@@ -195,20 +200,20 @@ Position = (type) ->
         ).append($('<input>',
             type: 'text'
             class: 'input-xlarge, input-margin-right'
-            id: "#{type}-#{id}-name"
-            name: "#{type}-#{id}-name"
+            id: "#{id}-name"
+            name: "#{id}-name"
             width: '200px'
             placeholder: 'Full Name'
         )).append($('<input>',
             type: 'text'
             class: 'input-xlarge'
-            id: "#{type}-#{id}-net-id"
-            name: "#{type}-#{id}-net-id"
+            id: "#{id}-net-id"
+            name: "#{id}-net-id"
             width: '50px'
             placeholder: 'NetID'
         )).append($('<span/>',
             class: 'add-on'
-            id: "#{type}-#{id}"
+            id: "#{id}"
         ).append($('<i/>',
             class: 'icon-remove'
         )))
@@ -217,7 +222,7 @@ Position = (type) ->
         self.candidateIDs.push(index)
         
         # Delete candidate button
-        $("##{type}-#{id}").click ->
+        $("##{@type}-#{id}").click ->
             indexPtr = self.candidateIDs.indexOf(index)
             self.candidateIDs.splice(indexPtr, 1) if indexPtr != -1
             $(this).parent().fadeOut(500)
@@ -242,8 +247,8 @@ Position = (type) ->
         
         # Make sure the candidate name is defined for all candidates
         for can in @candidateIDs
-            nameInput = $("#position-candidate-#{can}-name")
-            netIdInput = $("#position-candidate-#{can}-net-id")
+            nameInput = $("#position-#{@type}-candidate-#{can}-name")
+            netIdInput = $("#position-#{@type}-candidate-#{can}-net-id")
             if nameInput.val() == '' or netIdInput.val() == ''
                 missing = true
             else
@@ -274,11 +279,6 @@ Position = (type) ->
             slotsContainer.addClass('error')
             $('<span class="help-inline errorMsgSlots">Out of valid range.' +
                 '</span>').insertAfter(@writeInSlots)
-            return null
-        else if (val > @candidateIDs.length and not hasWriteIn())
-            slotsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Number of slots exceed' +
-                ' number of candidates.</span>').insertAfter(@writeInSlots)
             return null
         return val
 
@@ -328,7 +328,7 @@ CumulativeVotingPosition = ->
             $('<span class="help-inline errorMsgSlots">Out of valid range.' +
                 '</span>').insertAfter(@slots)
             return null
-        else if (false)
+        else if (val > @candidateIDs.length and @getWriteInSlots() < 1)
             slotsContainer.addClass('error')
             $('<span class="help-inline errorMsgSlots">Number of ' +
                 'slots exceed number of candidates.</span>').insertAfter(@slots)
