@@ -87,7 +87,7 @@ function getBallot() {
         var type     = $(this).attr('data-type');
         var id       = $(this).attr('data-id');
         var required = ($(this).attr('data-vote-required') == 'True') ? true : false
-        var available_votes = $(this).attr('data-available-votes');
+        var available_points = $(this).attr('data-available-votes');
 
         /* Ranked Choice and cumulative info gathering. */
         if (type == 'Ranked-Choice' || type == 'Cumulative-Voting') {
@@ -102,8 +102,8 @@ function getBallot() {
             if (type == 'Ranked-Choice') {
                 position['candidate_rankings'] = [];
             }else if (type == 'Cumulative-Voting') {
-                position['candidate_votes'] = [];
-                position['available_votes'] = available_votes;
+                position['candidate_points'] = [];
+                position['available_points'] = available_points;
             }
 
             /* Get the data from each of the children running for office. */
@@ -129,13 +129,13 @@ function getBallot() {
                         position['candidate_rankings'].push(candidate)
                     }
                     if (type == 'Cumulative-Voting') {
-                        var candidate_votes = $(this).val() ? parseInt($(this).val()) : 0
+                        var candidate_points = $(this).val() ? parseInt($(this).val()) : 0
                         var candidate = {
                             'name' : candidate_name,
                             'id'   : candidate_id,
-                            'votes' : candidate_votes
+                            'points' : candidate_points
                         }
-                        position['candidate_votes'].push(candidate)
+                        position['candidate_points'].push(candidate)
                     }
                 }
             });
@@ -218,13 +218,13 @@ function ballotValidates(ballot) {
         /* ----------------------------------------------------------------- */
 
         if (type == 'Cumulative-Voting') {
-            var candidates = position['candidate_votes']
-            var available_votes = position['available_votes'];
+            var candidates = position['candidate_points']
+            var available_points = position['available_points'];
             var sum = 0;
 
             /* Make sure the total number of votes sum to the right number */
             $.each(candidates, function(i, candidate) {
-                var votes = candidate['votes'];
+                var votes = candidate['points'];
 
                 if (!$.isNumeric(votes) || votes < 0) {
                     valid = false;
@@ -236,7 +236,7 @@ function ballotValidates(ballot) {
 
             /* Any non-zero number of votes not equal to sum is invalid.*/
             // TODO: perhaps [0, available] range is valid?
-            if (sum != available_votes && sum != 0) {
+            if (sum != available_points && sum != 0) {
                 valid = false;
                 $('#' + id + '-error').addClass('text-error');
             }
