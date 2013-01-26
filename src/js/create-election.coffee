@@ -361,7 +361,7 @@ CumulativeVotingPosition = ->
     # Gives the contents of the form in json form if valid, otherwise null
     CumulativeVotingPosition::toJson = ->
         position =
-            'type': 'Cumulative'
+            'type': 'Cumulative-Voting'
             'name': @getName()
             'candidates': @getCandidates()
             'write_in': @getWriteInSlots()

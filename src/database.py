@@ -176,7 +176,7 @@ class CumulativeVotingPosition(ElectionPosition):
     """
     A position that requires cumulative voting.
     """
-    position_type = 'Cumulative'
+    position_type = 'Cumulative-Voting'
     points = db.IntegerProperty(required=True)
     slots = db.IntegerProperty(required=True)
 

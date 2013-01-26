@@ -97,7 +97,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
                         vote_required=position['vote_required'],
                         write_in_slots=position['write_in'])
                     ep.put()
-                elif position['type'] == 'Cumulative':
+                elif position['type'] == 'Cumulative-Voting':
                     ep = database.CumulativeVotingPosition(
                         election=election,
                         position=position_entry,

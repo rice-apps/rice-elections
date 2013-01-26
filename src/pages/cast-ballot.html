@@ -41,8 +41,8 @@
           {% endif %}
 
           <!-- Cumulative Voting insturctions -->
-          {% if position.type == "Cumulative Voting" %}
-            You have {{ count }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ count }}.
+          {% if position.type == "Cumulative-Voting" %}
+            You have {{ position.points }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ position.points }}.
           {% endif %}
 
           {% if position.vote_required == True %}
@@ -53,7 +53,7 @@
         <!-- Candidate listing for this position. -->
         <ul class='position unstyled'
             data-name='{{ position.name }}'
-            data-available-votes='{{ count }}'
+            data-available-votes='{{ position.points }}'
             data-type='{{ position.type }}'
             data-vote-required='{{ position.vote_required }}'
             data-id='{{position.id}}'>
