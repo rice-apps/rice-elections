@@ -16,6 +16,7 @@ jQuery ->
 		all_positions = []
 		$('#positions-list').children().remove()
 
+
 # Positions added in the election where each position is an object literal
 all_positions = []
 
@@ -144,6 +145,144 @@ displayPosition = (position) ->
 	$('#positions-list').append(newPos)
 	newPos.hide().slideDown(1000)
 
+
+# Abstract base class different position types, replace type in subclasses
+class position
+	# Position type
+	type = null
+	
+	# Text Input: Position name input
+	name = null
+	
+	# List of HTML IDs of candidates added to the form
+	candidateIDs = null
+	
+	# Generator for candidate IDs
+	candidateIDGen = null
+	
+	# HTML ID prefix for candidates, 
+	candidateIDPrefix = null
+	
+	# Button: Add candidate
+	addCandidate = null
+	
+	# Div: list of candidates
+	candidates = null
+	
+	# Position constructor
+	constructor: (posType) ->	
+		type = posType
+		console.log("Binding type to #{posType}")
+		console.log("Result is #{type}")
+		name = $("#position-#{posType}-name")
+		candidateIDs = []
+		candidateIDPrefix = "position-#{posType}-candidate-"
+		addCandidate = $("#position-#{posType}-add-candidate")
+		candidates = $("#position-#{posType}-candidates")
+		addCandidate.click(addCandidateHandler)
+	
+	# Adds an input field for a candidate to the form
+	addCandidateHandler = ->
+		console.log("What's my name? #{type}")
+		index = candidateIDGen++
+		id = candidateIDPrefix + index
+		candidateInput = $('<div/>',
+			class: 'input-append'
+		).append($('<input>',
+			type: 'text'
+			class: 'input-xlarge, input-margin-right'
+			id: "#{type}-#{id}-name"
+			name: "#{type}-#{id}-name"
+			width: '200px'
+			placeholder: 'Full Name'
+		)).append($('<input>',
+			type: 'text'
+			class: 'input-xlarge'
+			id: "#{type}-#{id}-net-id"
+			name: "#{type}-#{id}-net-id"
+			width: '50px'
+			placeholder: 'NetID'
+		)).append($('<span/>',
+			class: 'add-on'
+			id: "#{type}-#{id}"
+		).append($('<i/>',
+			class: 'icon-remove'
+		)))
+		candidates.append(candidateInput)
+		candidateInput.hide().fadeIn(500)
+		candidateIDs.push(index)
+		
+		# Delete candidate button
+		$("##{@type}-#{id}").click ->
+			indexPtr = candidateIDs.indexOf(index)
+			candidateIDs.splice(indexPtr, 1) if indexPtr != -1
+			$(this).parent().fadeOut(500)
+	
+	# Resets the HTML form
+	reset: ->
+		throw new Error("Not implemented.")
+	
+	# Validates and returns the position name typed.
+	getName = ->
+		nameContainer = name.parent().parent()
+		nameContainer.removeClass('error')
+		$('.errorMsgPositionName').remove()
+		if not name.val()
+			nameContainer.addClass('error')
+			$('<span class="help-inline errorMsgPositionName">Missing ' +
+				'information.</span>').insertAfter(name)
+			return null
+		return name.val()
+
+
+class RankedVotingPosition extends position
+	console.log("Constructing ranked code")
+	constructor: () ->
+		console.log("Constructing ranked position")
+		super("ranked")
+
+
+class CumulativeVotingPosition extends position
+	console.log("Running cumulative code")
+	constructor: () ->
+		console.log("Constructing cumulative position")
+		super("cumulative")
+
+
+class addPositionModal
+	# Drop-down: Position type
+	selectType = $("#position-select-type")
+	
+	# Divs: selected position types
+	selectionContent = $(".selection-content")
+	
+	# Select: ranked choice position type
+	rankedChoice = $("#ranked-choice")
+	
+	# Select: cumulative voting pos
+	cumulativeVoting = $("#cumulative-voting")
+	
+	# Ranked Voting Position instance
+	rankedVotingPosition = new RankedVotingPosition()
+	
+	# Cumulative Voting Position instance
+	cumulativeVotingPosition = new CumulativeVotingPosition()
+	
+	# Current position selected
+	positionSelected = rankedVotingPosition
+	
+	# Resets the HTML forms in the modal box on the page.
+	resetModal: -> 
+		selectType.val('0').change()
+	
+	# Updates the form when the position type is changed
+	selectType.change ->
+		selectionContent.hide()
+		selectionId = $(this).val()
+		$("##{selectionId}").show()
+#		positionSelected = 
+#			(selectionId == '0')? rankedVotingPosition:cumulativeVotingPosition
+	
 class positionModal
 	candidateIDs = []	 # List of HTML IDs of candidates added to the form
 	candidateIDGen = 0	 # Generator for candidate IDs
@@ -293,7 +432,7 @@ class positionModal
 		# TODO: Find a way to reference self, this.resetForm() doesn't work nor
 		# does modalPosition.resetForm() 
 	
-currentModal = new positionModal()
+currentModal = new addPositionModal()
 
 
 

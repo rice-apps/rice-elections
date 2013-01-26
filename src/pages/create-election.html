@@ -107,52 +107,31 @@
               <select id="position-select-type" name="position-select-type">
                 <option id="ranked-choice" value="0">Ranked-Choice Voting Position</option>
                 <!-- option id="single-choice" value="1">Single-Choice Voting Position</option -->
-                <option id="cumulative-voting" value="2">Cumulative Voting Position</option>
+                <option id="cumulative-voting" value="1">Cumulative Voting Position</option>
               </select>
             </div>
           </div>
 
-          <!-- Single Person Position -->
+          <!-- Ranked Choice Voting -->
           <div class="selection-content" id="0">
             <h4>Ranked-Choice Voting Position</h4>
             <p>Ranked-Choice Voting (also known as instant runoff voting) allows voters to rank a first, second, third (and onwards) choice candidate for a single position. This makes it possible to elect people by majority vote without the need for a separate run-off election.</p>
-          </div>
-
-          <!-- Multiple People Position -->
-          <div class="selection-content" id="1" style="display:none">
-            <h4>Single-Choice Voting Position</h4>
-            <p>Single-Choice voting allows voters to only vote for a single candidate for a position.</p>
-          </div>
-
-          <!-- Cumulative Voting Position -->
-          <div class="selection-content" id="2" style="display:none">
-            <h4>Cumulative Voting Position</h4>
-            <p>In cumulative voting, voters cast as many votes as there are positions available. But unlike winner-take-all systems, voters are not limited to giving only one vote to a candidate. Instead, they can put multiple votes on one or more candidates.</p>
-          </div>
-
-          <hr>
-            <form>
+          	<hr>
+          	<form>
               <fieldset>
                 <!-- Position Name -->
                 <div class="control-group">
-                  <label class="control-label" for="position-name">Position Name</label>
+                  <label class="control-label" for="position-ranked-name">Position Name</label>
                   <div class="controls">
-                    <input type="text" class="input-xlarge" id="position-name" name="position-name-txt">
+                    <input type="text" class="input-xlarge" id="position-ranked-name" name="position-ranked-name-txt">
                   </div>
                 </div>
 
                 <div class="control-group">
-                  <label class="control-label" for="position-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
+                  <label class="control-label" for="position-ranked-candidates">Candidates<br /></label>
                   <div class="controls">
-                    <input type="number" class="input-mini" name="position-slots" min="1" max="10" id="position-slots" value="1">
-                  </div>
-                </div>
-
-                <div class="control-group">
-                  <label class="control-label" for="position-candidates">Candidates<br /></label>
-                  <div class="controls">
-                    <div class="add-on btn btn-success" id="position-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
-                    <div style="margin-bottom: 5px;" id="position-candidates"></div>
+                    <div class="add-on btn btn-success" id="position-ranked-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+                    <div style="margin-bottom: 5px;" id="position-ranked-candidates"></div>
                   </div>
                 </div>
 
@@ -160,7 +139,7 @@
                   <label class="control-label">Write-in Option</label>
                   <div class="controls">
                   	<label class="checkbox">
-                  	  <input type="checkbox" id="position-write-in">
+                  	  <input type="checkbox" id="position-ranked-write-in">
                   	  Enabled
                   	</label>
                   </div>
@@ -170,7 +149,7 @@
                   <label class="control-label">Vote Required</label>
                   <div class="controls">
                     <label class="checkbox">
-                      <input type="checkbox" id="position-required">
+                      <input type="checkbox" id="position-ranked-required">
                       Enabled
                     </label>
                   </div>
@@ -178,6 +157,61 @@
 
               </fieldset>
             </form>
+          </div>
+
+          <!-- Cumulative Voting Position -->
+          <div class="selection-content" id="1" style="display:none">
+            <h4>Cumulative Voting Position</h4>
+            <p>In cumulative voting, voters cast as many votes as there are positions available. But unlike winner-take-all systems, voters are not limited to giving only one vote to a candidate. Instead, they can put multiple votes on one or more candidates.</p>
+            <hr>
+            <form>
+              <fieldset>
+                <!-- Position Name -->
+                <div class="control-group">
+                  <label class="control-label" for="position-cumulative-name">Position Name</label>
+                  <div class="controls">
+                    <input type="text" class="input-xlarge" id="position-cumulative-name" name="position-cumulative-name-txt">
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="position-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
+                  <div class="controls">
+                    <input type="number" class="input-mini" name="position-cumulative-slots" min="1" max="10" id="position-cumulative-slots" value="1">
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="position-candidates">Candidates<br /></label>
+                  <div class="controls">
+                    <div class="add-on btn btn-success" id="position-cumulative-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+                    <div style="margin-bottom: 5px;" id="position-cumulative-candidates"></div>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label">Write-in Option</label>
+                  <div class="controls">
+                  	<label class="checkbox">
+                  	  <input type="checkbox" id="position-cumulative-write-in">
+                  	  Enabled
+                  	</label>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label">Vote Required</label>
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" id="position-cumulative-required">
+                      Enabled
+                    </label>
+                  </div>
+                </div>
+
+              </fieldset>
+            </form>
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal">Close</button>
