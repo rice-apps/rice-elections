@@ -206,7 +206,8 @@ class BallotHandler(webapp2.RequestHandler):
         election_position_candidates = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND written_in=False',
                                                                     election_position)
         num_ranks_required = election_position_candidates.count()
-        write_in = election_position.write_in
+        write_in_slots_allowed = election_position.write_in_slots
+        write_in_slots_used = 0
         ranks = []
         candidates_verified = {}
         for election_position_candidate in election_position_candidates:
@@ -221,11 +222,12 @@ class BallotHandler(webapp2.RequestHandler):
                 ranks.append(candidate_ranking['rank'])
                 candidates_verified[candidate_ranking['id']] = True
                 if candidate_ranking['id'] == 'write-in':
-                    if not write_in:
+                    if not write_in_slots_allowed:
                         logging.info('Write-in not allowed.')
                         return False        # Write in not allowed
                     elif candidate_ranking['rank']:
                         num_ranks_required += 1
+                        write_in_slots_used += 1
                     else:
                         logging.info('Write in was specified but not ranked')
                         return False        # Write in was specified but not ranked
@@ -237,7 +239,7 @@ class BallotHandler(webapp2.RequestHandler):
         ranks.sort()
         if len(ranks) == 0 and not required: return True
         if ranks[0] != 1 or ranks[len(ranks)-1] != num_ranks_required: return False    # Number of rankings don't match
-        if num_ranks_required > election_position.write_in_slots: return False
+        if write_in_slots_used > write_in_slots_allowed: return False
         logging.info('Ballot for position %s verified.', election_position.position.name)
         return True
 
@@ -248,7 +250,7 @@ class BallotHandler(webapp2.RequestHandler):
         written-in candidate's id.
         
         Args:
-            position{dictionary}: the verifies position dictionary from the client
+            position{dictionary}: the verified position dictionary from the client
         """
         election_position = database.ElectionPosition.get(position['id'])
         preferences = [None] * len(position['candidate_rankings'])
@@ -275,6 +277,7 @@ class BallotHandler(webapp2.RequestHandler):
         ballot.put()
         logging.info('Stored ballot in database with preferences %s', preferences)
 
+    @staticmethod
     def verify_cumulative_voting_ballot(position):
         """
         Verifies the validity a cumulative voting ballot.
@@ -297,13 +300,72 @@ class BallotHandler(webapp2.RequestHandler):
         election_position_candidates = database.ElectionPositionCandidate.gql(
             'WHERE election_position=:1 AND written_in=False',
             election_position)
+        write_in_slots_allowed = election_position.write_in_slots
+        write_in_slots_used = 0
         points_required = election_position.points
         points_used = 0
         for epc in election_position_candidates:
             candidates_verified[str(epc.key())] = False
         for cp in position['candidate_points']:
             points_used += cp['points']
-            
+            if candidates_verified[cp['id']] = True
+            if cp['id'].startswith('write-in-'):
+                if not write_in_slots_allowed:
+                    logging.info('Write-in not allowed.')
+                    return False
+                elif cp['name'] and not cp['points']:
+                    logging.info('Write-in was specified but not ranked.')
+                    return False
+                elif cp['name'] and cp['points']:
+                    write_in_slots_used += 1
+
+        for verified in candidates_verified.values():
+            if not verified:
+                logging.info('Not all candidates verified')
+                return False
+
+        if write_in_slots_used > write_in_slots_allowed: return False
+        if points_used == 0: return None
+        if points_used != points_required: return False
+        logging.info('Ballot for position %s verified.',
+                     election_position.position.name)
+        return True
+
+    @staticmethod
+    def cast_cumulative_voting_ballot(position):
+        """
+        Records a cumulative choice ballot in the database. Modifies write-in
+        ids of the dictionary to reflect the written-in candidate's id.
+
+        Args:
+            position{dictionary}: the verified position dictionary from client
+        """
+        election_position = database.CumulativeVotingPosition.get(position['id'])
+        ballot = database.CumulativeVotingBallot(position=election_position)
+        ballot.put()
+        for cp in position['candidate_points']:
+
+            # Check for a write-in
+            if cp['id'].beginswith('write-in'):
+                epc = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND name=:2',
+                                                             election_position,
+                                                             cp['name']).get()
+                if not epc:
+                    epc = database.ElectionPositionCandidate(election_position=election_position,
+                                                             net_id=None,
+                                                             name=cp['name'],
+                                                             written_in=True)
+                    epc.put()
+                cp['id'] = str(epc.key())
+            points = cp['points']
+            if points > 0:
+                choice = database.CumulativeVotingChoice(ballot=ballot,
+                                                         candidate=epc,
+                                                         points=points)
+                choice.put()
+        logging.info('Stored cumulative choice ballot in database.')
+
+
 
 
                 

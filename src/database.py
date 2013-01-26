@@ -222,7 +222,7 @@ class ElectionPositionCandidate(db.Model):
 
 class RankedBallot(db.Model):
     """
-    A single ranked ballot for an election position.
+    A single ranked ballot for a ranked voting position.
     """
     position = db.ReferenceProperty(RankedVotingPosition,
                                     required=True,
@@ -230,6 +230,27 @@ class RankedBallot(db.Model):
     preferences = db.ListProperty(db.Key,
                                   required=True)
 
+class CumulativeVotingBallot(db.Model)
+    """
+    A single cumulative voting ballot for a cumulate voting position.
+    """
+    position = db.ReferenceProperty(CumulativeVotingPosition,
+                                    required=True,
+                                    collection_name='ballots')
+
+class CumulativeVotingChoice(db.Model)
+    """
+    A single choice within a cumulative voting ballot.
+    """
+    ballot = db.ReferenceProperty(CumulativeVotingBallot,
+                                  required=True,
+                                  collection_name='choices')
+
+    candidate = db.ReferenceProperty(ElectionPositionCandidate,
+                                     required=True,
+                                     collection_name='votes')
+
+    points = db.IntegerProperty(required=True)
 
 def get_organization(name):
     """
