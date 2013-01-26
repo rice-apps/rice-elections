@@ -88,9 +88,8 @@ class BallotHandler(webapp2.RequestHandler):
             return
 
         # Write election information
-        page_data['id'] = str(election.key())
-        page_data['name'] = election.name
-        page_data['organization'] = election.organization.name
+        for key, value in election.to_json().items():
+            page_data[key] = value
         page_data['positions'] = []
         page_data['voter_net_id'] = voter.net_id
 
@@ -98,18 +97,8 @@ class BallotHandler(webapp2.RequestHandler):
         election_positions = election.election_positions
         for election_position in election_positions:
             position = {}
-            position['id'] = str(election_position.key())
-            position['name'] = election_position.position.name
-            position['slots'] = election_position.slots
-            position['type'] = election_position.type
-            position['write_in'] = election_position.write_in
-            position['vote_required'] = election_position.vote_required
-            position['candidates'] = []
-            for epc in election_position.election_position_candidates:
-                if epc.written_in:
-                    continue
-                position['candidates'].append({'name': epc.name,
-                                               'id': str(epc.key())})
+            for key, value in election_position.to_json().items():
+                position[key] = value
             random.shuffle(position['candidates'])
             page_data['positions'].append(position)
 

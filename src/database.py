@@ -36,6 +36,16 @@ class Election(db.Model):
     result_delay = db.IntegerProperty(required=True,
                                       default=0) # Results delay to public in seconds
 
+    def to_json(self):
+        """
+        Creates a JSON object of the election to pass to the client side.
+        """
+        return {
+            'id': str(self.key()),
+            'name': self.name,
+            'organization': self.organization.name
+        }
+
 
 class Voter(db.Model):
     """
@@ -111,6 +121,25 @@ class ElectionPosition(polymodel.PolyModel):
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
 
+    def to_json(self):
+        """
+        Creates a JSON object of the election position to pass to the client
+        side.
+        """
+        json = {
+            'id': str(self.key()),
+            'name': self.position.name,
+            'write_in_slots': self.write_in_slots,
+            'winners': [winner.to_json() for winner in self.winners],
+            'candidates': []
+        }
+        for epc in self.election_position_candidates:
+            if epc.written_in:
+                continue
+            json['candidates'].append({'name': epc.name,
+                                       'id': str(epc.key())})
+        return json
+
     def compute_winners(self):
         """
         Computes the winners of this election position.
@@ -124,6 +153,15 @@ class RankedVotingPosition(ElectionPosition):
     A position that requires ranked voting.
     """
     position_type = 'Ranked-Choice'
+
+    def to_json(self):
+        """
+        Creates a JSON object of the election position to pass to the client
+        side.
+        """
+        json = super(RankedVotingPosition, self).to_json()
+        json['type'] = self.position_type
+        return json
 
     def compute_winners(self):
         ballots = []
@@ -141,6 +179,17 @@ class CumulativeVotingPosition(ElectionPosition):
     position_type = 'Cumulative'
     points = db.IntegerProperty(required=True)
     slots = db.IntegerProperty(required=True)
+
+    def to_json(self):
+        """
+        Creates a JSON object of the election position to pass to the client
+        side.
+        """
+        json = super(CumulativeVotingPosition, self).to_json()
+        json['type'] = self.position_type
+        json['points'] = self.points
+        json['slots'] = self.slots
+        return json
 
     def compute_winners(self):
         raise NotImplementedError('Later')
