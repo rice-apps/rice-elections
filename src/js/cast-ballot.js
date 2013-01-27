@@ -135,7 +135,9 @@ function getBallot() {
                             'id'   : candidate_id,
                             'points' : candidate_points
                         }
-                        position['candidate_points'].push(candidate)
+                        if (candidate['points'] != 0) {
+                            position['candidate_points'].push(candidate)
+                        }
                     }
                 }
             });
