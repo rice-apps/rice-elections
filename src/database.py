@@ -134,7 +134,7 @@ class ElectionPosition(polymodel.PolyModel):
             'candidates': []
         }
         for epc in self.election_position_candidates:
-            if epc.written_in and epc not in self.winners:
+            if epc.written_in and epc.key() not in self.winners:
                 continue
             candidate = {'name': epc.name,
                          'id': str(epc.key())}
@@ -143,6 +143,7 @@ class ElectionPosition(polymodel.PolyModel):
             else:
                 candidate['winner'] = False
             json['candidates'].append(candidate)
+        logging.info(json)
         return json
 
     def compute_winners(self):

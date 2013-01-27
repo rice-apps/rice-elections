@@ -1,9 +1,17 @@
+"""
+Cron job script to compute election results.
+"""
+
+__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+
 import database
 import logging
+import reportresults
 import webapp2
 
 from datetime import datetime
 from google.appengine.ext import db
+
 
 class ComputeResultsHandler(webapp2.RequestHandler):
     def get(self):
@@ -21,6 +29,7 @@ class ComputeResultsHandler(webapp2.RequestHandler):
             
         election.result_computed = True
         election.put()
+        reportresults.email_report(election)
         
             
 app = webapp2.WSGIApplication([
