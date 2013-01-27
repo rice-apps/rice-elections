@@ -1,6 +1,6 @@
 Rice Elections
 =================
-A web application for holding automated and verified elections for organizations at Rice University.
+A secure, user friendly, and transparent way of voting for elections within different organizations at Rice!
 
 
 Website

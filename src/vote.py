@@ -28,6 +28,14 @@ class VoteHandler(webapp2.RequestHandler):
         
         # Elections the user is eligible to vote for
         elections = voter.elections
+        election_keys = [election.key() for election in elections]
+
+        # Add universal elections
+        universal_elections = database.Election.gql("WHERE universal=TRUE").run()
+        for election in universal_elections:
+            if datetime.datetime.now() < election.end and election.key() not in election_keys:
+                elections.append(election)
+
         logging.info(elections)
 
         for election in elections:
