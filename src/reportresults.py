@@ -6,6 +6,7 @@ __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
 import database
 import logging
+import webapp2
 
 from google.appengine.ext import db
 from google.appengine.api import mail
@@ -19,7 +20,7 @@ def email_report(election):
 	admins = [organization_admin.admin for organization_admin in
 					election.organization.organization_admins]
 	message = mail.EmailMessage(
-		sender="owlection@appspot.gserviceaccount.com",
+		sender="wa1@rice.edu",
 		subject="Election Report for %s" % election.name)
 	message.to = ', '.join([admin.email for admin in admins])
 
@@ -81,5 +82,4 @@ Voting for {1} has concluded. Below are the detailed results of the election.
 	message.body += '\nPosition Results\n' + '\n'.join(results)
 	logging.info(message.body)
 	message.send()
-
 

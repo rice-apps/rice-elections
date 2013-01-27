@@ -10,6 +10,7 @@ import logging
 import webapp2
 
 from authentication import require_login, get_voter
+from datetime import datetime
 from google.appengine.ext import db
 from main import render_page
 
@@ -77,10 +78,13 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 return
             
             # Store election
-            election = database.put_election(electionData['name'], electionData['start'],
-                                             electionData['end'], organization)
-            logging.info('Result Delay: %s', electionData['result_delay'])
-            election.result_delay = electionData['result_delay']
+            election = database.Election(
+                name=electionData['name'],
+                start=datetime.fromtimestamp(electionData['start']),
+                end=datetime.fromtimestamp(electionData['end']),
+                organization=organization,
+                universal=electionData['universal'],
+                result_delay=electionData['result_delay'])
             election.put()
             database.add_eligible_voters(election, electionData['voters'])
             

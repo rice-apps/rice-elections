@@ -39,6 +39,7 @@ submitForm = ->
         'voters': formData[2]
         'positions': formData[3]
         'result_delay': formData[4]
+        'universal': isUniversalElection()
 
     $.ajax
         url: '/create-election'
@@ -118,6 +119,8 @@ getEligibleVoters = ->
             "information.</span>").insertAfter(voters)
         return null
     return votersList
+
+isUniversalElection = -> $('#universal-election').attr('checked') == 'checked'
 
 getPositions = ->
     pos = $('#positions-list')

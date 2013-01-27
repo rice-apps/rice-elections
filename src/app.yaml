@@ -31,7 +31,7 @@ handlers:
 
 - url: /logout-response
   script: authentication.app
-  
+
 - url: /cleanup-sessions
   script: cleanupsessions.app
 

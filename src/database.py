@@ -36,6 +36,8 @@ class Election(db.Model):
                                          default=False)
     result_delay = db.IntegerProperty(required=True,
                                       default=0) # Results delay to public in seconds
+    universal = db.BooleanProperty(required=True,
+                                   default=False)
 
     def to_json(self):
         """
