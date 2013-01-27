@@ -42,6 +42,11 @@
 
           <!-- Cumulative Voting insturctions -->
           {% if position.type == "Cumulative-Voting" %}
+            {% if position.slots == 1 %}
+              One person will be elected for this position.
+            {% else %}
+              {{ position.slots }} people will be elected for this position.
+            {% endif %}
             You have {{ position.points }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ position.points }}.
           {% endif %}
 

@@ -73,25 +73,17 @@ class ResultsHandler(webapp2.RequestHandler):
                 return
 
         # Write election information
-        page_data['id'] = str(election.key())
-        page_data['name'] = election.name
-        page_data['organization'] = election.organization.name
-        page_data['positions'] = []
+        for key, value in election.to_json().items():
+            page_data[key] = value
         page_data['voter_net_id'] = voter.net_id
-
+        page_data['positions'] = []
+        
         # Write position information
         election_positions = election.election_positions
         for election_position in election_positions:
             position = {}
-            position['id'] = str(election_position.key())
-            position['name'] = election_position.position.name
-            position['candidates'] = []
-            for epc in election_position.election_position_candidates:
-                if epc.written_in and not epc.winner:
-                    continue
-                position['candidates'].append({'name': epc.name,
-                                               'id': str(epc.key()),
-                                               'won': epc.winner})
+            for key, value in election_position.to_json().items():
+                position[key] = value
             page_data['positions'].append(position)
 
         logging.info(page_data)

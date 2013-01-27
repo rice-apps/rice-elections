@@ -1,5 +1,5 @@
 """
-Test cases for instant run-off voting.
+Test cases for instant run-off voting algorithm.
 """
 
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
@@ -9,6 +9,11 @@ import unittest
 
 
 class TestInstantRunoffVoting(unittest.TestCase):
+
+    def test_empty(self):
+        ballots = []
+        winners = irv.run_irv(ballots)
+        self.assertEqual(winners, [])
     
     def test_no_majority(self):
         ballots = [['Slice', 'Sneaky'],

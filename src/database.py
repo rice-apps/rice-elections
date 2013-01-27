@@ -4,6 +4,7 @@ Database for the app.
 
 __author__ = 'Waseem Ahmad (waseem@rice.edu)'
 
+import cv
 import irv
 import logging
 
@@ -130,14 +131,18 @@ class ElectionPosition(polymodel.PolyModel):
             'id': str(self.key()),
             'name': self.position.name,
             'write_in_slots': self.write_in_slots,
-            'winners': [winner.to_json() for winner in self.winners],
             'candidates': []
         }
         for epc in self.election_position_candidates:
-            if epc.written_in:
+            if epc.written_in and epc not in self.winners:
                 continue
-            json['candidates'].append({'name': epc.name,
-                                       'id': str(epc.key())})
+            candidate = {'name': epc.name,
+                         'id': str(epc.key())}
+            if epc.key() in self.winners:
+                candidate['winner'] = True
+            else:
+                candidate['winner'] = False
+            json['candidates'].append(candidate)
         return json
 
     def compute_winners(self):
@@ -164,6 +169,7 @@ class RankedVotingPosition(ElectionPosition):
         return json
 
     def compute_winners(self):
+        super(RankedVotingPosition, self).compute_winners()
         ballots = []
         for ballot in self.ballots:
             ballots.append(ballot.preferences)
@@ -171,6 +177,7 @@ class RankedVotingPosition(ElectionPosition):
         winners = irv.run_irv(ballots)
         for winner in winners:
             self.winners.append(winner)
+        self.put()
 
 class CumulativeVotingPosition(ElectionPosition):
     """
@@ -192,21 +199,19 @@ class CumulativeVotingPosition(ElectionPosition):
         return json
 
     def compute_winners(self):
-        raise NotImplementedError('Later')
+        super(CumulativeVotingPosition, self).compute_winners()
+        ballots = []
+        for ballot in self.ballots:
+            ballot_dict = {}
+            for choice in ballot.choices:
+                candidate_key = choice.candidate.key()
+                ballot_dict[candidate_key] = choice.points
+            ballots.append(ballot_dict)
+        winners = cv.run_cv(ballots, self.slots)
+        for winner in winners:
+            self.winners.append(winner)
+        self.put()
     
-# class ElectionPositionOld(db.Model):
-#     """
-#     A position for a specific election within an organization.
-#     """
-#    election = db.ReferenceProperty(Election,
-#                                    collection_name='election_positions')
-#    position = db.ReferenceProperty(Position)
-#    slots = db.IntegerProperty(required=True,
-#                               default=1)
-#    write_in = db.BooleanProperty(required=True)
-#    vote_required = db.BooleanProperty(required=True)
-#    type = db.StringProperty(choices=('Single-Choice', 'Ranked-Choice'))
-
 
 class ElectionPositionCandidate(db.Model):
     """
@@ -218,6 +223,7 @@ class ElectionPositionCandidate(db.Model):
     net_id = db.StringProperty()
     name = db.StringProperty(required=True)
     written_in = db.BooleanProperty(required=True, default=False)
+
 
 
 class RankedBallot(db.Model):
@@ -407,62 +413,6 @@ def get_position(name, organization, create=False):
         position.put()
         logging.info('Position created with name: %s for organization: %s', name, organization.name)
     return position
-
-
-def put_election_position(election, position, slots, write_in, position_type, vote_required):
-    """
-    Creates and stores an ElectionPosition in the database.
-    
-    Args:
-        election {db.Model}: the Election for which this ElectionPosition is being created.
-        position {db.Model}: the Position entry corresponding to the ElectionPosition.
-        slots {Integer}: the number of slots for this position.
-        write_in {Boolean}: whether a write-in is allowed.
-        position_type {String}: the position type, see entity definition for choices.
-        vote_required {Boolean}: whether a voter is required to vote for this position.
-    
-    Returns:
-        election_position {db.Model}: the ElectionPosition that was stored in the database.
-    """
-    election_position = ElectionPosition(election=election.key(),
-                                         position=position.key(),
-                                         slots=slots,
-                                         write_in=write_in,
-                                         type=position_type,
-                                         vote_required=vote_required)
-    election_position.put()
-    logging.info('ElectionPosition created for %s in organization: %s', 
-                        election_position.position.name, election_position.position.organization.name)
-    return election_position
-
-
-def get_candidates_for_election_position(election_position):
-    """
-    Gets the candidates running for an election position.
-    
-    Args:
-        election_position {ElectionPosition}: the ElectionPosition
-    
-    Returns:
-        candidates {Iterator<ElectionPositionCandidate>}: the candidates running
-    """
-    return ElectionPositionCandidate.gql('WHERE election_position=:1', election_position).run()
-    
-
-def put_candidate_for_election_position(election_position, name, net_id=None, written_in=False):
-    """
-    Adds a candidate as a runner for the specified election_position.
-    
-    Args:
-        election_position {ElectionPosition}: the ElectionPosition the Candidate is running for
-        name {String}: the name of the candidate
-        net_id {String, optional}: the NetID of the candidate
-        written_in {Boolean, optional}: whether the candidate was written in.
-    """
-    ElectionPositionCandidate(election_position=election_position.key(), 
-                              name=name,
-                              net_id=net_id,
-                              written_in=written_in).put()
 
 
 def voter_status(voter, election):

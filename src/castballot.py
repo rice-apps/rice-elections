@@ -16,32 +16,7 @@ from main import render_page
 
 
 PAGE_NAME = '/cast-ballot'
-REF_DATA = {u'positions': [
-                {u'skipped': False, 
-                 u'name': u'President', 
-                 u'required': True, 
-                 u'candidate_rankings': [
-                        {u'name': u'Candidate B', 
-                         u'rank': 1, 
-                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBQM'}, 
-                        {u'name': u'Candidate A', 
-                         u'rank': 2, 
-                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBMM'}], 
-                 u'type': u'Ranked-Choice', 
-                 u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IWCxIQRWxlY3Rpb25Qb3NpdGlvbhgSDA'}, 
-                {u'skipped': True, 
-                 u'name': u'Chief Justice', 
-                 u'required': False, 
-                 u'candidate_rankings': [
-                        {u'name': u'Candidate A', 
-                         u'rank': u'', 
-                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBcM'}, 
-                        {u'name': u'Candidate B', 
-                         u'rank': u'', 
-                         u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IPCxIJQ2FuZGlkYXRlGBQM'}], 
-                 u'type': u'Ranked-Choice', 
-                 u'id': u'ag5kZXZ-b3dsZWN0aW9uc3IWCxIQRWxlY3Rpb25Qb3NpdGlvbhgWDA'}], 
-            u'election_id': u'ag5kZXZ-b3dsZWN0aW9uc3IOCxIIRWxlY3Rpb24YCww'}
+
 
 class BallotHandler(webapp2.RequestHandler):
     """
