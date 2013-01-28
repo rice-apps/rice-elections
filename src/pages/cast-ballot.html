@@ -53,7 +53,7 @@
             {% else %}
               {{ position.slots }} people will be elected for this position.
             {% endif %}
-            You have {{ position.points }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ position.points }}.
+            You have {{ position.points }} votes to distribute to the following candidates. You are not limited to giving only one vote to a candidate. Instead, you can put multiple votes on one or more candidates, so long as they sum to {{ position.points }}. Write the number of points you want to distribute to the candiate on the input left of their name.
           {% endif %}
 
           {% if position.vote_required == True %}
