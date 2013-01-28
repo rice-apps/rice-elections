@@ -85,6 +85,8 @@
           {% for candidate in position.candidates %}
             <li>
               <input type='text'
+                     pattern='[0-9]*'
+                     title='Rank for this candidate'
                      data-candidate-name='{{ candidate.name }}'
                      data-candidate-id='{{ candidate.id }}'
                      class='rank-input input-mini {{position.id}}'>
@@ -112,7 +114,10 @@
           {% for candidate in position.candidates %}
             <li>
               <input type='number'
+                     step='1'
                      min='0'
+                     title='Number of votes for this candidate'
+                     pattern='[0-9]*'
                      max='{{ position.points }}'
                      data-candidate-name='{{ candidate.name }}'
                      data-candidate-id='{{ candidate.id }}'
