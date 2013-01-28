@@ -41,6 +41,8 @@ submitForm = ->
         'result_delay': formData[4]
         'universal': isUniversalElection()
 
+    $('#election-submit').addClass('disabled')
+
     $.ajax
         url: '/create-election'
         type: 'POST'

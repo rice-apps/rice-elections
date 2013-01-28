@@ -43,6 +43,7 @@ submitForm = function() {
     'result_delay': formData[4],
     'universal': isUniversalElection()
   };
+  $('#election-submit').addClass('disabled');
   return $.ajax({
     url: '/create-election',
     type: 'POST',

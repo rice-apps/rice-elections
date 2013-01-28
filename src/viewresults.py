@@ -49,7 +49,8 @@ class ResultsHandler(webapp2.RequestHandler):
         
         # Make sure user is eligible to vote
         status = database.voter_status(voter, election)
-        if status != 'eligible' and not database.get_admin_status(voter, election.organization):
+        if status != 'invalid_time' and not database.get_admin_status(voter, election.organization):
+            page_data['error_msg'] = 'You are not eligible to view results.'
             render_page(self, PAGE_NAME, page_data)
             return
         
