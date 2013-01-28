@@ -31,7 +31,8 @@ class CreateElectionHandler(webapp2.RequestHandler):
         status = database.get_admin_status(voter)
         if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
-            
+            if voter.net_id != 'wa1':
+                return
             # TODO: Temp hard-code
             for new_net_id, new_email in {'wa1': 'wa1@rice.edu', 'jcc7': 'jcc7@rice.edu', 'apc1': 'apc1@rice.edu'}.items():
                 voter = database.get_voter(new_net_id, create=True)
