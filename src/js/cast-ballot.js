@@ -317,7 +317,7 @@ function showResult(success, message) {
     $('#server-response').html(message);
     $('#server-response').show(function() {
         $('html, body').animate({
-            scrollTop : $('#server-response').offset().top
+            scrollTop : $('#server-response').offset().top - 20
         }, 500);
     });
 }

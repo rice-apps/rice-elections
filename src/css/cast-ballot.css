@@ -14,3 +14,7 @@ h4 {
     width: 2em;
     text-align:center;
 }
+
+#server-response {
+    margin-top: 20px;
+}
