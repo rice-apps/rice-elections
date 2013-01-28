@@ -330,25 +330,23 @@ class BallotHandler(webapp2.RequestHandler):
         ballot = database.CumulativeVotingBallot(position=election_position)
         ballot.put()
         for cp in position['candidate_points']:
-
-            # Check for a write-in
-            if cp['id'].startswith('write-in'):
-                epc = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND name=:2',
-                                                             election_position,
-                                                             cp['name']).get()
-                if not epc:
-                    epc = database.ElectionPositionCandidate(election_position=election_position,
-                                                             net_id=None,
-                                                             name=cp['name'],
-                                                             written_in=True)
-                    epc.put()
-                cp['id'] = str(epc.key())
-            epc = database.ElectionPositionCandidate.get(cp['id'])
-            points = cp['points']
-            if points > 0:
+            if cp['points'] > 0:
+                # Check for a write-in
+                if cp['id'].startswith('write-in'):
+                    epc = database.ElectionPositionCandidate.gql('WHERE election_position=:1 AND name=:2',
+                                                                 election_position,
+                                                                 cp['name']).get()
+                    if not epc:
+                        epc = database.ElectionPositionCandidate(election_position=election_position,
+                                                                 net_id=None,
+                                                                 name=cp['name'],
+                                                                 written_in=True)
+                        epc.put()
+                    cp['id'] = str(epc.key())
+                epc = database.ElectionPositionCandidate.get(cp['id'])
                 choice = database.CumulativeVotingChoice(ballot=ballot,
                                                          candidate=epc,
-                                                         points=points)
+                                                         points=cp['points'])
                 choice.put()
         logging.info('Stored cumulative choice ballot in database.')
 
