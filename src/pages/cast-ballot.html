@@ -37,7 +37,11 @@
           <!-- Ranked Choice instructions -->
           {% if position.type == "Ranked-Choice" %}
             Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
-            <em>You must rank every candidate.</em>
+            {% if position.vote_required %}
+              <em>You must rank every candidate.</em>
+            {% else %}
+              <em>If you choose to vote in this election, you must rank every candidate.</em>
+            {% endif %}
             {% if position.write_in_slots == 1 %}
               <em>Note: If you add a write-in you should rank from from 1 to {{ count + 1}}. </em>
             {% endif %}
