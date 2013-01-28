@@ -369,9 +369,10 @@ def add_eligible_voters(election, net_id_list):
         net_id_list: List of NetID strings
     """
     for net_id in net_id_list:
-        voter = get_voter(net_id, create=True)
-        ElectionVoter(voter=voter,
-                      election=election).put()
+        if net_id.strip():
+            voter = get_voter(net_id.strip(), create=True)
+            ElectionVoter(voter=voter,
+                          election=election).put()
 
 
 def get_voter(net_id, create=False):
