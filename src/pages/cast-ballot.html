@@ -17,19 +17,22 @@
   <div class='well'>
     <legend>{{ name }} ({{ organization }})</legend>
     <p>
-      Below is the ballot for this election. You are voting as <strong>{{ voter_net_id }}</strong> but your choices will not be tied to your netID in any way.
+      Below is the ballot for this election. Please read the instructions for each position carefully, as they may differ from position to position. You are voting as <strong>{{ voter_net_id }}</strong> but your choices will not be tied to your netID in any way.
     </p>
 
     <!-- Print each election by position. -->
     {% for position in positions %}
 
-      <h4>{{ position.name }}</h4>
+      <h4 id='{{position.id}}-error' class='error-texts'>
+        {{ position.name }}
+      </h4>
+      <h5 style='color:#666;'>{{ position.type }} Election</h5>
 
       {% if position.type in ["Ranked-Choice", "Cumulative-Voting"] %}
 
         <!-- Instructions for ranked-choice ballots. -->
         {% set count = position.candidates|count %}
-        <p id='{{position.id}}-error' class='error-texts'>
+        <p>
 
           <!-- Ranked Choice instructions -->
           {% if position.type == "Ranked-Choice" %}
