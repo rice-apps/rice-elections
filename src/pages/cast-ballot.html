@@ -35,8 +35,11 @@
           {% if position.type == "Ranked-Choice" %}
             Please rank the following candidates with a unique whole number from 1 to {{ count }} (with 1 being your first choice, {{ count }} being your last).
             <em>You must rank every candidate.</em>
-            {% if position.write_in %}
+            {% if position.write_in_slots == 1 %}
               <em>Note: If you add a write-in you should rank from from 1 to {{ count + 1}}. </em>
+            {% endif %}
+            {% if position.write_in_slots > 1 %}
+              <em>Note: If you choose to add one or more write-ins, please rank all write-ins you vote for as well (at most your ranks will go up to {{ count + position.write_in_slots}}). </em>
             {% endif %}
           {% endif %}
 
