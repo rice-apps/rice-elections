@@ -430,12 +430,14 @@ def voter_status(voter, election):
         status {String}: 'not_eligible', 'eligible', 'invalid_time', or 'voted'
     """
     election_voter = ElectionVoter.gql('WHERE voter=:1 AND election=:2', voter, election).get()
-    if not election_voter:
+    if not election_voter and not election.universal:
         return 'not_eligible'
-    elif election_voter.vote_time:
-        return 'voted'
     elif datetime.now() < election.start or datetime.now() > election.end:
         return 'invalid_time'
+    elif not election_voter and election.universal:
+        return 'eligible'
+    elif election_voter.vote_time:
+        return 'voted'
     else:
         return 'eligible'
     
@@ -453,7 +455,10 @@ def mark_voted(voter, election):
     """
     election_voter = ElectionVoter.gql('WHERE voter=:1 AND election=:2', voter, election).get()
     if not election_voter:
-        return False
+        if election.universal:
+            election_voter = ElectionVoter(voter=voter, election=election)
+        else:
+            return False
     election_voter.vote_time = datetime.now()
     election_voter.put()
     return True

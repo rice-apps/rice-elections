@@ -20,7 +20,7 @@ def email_report(election):
 	admins = [organization_admin.admin for organization_admin in
 					election.organization.organization_admins]
 	message = mail.EmailMessage(
-		sender="wa1@rice.edu",
+		sender="no-reply@owlection.appspotmail.com",
 		subject="Election Report for %s" % election.name)
 	message.to = ', '.join([admin.email for admin in admins])
 

@@ -86,7 +86,8 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 universal=electionData['universal'],
                 result_delay=electionData['result_delay'])
             election.put()
-            database.add_eligible_voters(election, electionData['voters'])
+            if not election.universal:
+                database.add_eligible_voters(election, electionData['voters'])
             
             # Store positions
             for position in electionData['positions']:

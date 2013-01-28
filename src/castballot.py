@@ -147,9 +147,9 @@ class BallotHandler(webapp2.RequestHandler):
                 elif position['type'] == 'Cumulative-Voting':
                     self.cast_cumulative_voting_ballot(position)
             
-#        database.mark_voted(voter, election)
+        database.mark_voted(voter, election)
         
-        self.respond('OK', 'Your ballot has been successfully cast!')
+        self.respond('OK', 'Your ballot has been successfully cast! <a href="/vote">Click here to go to the voting page.</a>')
         
     def respond(self, status, message):
         """
@@ -276,7 +276,7 @@ class BallotHandler(webapp2.RequestHandler):
         election_position = database.CumulativeVotingPosition.get(
             position['id'])
         if not election_position:
-            logging.info('No election position found in database.')
+            logging.warning('No election position found in database.')
             return False
         assert election_position.position_type == 'Cumulative-Voting'
 
@@ -288,27 +288,27 @@ class BallotHandler(webapp2.RequestHandler):
         write_in_slots_used = 0
         points_required = election_position.points
         points_used = 0
-        candidates_verified = {}
+        verified_candidates = {}
         for epc in election_position_candidates:
-            candidates_verified[str(epc.key())] = False
+            verified_candidates[str(epc.key())] = True
         for cp in position['candidate_points']:
-            if cp['points'] < 0: return False   # Negative points not allowed
+            if cp['points'] < 0:
+                logging.warning("Negative points not allowed")
+                return False   # Negative points not allowed
             points_used += cp['points']
-            candidates_verified[cp['id']] = True
+            verified_candidates[cp['id']] = True
             if cp['id'].startswith('write-in-'):
                 if not write_in_slots_allowed:
-                    logging.info('Write-in not allowed.')
+                    logging.warning('Write-in not allowed.')
                     return False
                 elif cp['name'] and not cp['points']:
-                    logging.info('Write-in was specified but not ranked.')
+                    logging.warning('Write-in was specified but not ranked.')
                     return False
                 elif cp['name'] and cp['points']:
                     write_in_slots_used += 1
-
-        for verified in candidates_verified.values():
-            if not verified:
-                logging.info('Not all candidates verified')
-                return False
+            else:
+                if cp['id'] not in verified_candidates:
+                    logging.warning('Unknown')
 
         if write_in_slots_used > write_in_slots_allowed: return False
         if points_used == 0: return None
