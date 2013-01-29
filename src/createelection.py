@@ -130,15 +130,15 @@ class CreateElectionHandler(webapp2.RequestHandler):
                         name=candidate['name']).put()
                     logging.info('%s running for %s', candidate['name'], ep.position.name)
                 
-                # Enqueue task for computing results after election ends
-                compute_time = election.end + timedelta(seconds=5)
-                data = {'election_key': str(election.key())}
-                retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
-                taskqueue.add(url='/tasks/election-results-factory',
-                              params={'data': json.dumps(data)},
-                              eta=compute_time,
-                              retry_options=retry_options)
-                logging.info('Election result computation enqueued.')
+            # Enqueue task for computing results after election ends
+            compute_time = election.end + timedelta(seconds=5)
+            data = {'election_key': str(election.key())}
+            retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
+            taskqueue.add(url='/tasks/election-results-factory',
+                          params={'data': json.dumps(data)},
+                          eta=compute_time,
+                          retry_options=retry_options)
+            logging.info('Election result computation enqueued.')
             logging.info(electionData)
         except NameError as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
