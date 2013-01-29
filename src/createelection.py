@@ -10,7 +10,7 @@ import logging
 import webapp2
 
 from authentication import require_login, get_voter
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_page
@@ -44,7 +44,6 @@ class CreateElectionHandler(webapp2.RequestHandler):
         render_page(self, PAGE_NAME, {})
     def post(self):
         logging.info('Received new create election submission')
-        logging.info(self.request.POST)
         
         try:
             # Get form data
@@ -93,8 +92,10 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 voter_list = electionData['voters']
                 data = {'election_key': election_key,
                         'voter_list': voter_list}
+                retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
                 taskqueue.add(url='/tasks/election-voter-factory',
-                              params={'data':json.dumps(data)})
+                              params={'data':json.dumps(data)},
+                              retry_options=retry_options)
             
             # Store positions
             for position in electionData['positions']:
@@ -128,9 +129,18 @@ class CreateElectionHandler(webapp2.RequestHandler):
                         net_id=candidate['netId'],
                         name=candidate['name']).put()
                     logging.info('%s running for %s', candidate['name'], ep.position.name)
-            
+                
+                # Enqueue task for computing results after election ends
+                compute_time = election.end + timedelta(seconds=5)
+                data = {'election_key': str(election.key())}
+                retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
+                taskqueue.add(url='/tasks/election-results-factory',
+                              params={'data': json.dumps(data)},
+                              eta=compute_time,
+                              retry_options=retry_options)
+                logging.info('Election result computation enqueued.')
             logging.info(electionData)
-        except Exception as e:
+        except NameError as e:
             msg = 'Sorry! An error occurred: %s' % str(e)
             logging.error(msg)
             self.respond('ERROR', msg)
@@ -138,7 +148,10 @@ class CreateElectionHandler(webapp2.RequestHandler):
             
         
         # Success
-        msg = 'Election successfully created!'
+        msg = ('Election successfully created! Adding the eligible voters '
+               'requires some additional processing that should be completed '
+               'soon. You will receive a confirmation email once the task is '
+               'complete.')
         self.respond('OK', msg)
         logging.info(msg)
 
