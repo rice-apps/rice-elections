@@ -2,7 +2,7 @@
 Cron job script to compute election results.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import database
 import logging

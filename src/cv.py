@@ -2,8 +2,7 @@
 Cumulative voting algorithm for the app.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
-
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import logging
 

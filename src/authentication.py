@@ -2,7 +2,7 @@
 Application specific authentication module.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
 import database

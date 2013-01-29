@@ -2,7 +2,7 @@
 Back-end for the Create Election Form.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import database
 import json
@@ -11,6 +11,7 @@ import webapp2
 
 from authentication import require_login, get_voter
 from datetime import datetime
+from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_page
 
@@ -88,7 +89,12 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 result_delay=electionData['result_delay'])
             election.put()
             if not election.universal:
-                database.add_eligible_voters(election, electionData['voters'])
+                election_key = str(election.key())
+                voter_list = electionData['voters']
+                data = {'election_key': election_key,
+                        'voter_list': voter_list}
+                taskqueue.add(url='/tasks/election-voter-factory',
+                              params={'data':json.dumps(data)})
             
             # Store positions
             for position in electionData['positions']:

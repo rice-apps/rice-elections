@@ -2,7 +2,8 @@
 Script to report election results including ballots in detail to election admin.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
+
 
 import database
 import logging
@@ -80,6 +81,7 @@ Dear {0} Admin,
 Voting for {1} has concluded. Below are the detailed results of the election.
 """.format(election.organization.name, election.name)
 	message.body += '\nPosition Results\n' + '\n'.join(results)
+	message.body += '\n\nAt your service,\n\nOwlection Team'
 	logging.info(message.body)
 	message.send()
 

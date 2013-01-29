@@ -2,7 +2,8 @@
 Back-end for the vote page.
 """
 
-__authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
+__authors__ = ['Waseem Ahmad <waseem@rice.edu>',
+               'Andrew Capshaw <capshaw@rice.edu>']
 
 import authentication
 import database

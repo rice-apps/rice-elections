@@ -2,7 +2,7 @@
 Test cases for cumulative voting algorithm.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import cv
 import unittest

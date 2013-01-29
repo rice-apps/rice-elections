@@ -2,7 +2,8 @@
 Back-end for serving and accepting a ballot for an election.
 """
 
-__authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
+__authors__ = ['Waseem Ahmad <waseem@rice.edu>',
+               'Andrew Capshaw <capshaw@rice.edu>']
 
 import database
 import json

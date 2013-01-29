@@ -2,7 +2,8 @@
 The Rice Elections App.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
+
 
 import jinja2
 import os

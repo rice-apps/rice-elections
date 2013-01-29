@@ -2,7 +2,8 @@
 Back-end for serving the results of an election.
 """
 
-__authors__ = ['Waseem Ahmad (waseem@rice.edu)', 'Andrew Capshaw (capshaw@rice.edu)']
+__authors__ = ['Waseem Ahmad <waseem@rice.edu>',
+               'Andrew Capshaw <capshaw@rice.edu>']
 
 import database
 import logging

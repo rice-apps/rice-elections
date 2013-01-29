@@ -2,7 +2,7 @@
 Database for the app.
 """
 
-__author__ = 'Waseem Ahmad (waseem@rice.edu)'
+__author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import cv
 import irv
@@ -54,7 +54,8 @@ class Voter(db.Model):
     """
     A voter that uses the application.
     """
-    net_id = db.StringProperty(required=True)
+    net_id = db.StringProperty(required=True,
+                               indexed=True)
     
     @property
     def elections(self):
@@ -368,11 +369,14 @@ def add_eligible_voters(election, net_id_list):
         election: Election object to add eligible voters for.
         net_id_list: List of NetID strings
     """
+    logging.info('Adding eligible voters for election %s', election.name)
     for net_id in net_id_list:
         if net_id.strip():
             voter = get_voter(net_id.strip(), create=True)
             ElectionVoter(voter=voter,
                           election=election).put()
+    logging.info('Successfully added eligible voters for election %s',
+                 election.name)
 
 
 def get_voter(net_id, create=False):
@@ -386,17 +390,11 @@ def get_voter(net_id, create=False):
     Returns:
         voter: The Voter entry corresponding to net_id, None if one doesn't exist and create is False.
     """
-    query_result = db.GqlQuery('SELECT * FROM Voter WHERE net_id=:1 LIMIT 1', net_id).run()
-    for voter in query_result:
-        return voter
-    
-    if create:
+    voter = Voter.gql('WHERE net_id=:1', net_id).get()
+    if not voter and create:    
         voter = Voter(net_id=net_id)
         voter.put()
-        logging.info('Voter with NetID: %s created and stored.', net_id)
-        return voter
-    
-    return None
+    return voter
 
 
 def get_position(name, organization, create=False):

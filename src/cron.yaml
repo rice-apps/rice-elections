@@ -2,6 +2,3 @@ cron:
 - description: daily session cleanup
   url: /cleanup-sessions
   schedule: every 24 hours
-- description: compute election results
-  url: /compute-results
-  schedule: every 2 minutes

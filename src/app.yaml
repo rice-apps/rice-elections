@@ -4,6 +4,19 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+libraries:
+- name: webapp2
+  version: "2.5.1"
+
+- name: jinja2
+  version: latest
+
+builtins:
+- remote_api: on
+
+inbound_services:
+- warmup
+
 handlers:
 - url: /css
   static_dir: css
@@ -38,18 +51,9 @@ handlers:
 - url: /view-results
   script: viewresults.app
 
-- url: /compute-results
-  script: computeresults.app
+- url: /tasks/.*
+  script: tasks.app
+  login: admin
 
 - url: /.*
   script: main.app
-
-builtins:
-- remote_api: on
-
-libraries:
-- name: webapp2
-  version: "2.5.1"
-
-- name: jinja2
-  version: latest
