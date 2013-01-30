@@ -1,5 +1,57 @@
 body {
     border-top: 4px solid #369;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+/* Custom container */
+.container-narrow {
+    margin: 0 auto;
+    max-width: 700px;
+}
+.container-narrow > hr {
+    margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+    margin: 80px 0;
+    text-align: center;
+}
+
+.wow {
+    /*padding: 40px;*/
+
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+    background: rgb(255,255,255); /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(246,246,246,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* IE10+ */
+    background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+.jumbotron h1 {
+    font-size: 60px;
+    line-height: 1;
+}
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+
+/* Supporting marketing content */
+.marketing {
+    margin-top: 40px;
+}
+
+.marketing p + h4 {
+    margin-top: 28px;
 }
 
 a {
