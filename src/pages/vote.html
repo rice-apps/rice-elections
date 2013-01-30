@@ -1,6 +1,7 @@
 <!-- Load JS / CSS
 ================================================== -->
 <script src="js/timezone.js"></script>
+<script src="js/vote.js"></script>
 <section id="main">
  <!-- PUT CONTENT IN HERE
 ================================================== -->
@@ -66,8 +67,6 @@
         Results
       </th>
     </tr>
-    {# Again, a shot in the dark, to be connected to the backend interface when
-       that has been decided upon. #}
     {% if election_results %}
       {% for election in election_results %}
       <tr>
@@ -78,7 +77,11 @@
           <span class="date">{{ election.end_date }}</span>
         </td>
         <td>
-          <a href='/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
+          {% if election.time_remaining > 0 %}
+            <a href='#' data-href='/view-results?id={{ election.id }}' class='countdown btn btn-primary disabled' data-time-remaining='{{election.time_remaining}}' data-result-delay='{{election.result_delay}}' data-countdown-over-text='View Results'>00:00:00</a>
+          {% else %}
+            <a href='/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}

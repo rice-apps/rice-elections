@@ -26,7 +26,7 @@ class VoteHandler(webapp2.RequestHandler):
         voter = authentication.get_voter()
         if not voter:
             require_login(self)
-        
+
         # Elections the user is eligible to vote for
         elections = voter.elections
         election_keys = [election.key() for election in elections]
@@ -46,11 +46,14 @@ class VoteHandler(webapp2.RequestHandler):
             data['name'] = election.name
             now = datetime.datetime.now()
             if now > election.end:      # Election passed
+                result_delay = election.result_delay
                 data['end_date'] = election.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
+                data['time_remaining'] = result_delay * 1000 - (now - election.end).seconds * 1000
+                data['result_delay'] = result_delay
                 page_data['election_results'].append(data)
             else:
                 data['user_action'] = 'not_started' # Initial assumption
-                
+
                 # Check election times
                 if election.start > now:
                     start_str = election.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
@@ -60,11 +63,11 @@ class VoteHandler(webapp2.RequestHandler):
                     end_str = election.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
                     data['status'] = {'text': 'Voting ends on', 'date': end_str}
                     data['user_action'] = 'vote'
-                    
+
                 # Check to see if the user has already voted
                 if database.voter_status(voter, election) == 'voted':
                     data['user_action'] = 'voted'
-                
+
                 page_data['open_elections'].append(data)
             logging.info(data)
 
