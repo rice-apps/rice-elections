@@ -13,6 +13,8 @@ from google.appengine.ext import db
 from google.appengine.api import mail
 from datetime import datetime
 
+def encode(string):
+	return string.encode('ascii', 'replace')
 
 def email_report(election):
 	"""
@@ -27,7 +29,7 @@ def email_report(election):
 
 	results = []
 	ranked_positions = database.RankedVotingPosition.gql("WHERE election=:1",
-														 election).run()
+														 election)
 	for pos in ranked_positions:
 		json = pos.to_json()
 		string = """
@@ -38,8 +40,8 @@ Candidates: {3},
 Winners: {4}""".format(pos.position.name,
 					   pos.vote_required,
 					   pos.write_in_slots,
-					   ', '.join([can.name for can in pos.election_position_candidates]),
-					   ', '.join([db.get(winner).name for winner in pos.winners]))
+					   ', '.join([encode(can.name) for can in pos.election_position_candidates]),
+					   ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
 		ballots = []
 		for ballot in pos.ballots:
 			ballots.append('[' +
@@ -49,7 +51,7 @@ Winners: {4}""".format(pos.position.name,
 		results.append(string)
 
 	cumulative_positions = database.CumulativeVotingPosition.gql("WHERE election=:1",
-															 election).run()
+															 election)
 	for pos in cumulative_positions:
 		json = pos.to_json()
 		string = """
@@ -64,15 +66,24 @@ Winners: {6}""".format(pos.position.name,
 					   pos.write_in_slots,
 					   pos.slots,
 					   pos.points,
-					   ', '.join([can.name for can in pos.election_position_candidates]),
-					   ', '.join([db.get(winner).name for winner in pos.winners]))
+					   ', '.join([encode(can.name) for can in pos.election_position_candidates]),
+					   ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+		counts = {}
 		ballots = []
 		for ballot in pos.ballots:
 			choices = []
 			for choice in ballot.choices:
 				choices.append('%s: %d' % (choice.candidate.name, choice.points))
+				if choice.candidate.name in counts:
+					counts[choice.candidate.name] += choice.points
+				else:
+					counts[choice.candidate.name] = choice.points
 			ballots.append('{' + ', '.join(choices) + '}')
 		string += '\nBallots Cast:\n' + '\n'.join(ballots) + '\n'
+		counts_list = []
+		for name, points in counts.items():
+			counts_list.append('%s: %s' % (name, points))
+		string += '\nTotal Counts:\n' + '\n'.join(counts_list) + '\n'
 		results.append(string)
 
 	message.body = """
