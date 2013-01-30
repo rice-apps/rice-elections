@@ -1,0 +1,19 @@
+body {
+    border-top: 4px solid #369;
+}
+
+a {
+    color: #369;
+}
+
+.nav-pills > a:hover {
+    color: #369;
+}
+
+.nav-pills > .active > a{
+    background-color: #369;
+}
+
+.nav-pills > .active > a:hover{
+    background-color: #258;
+}
