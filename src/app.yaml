@@ -18,6 +18,7 @@ inbound_services:
 - warmup
 
 handlers:
+
 - url: /css
   static_dir: css
 
@@ -55,5 +56,12 @@ handlers:
   script: tasks.app
   login: admin
 
+- url: /over-quota
+  script: overquota.app
+
 - url: /.*
   script: main.app
+
+error_handlers:
+  - error_code: over_quota
+    file: /over-quota

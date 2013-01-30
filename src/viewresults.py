@@ -70,7 +70,7 @@ class ResultsHandler(webapp2.RequestHandler):
             if not status:
                 page_data['error_msg'] = ('Election results are not available to the public yet. '
                                          'Please wait for %s longer.' % 
-                                         str(public_result_time - datetime.now())[:4])
+                                         str(public_result_time - datetime.now())[:6])
                 render_page(self, PAGE_NAME, page_data)
                 return
 
