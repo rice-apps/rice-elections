@@ -10,6 +10,7 @@ import logging
 
 from datetime import datetime
 from google.appengine.ext import db
+from google.appengine.api import memcache
 from google.appengine.ext.db import polymodel
 
 
@@ -43,11 +44,15 @@ class Election(db.Model):
         """
         Creates a JSON object of the election to pass to the client side.
         """
-        return {
-            'id': str(self.key()),
-            'name': self.name,
-            'organization': self.organization.name
-        }
+        json = memcache.get(self.key())
+        if not json:
+            json = {
+                'id': str(self.key()),
+                'name': self.name,
+                'organization': self.organization.name
+            }
+            memcache.set(self.key(), json, 86400)   # Cache for a day
+        return json
 
 
 class Voter(db.Model):
