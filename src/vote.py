@@ -48,8 +48,14 @@ class VoteHandler(webapp2.RequestHandler):
             if now > election.end:      # Election passed
                 result_delay = election.result_delay
                 data['end_date'] = election.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
-                data['time_remaining'] = result_delay * 1000 - (now - election.end).seconds * 1000
                 data['result_delay'] = result_delay
+
+                # Compute how much time the user will have to wait to view the election
+                time_since_election_end = (now - election.end).seconds + (now - election.end).days * 86400
+                if time_since_election_end > result_delay:
+                    data['time_remaining'] = -1
+                else:
+                    data['time_remaining'] = (result_delay - time_since_election_end) *1000
                 page_data['election_results'].append(data)
             else:
                 data['user_action'] = 'not_started' # Initial assumption
