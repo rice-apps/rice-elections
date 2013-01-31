@@ -34,8 +34,8 @@
 	</script>
 </head>
 <body>
-    <div class="container-narrow">
-      <div style="margin-bottom:30px;" class="masthead">
+    <div>
+      <div style="margin-bottom:30px;" class="masthead container-narrow">
         <ul class="nav nav-pills pull-right">
           {% for nav_item in nav_bar %}
             {% if nav_item.active %}
@@ -49,11 +49,12 @@
         <a href="/"><img src="img/brand/logo.png" style="width:300px;"/></a>
       </div>
       {% if net_id %}
-        <div style="text-align:right; margin-bottom:5px;">Logged in as <em>{{ net_id }}</em>.<br><a href="/logout">Click here to logout</a></div>
+        <div style="text-align:right; margin-bottom:5px;" class='container-narrow'>Logged in as <em>{{ net_id }}</em>.<br><a href="/logout">Click here to logout</a></div>
       {% endif %}
+
       {{ page_content }}
 
-      <div style="margin-top:50px;" class="footer">
+      <div style="margin-top:50px;" class="footer container-narrow">
         <p>&copy; Rice Elections 2012</p>
         <p class="muted credit">Created by the <a href="/contact">Comp Sci Kids at Brown College</a>.</p>
       </div>
