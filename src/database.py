@@ -233,6 +233,7 @@ class CumulativeVotingPosition(ElectionPosition):
         for winner in winners:
             self.winners.append(winner)
         self.put()
+        self.clear_cache()
     
 
 class ElectionPositionCandidate(db.Model):
