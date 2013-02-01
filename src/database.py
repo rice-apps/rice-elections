@@ -13,6 +13,33 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.ext.db import polymodel
 
+class CacheableJson(object):
+    """
+    A class that allows a cacheable json representation of the object.
+
+    Required implementation of _json_data method.
+    """
+    def _json_data(self):
+        raise NotImplementedError()
+
+    def to_json(self):
+        """
+        Returns a JSON representation of the object.
+        """
+        json = memcache.get(str(self.key()))
+        if not json:
+            json = self._json_data()
+            memcache.set(str(self.key()), json, 86400)  # Cache for a day
+            logging.info('Cached %s', self.key())
+        return json
+
+    def clear_cache(self):
+        """
+        Clears the cache entry of the object.
+        Should be called after the object is modified.
+        """
+        memcache.delete(self.key())
+
 
 class Organization(db.Model):
     """
@@ -24,7 +51,7 @@ class Organization(db.Model):
     website = db.StringProperty()
 
 
-class Election(db.Model):
+class Election(db.Model, CacheableJson):
     """
     An election that users may vote for.
     """
@@ -40,19 +67,12 @@ class Election(db.Model):
     universal = db.BooleanProperty(required=True,
                                    default=False)
 
-    def to_json(self):
-        """
-        Creates a JSON object of the election to pass to the client side.
-        """
-        json = memcache.get(self.key())
-        if not json:
-            json = {
-                'id': str(self.key()),
-                'name': self.name,
-                'organization': self.organization.name
-            }
-            memcache.set(self.key(), json, 86400)   # Cache for a day
-        return json
+    def _json_data(self):
+        return {
+            'id': str(self.key()),
+            'name': self.name,
+            'organization': self.organization.name
+        }
 
 
 class Voter(db.Model):
@@ -117,7 +137,7 @@ class Position(db.Model):
                                         collection_name='positions')
 
 
-class ElectionPosition(polymodel.PolyModel):
+class ElectionPosition(polymodel.PolyModel, CacheableJson):
     """
     A position for a specific election within an organization.
     """
@@ -130,11 +150,7 @@ class ElectionPosition(polymodel.PolyModel):
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
 
-    def to_json(self):
-        """
-        Creates a JSON object of the election position to pass to the client
-        side.
-        """
+    def _json_data(self):
         json = {
             'id': str(self.key()),
             'name': self.position.name,
@@ -151,7 +167,6 @@ class ElectionPosition(polymodel.PolyModel):
             else:
                 candidate['winner'] = False
             json['candidates'].append(candidate)
-        logging.info(json)
         return json
 
     def compute_winners(self):
@@ -168,13 +183,12 @@ class RankedVotingPosition(ElectionPosition):
     """
     position_type = 'Ranked-Choice'
 
-    def to_json(self):
-        """
-        Creates a JSON object of the election position to pass to the client
-        side.
-        """
-        json = super(RankedVotingPosition, self).to_json()
-        json['type'] = self.position_type
+    def _json_data(self):
+        json = memcache.get(str(self.key()))
+        if not json:
+            json = super(RankedVotingPosition, self)._json_data()
+            json['type'] = self.position_type
+            memcache.set(str(self.key()), json, 86400)
         return json
 
     def compute_winners(self):
@@ -187,6 +201,7 @@ class RankedVotingPosition(ElectionPosition):
         for winner in winners:
             self.winners.append(winner)
         self.put()
+        self.clear_cache()
 
 class CumulativeVotingPosition(ElectionPosition):
     """
@@ -196,15 +211,13 @@ class CumulativeVotingPosition(ElectionPosition):
     points = db.IntegerProperty(required=True)
     slots = db.IntegerProperty(required=True)
 
-    def to_json(self):
-        """
-        Creates a JSON object of the election position to pass to the client
-        side.
-        """
-        json = super(CumulativeVotingPosition, self).to_json()
-        json['type'] = self.position_type
-        json['points'] = self.points
-        json['slots'] = self.slots
+    def _json_data(self):
+        json = memcache.get(str(self.key()))
+        if not json:
+            json = super(CumulativeVotingPosition, self)._json_data()
+            json['type'] = self.position_type
+            json['points'] = self.points
+            json['slots'] = self.slots
         return json
 
     def compute_winners(self):
@@ -266,6 +279,7 @@ class CumulativeVotingChoice(db.Model):
                                      collection_name='votes')
 
     points = db.IntegerProperty(required=True)
+
 
 def get_organization(name):
     """
