@@ -50,7 +50,7 @@
         <a href="/"><img src="img/brand/logo.png" style="width:300px;"/></a>
       </div>
       {% if net_id %}
-        <div style="text-align:right; margin-bottom:5px;" class='container-narrow'>Logged in as <em>{{ net_id }}</em>.<br><a href="/logout">Click here to logout</a></div>
+        <div class='login-box container-narrow'>Logged in as <em>{{ net_id }}</em>.<br><a href="/logout">Click here to logout</a></div>
       {% endif %}
 
       {{ page_content }}

@@ -22,8 +22,7 @@ body {
 .wow {
     /*padding: 40px;*/
 
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border: 1px solid #ccc;
 
     background: rgb(255,255,255); /* Old browsers */
     background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%); /* FF3.6+ */
@@ -70,3 +69,7 @@ a {
     background-color: #258;
 }
 
+.login-box {
+    text-align: right;
+    margin-bottom: 15px;
+}
