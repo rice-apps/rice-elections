@@ -16,7 +16,7 @@ from google.appengine.ext import db
 from main import render_page
 
 PAGE_NAME = '/admin'
-MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an election administrator. Please contact the website administration '
+MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
                      'if you are interested in conducting elections for your organization.')
 
 class AdminHandler(webapp2.RequestHandler):
@@ -29,16 +29,20 @@ class AdminHandler(webapp2.RequestHandler):
         status = database.get_admin_status(voter)
         if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
-            if voter.net_id != 'wa1':
-                return
-            # TODO: Temp hard-code
-            for new_net_id, new_email in {'wa1': 'wa1@rice.edu', 'jcc7': 'jcc7@rice.edu', 'apc1': 'apc1@rice.edu'}.items():
-                voter = database.get_voter(new_net_id, create=True)
-                organization = database.get_organization('Brown College')
-                database.put_admin(voter, new_email, organization)
             return
+
+        # Get organization information
+        admin = database.Admin.gql('WHERE voter=:1', voter).get()
+        org_admin = database.OrganizationAdmin.gql('WHERE admin=:1',
+                                                    admin).get()
+        org = org_admin.organization
+
+        # Construct page information
+        page_data = {}
+        page_data['admins'] = self.admin_list(org)
+        page_data['elections'] = [elec.to_json() for elec in org.elections]
         
-        render_page(self, PAGE_NAME, {})
+        render_page(self, PAGE_NAME, page_data)
 
     def respond(self, status, message):
         """
@@ -49,6 +53,16 @@ class AdminHandler(webapp2.RequestHandler):
             message: response message
         """
         self.response.write(json.dumps({'status': status, 'msg': message}))
+
+    @staticmethod
+    def admin_list(organization):
+        admins = []
+        for organization_admin in organization.organization_admins:
+            admin = {}
+            admin['name'] = organization_admin.admin.name
+            admin['email'] = organization_admin.admin.email
+            admins.append(admin)
+        return admins
         
 app = webapp2.WSGIApplication([
         ('/admin', AdminHandler)

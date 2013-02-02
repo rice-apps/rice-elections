@@ -38,7 +38,7 @@ class CacheableJson(object):
         Clears the cache entry of the object.
         Should be called after the object is modified.
         """
-        memcache.delete(self.key())
+        memcache.delete(str(self.key()))
 
 
 class Organization(db.Model):
@@ -71,7 +71,15 @@ class Election(db.Model, CacheableJson):
         return {
             'id': str(self.key()),
             'name': self.name,
-            'organization': self.organization.name
+            'organization': self.organization.name,
+            'start': self.start,
+            'end': self.end,
+            'result_computed': self.result_computed,
+            'result_delay': self.result_delay,
+            'universal': self.universal,
+            'voter_count': ElectionVoter.gql('WHERE election=:1', self).count(),
+            'voted_count': ElectionVoter.gql(
+                'WHERE election=:1 AND vote_time!=NULL', self).count()
         }
 
 
@@ -98,6 +106,7 @@ class Admin(db.Model):
     """
     An election administrator for the application.
     """
+    name = db.StringProperty()
     email = db.StringProperty(required=True)
     voter = db.ReferenceProperty(Voter,
                                  required=True)

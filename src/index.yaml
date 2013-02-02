@@ -14,3 +14,8 @@ indexes:
   properties:
   - name: result_computed
   - name: end
+
+- kind: ElectionVoter
+  properties:
+  - name: election
+  - name: vote_time

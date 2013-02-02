@@ -5,6 +5,7 @@ The Rice Elections App.
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
+import datetime
 import jinja2
 import os
 import webapp2
@@ -18,10 +19,10 @@ JINJA_ENV = jinja2.Environment(
     loader=jinja2.FileSystemLoader(PAGES_DIR))
 
 NAV_BAR = [
-    {'text': 'Home', 'link': 'home'},
-    {'text': 'Vote', 'link': 'vote'},
-    {'text': 'Admin', 'link': 'admin'},
-    {'text': 'Contact', 'link': 'contact'}]
+    {'text': 'Home', 'link': '/home'},
+    {'text': 'Vote', 'link': '/vote'},
+    {'text': 'Admin', 'link': '/admin'},
+    {'text': 'Contact', 'link': '/contact'}]
 
 class StaticHandler(webapp2.RequestHandler):
     """Handles GET requests for static pages."""
@@ -30,6 +31,10 @@ class StaticHandler(webapp2.RequestHandler):
 
 
 def render_page(handler, page_name, page_data):
+    # Add Jinja Filters
+    JINJA_ENV.filters['datetime'] = format_datetime
+    JINJA_ENV.globals['now'] = datetime.datetime.now()
+
     # Get the page name being requested assume home.html if none specified
     if page_name == '/':
         page_name += NAV_BAR[0]['link']
@@ -37,7 +42,7 @@ def render_page(handler, page_name, page_data):
     # Get page info
     try:
         page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
-    except Exception:
+    except jinja2.TemplateNotFound:
         page = JINJA_ENV.get_template('not-found.html').render()
 
     # Mark all links in the nav bar as inactive except the page open
@@ -57,6 +62,12 @@ def render_page(handler, page_name, page_data):
         template_vals['net_id'] = session['net_id']
     
     handler.response.out.write(template.render(template_vals))
+
+def format_datetime(value, format):
+    if format == 'medium':
+        return value.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
+    if format == 'small':
+        return value.strftime('%m/%d/%y %I:%M %p') + ' UTC'
 
 app = webapp2.WSGIApplication([
     ('/.*', StaticHandler)

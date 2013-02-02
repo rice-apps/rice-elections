@@ -2,7 +2,7 @@
  * Loading this adjusts all times with tag class 'date' to the user's local time zone.
  */
 $(document).ready(function() {
-    $('.date').each(function() {
+    $('.date-format').each(function() {
         var date = Date.parse($(this).text());
         var dateOb = new Date(date);
         var newDateStr = dateOb.toString().substring(0, 15);

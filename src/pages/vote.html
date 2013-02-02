@@ -31,7 +31,7 @@
           {{ open_election.name }}
         </td>
         <td>
-          {{ open_election.status.text }} <span class='date'>{{ open_election.status.date }}</span>
+          {{ open_election.status.text }} <span class='date-format'>{{ open_election.status.date }}</span>
         </td>
         <td>
           {% if open_election.user_action == 'voted' %}
@@ -75,7 +75,7 @@
           {{ election.name }}
         </td>
         <td>
-          <span class="date">{{ election.end_date }}</span>
+          <span class="date-format">{{ election.end_date }}</span>
         </td>
         <td>
           {% if election.time_remaining > 0 %}
