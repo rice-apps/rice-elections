@@ -2,7 +2,24 @@
 var updatePanel;
 
 updatePanel = function() {
-  return console.log($('#election-panel li[class=active]').text());
+  var postData;
+  console.log($('#election-panel li[class=active]').text());
+  postData = {
+    'method': 'information',
+    'id': $('#election-panel').attr('data-election-id')
+  };
+  return $.ajax({
+    url: '/election-panel',
+    type: 'POST',
+    data: {
+      'data': JSON.stringify(postData)
+    },
+    success: function(data) {
+      console.log('Success!');
+      console.log(data);
+      return $('#election-information').append(data);
+    }
+  });
 };
 
 jQuery(function() {

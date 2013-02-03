@@ -31,19 +31,7 @@ class StaticHandler(webapp2.RequestHandler):
 
 
 def render_page(handler, page_name, page_data):
-    # Add Jinja Filters
-    JINJA_ENV.filters['datetime'] = format_datetime
-    JINJA_ENV.globals['now'] = datetime.datetime.now()
-
-    # Get the page name being requested assume home.html if none specified
-    if page_name == '/':
-        page_name += NAV_BAR[0]['link']
-    
-    # Get page info
-    try:
-        page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
-    except jinja2.TemplateNotFound:
-        page = JINJA_ENV.get_template('not-found.html').render()
+    page = get_page(page_name, page_data)
 
     # Mark all links in the nav bar as inactive except the page open
     for item in NAV_BAR:
@@ -62,6 +50,26 @@ def render_page(handler, page_name, page_data):
         template_vals['net_id'] = session['net_id']
     
     handler.response.out.write(template.render(template_vals))
+
+def render_html(handler, page_name, page_data):
+    handler.response.out.write(get_page(page_name, page_data))
+
+def get_page(page_name, page_data):
+    # Add Jinja Filters
+    JINJA_ENV.filters['datetime'] = format_datetime
+    JINJA_ENV.globals['now'] = datetime.datetime.now()
+
+    # Get the page name being requested assume home.html if none specified
+    if page_name == '/':
+        page_name += NAV_BAR[0]['link']
+    
+    # Get page info
+    try:
+        page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
+    except jinja2.TemplateNotFound:
+        page = JINJA_ENV.get_template('not-found.html').render()
+
+    return page
 
 def format_datetime(value, format):
     if format == 'medium':

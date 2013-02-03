@@ -13,7 +13,7 @@ from authentication import require_login, get_voter
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
-from main import render_page
+from main import render_html, render_page
 
 PAGE_NAME = '/election-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
@@ -44,7 +44,15 @@ class AdminHandler(webapp2.RequestHandler):
         render_page(self, PAGE_NAME, page_data)
 
     def post(self):
-    	return None
+        data = json.loads(self.request.get('data'))
+        method = data['method']
+        election_id = data['id']
+        election = {}
+        if election_id:
+            election_entry = database.Election.get(election_id)
+            election = election_entry.to_json()
+        render_html(self, '/election-panel-information', election)
+        return None
         
 app = webapp2.WSGIApplication([
         ('/election-panel', AdminHandler)

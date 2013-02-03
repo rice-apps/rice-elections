@@ -51,7 +51,7 @@
             {% endif %}
 
             <tr class="{{status_flag}}">            
-              <td>{{ elec.name }}</td>
+              <td><a href="/election-panel?id={{ elec.id }}">{{ elec.name }}</a></td>
               <td><span class="date-format">{{ elec.start | datetime('small') }}</span></td>
               <td><span class="date-format">{{ elec.end | datetime('small') }}</span></td>
               <td><span>{{ elec.voter_count }}</span></td>
