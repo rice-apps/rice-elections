@@ -44,7 +44,7 @@ handlers:
   script: vote.view-results.view-results.app
 
 - url: /create-election
-  script: createelection.app
+  script: create-election.create-election.app
 
 - url: /login-response
   script: authentication.app
