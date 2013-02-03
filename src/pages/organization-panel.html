@@ -1,4 +1,4 @@
-<!-- <link href="css/docs.css" rel="stylesheet"> -->
+<script type='text/javascript' src='js/organization-panel.js'></script>
 <section id="main" class='container-narrow'>
 
 <h3>{{ organization.name }}</h3>
@@ -85,9 +85,8 @@
           <label class="control-label" for="name">Name</label>
           <div class="controls">
             <input type="text"
-                   class="input-xlarge"
-                   id="name"
-                   name="election-name"
+                   class="input-xlarge span4"
+                   id="organization-name"
                    value='{{ organization.name }}'>
           </div>
         </div>
@@ -96,8 +95,7 @@
           <div class="controls">
             <textarea class="input-xlarge span4"
                       rows='4'
-                      id="description"
-                      name="election-name"
+                      id="organization-description"
                       placeholder="We like to hold elections">{{ organization.description }}</textarea>
           </div>
         </div>
@@ -105,9 +103,8 @@
           <label class="control-label" for="website">Website</label>
           <div class="controls">
             <input type="text"
-                   class="input-xlarge"
-                   id="website"
-                   name="election-name"
+                   class="input-xlarge span4"
+                   id="organization-website"
                    placeholder='http://awesome.com'
                    value='{{ organization.website }}'>
           </div>
@@ -115,12 +112,15 @@
         <div class="control-group">
           <label class="control-label" for="updateProfile"></label>
           <div class="controls">
-            <input type="submit"
-                   id='updateProfile'
-                   class="input-xlarge btn btn-primary"
+            <input id='updateProfile'
+                   type='submit'
+                   class="input-large btn btn-primary"
                    value='Update Profile'>
           </div>
         </div>
+        <input type="hidden"
+               id="organization-id"
+               value='{{ organization.id }}'>
       </fieldset>
 
     </form>
