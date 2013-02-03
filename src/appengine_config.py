@@ -1,5 +1,5 @@
-from gaesessions import SessionMiddleware
-from secretparams import COOKIE_KEY
+from authentication.gaesessions import SessionMiddleware
+from authentication.secretparams import COOKIE_KEY
 # suggestion: generate your own random key using os.urandom(64)
 # WARNING: Make sure you run os.urandom(64) OFFLINE and copy/paste the output to
 # this file.  If you use os.urandom() to *dynamically* generate your key at

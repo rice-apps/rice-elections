@@ -5,7 +5,7 @@ Back-end for serving the results of an election.
 __authors__ = ['Waseem Ahmad <waseem@rice.edu>',
                'Andrew Capshaw <capshaw@rice.edu>']
 
-import database
+import models
 import logging
 import webapp2
 
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from main import render_page
 
 
-PAGE_NAME = '/view-results'
+PAGE_NAME = '/vote/view-results'
 
 class ResultsHandler(webapp2.RequestHandler):
     """
@@ -42,15 +42,15 @@ class ResultsHandler(webapp2.RequestHandler):
         logging.info('%s requested election: %s', net_id, election_id)
 
         # Get the election from the database
-        election = database.Election.get(election_id)
+        election = models.Election.get(election_id)
         if not election:
             page_data['error_msg'] = 'Election not found.'
             render_page(self, PAGE_NAME, page_data)
             return
         
         # Make sure user is eligible to vote
-        status = database.voter_status(voter, election)
-        if status != 'invalid_time' and not database.get_admin_status(voter, election.organization):
+        status = models.voter_status(voter, election)
+        if status != 'invalid_time' and not models.get_admin_status(voter, election.organization):
             page_data['error_msg'] = 'You are not eligible to view results.'
             render_page(self, PAGE_NAME, page_data)
             return
@@ -66,7 +66,7 @@ class ResultsHandler(webapp2.RequestHandler):
             
         if datetime.now() < public_result_time:
             # Check to see if the user is an election admin
-            status = database.get_admin_status(voter, election.organization)
+            status = models.get_admin_status(voter, election.organization)
             if not status:
                 page_data['error_msg'] = ('Election results are not available to the public yet. '
                                          'Please wait for %s longer.' % 

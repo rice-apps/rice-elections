@@ -5,7 +5,7 @@ Application specific authentication module.
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
-import database
+import models
 import logging
 import re
 import urllib
@@ -38,7 +38,7 @@ class LoginResponseHandler(webapp2.RequestHandler):
             session.terminate()
 
         # Get the user's record
-        voter = database.get_voter(net_id, create=True)
+        voter = models.get_voter(net_id, create=True)
 
         # Start a session for the user
         session['net_id'] = voter.net_id
@@ -152,7 +152,7 @@ def get_voter():
     """
     session = get_current_session()
     if session.has_key('net_id'):
-        return database.get_voter(session['net_id'])
+        return models.get_voter(session['net_id'])
     else:
         return None
 

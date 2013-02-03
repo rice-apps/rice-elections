@@ -4,8 +4,8 @@ Database for the app.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import cv
-import irv
+import algorithms.cv
+import algorithms.irv
 import logging
 
 from datetime import datetime
@@ -299,7 +299,7 @@ def get_organization(name):
         name: The name of the organization.
     
     Returns:
-        Organization from database. None if it doesn't exist.
+        Organization from models. None if it doesn't exist.
     """
     temp_hard_code = True
     
@@ -364,7 +364,7 @@ def get_admin_status(voter, organization=None):
 
 def put_election(name, start, end, organization):
     """
-    Creates and stores an Election in the database.
+    Creates and stores an Election in the models.
     
     Args:
         name: election name.

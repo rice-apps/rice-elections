@@ -6,7 +6,7 @@ __authors__ = ['Waseem Ahmad <waseem@rice.edu>',
                'Andrew Capshaw <capshaw@rice.edu>']
 
 import authentication
-import database
+import models
 import datetime
 import logging
 import webapp2
@@ -32,7 +32,7 @@ class VoteHandler(webapp2.RequestHandler):
         election_keys = [election.key() for election in elections]
 
         # Add universal elections
-        universal_elections = database.Election.gql("WHERE universal=TRUE").run()
+        universal_elections = models.Election.gql("WHERE universal=TRUE").run()
         for election in universal_elections:
             if datetime.datetime.now() < election.end and election.key() not in election_keys:
                 elections.append(election)
@@ -71,7 +71,7 @@ class VoteHandler(webapp2.RequestHandler):
                     data['user_action'] = 'vote'
 
                 # Check to see if the user has already voted
-                if database.voter_status(voter, election) == 'voted':
+                if models.voter_status(voter, election) == 'voted':
                     data['user_action'] = 'voted'
 
                 page_data['open_elections'].append(data)

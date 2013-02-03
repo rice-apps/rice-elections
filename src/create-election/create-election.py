@@ -4,7 +4,7 @@ Back-end for the Create Election Form.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import database
+import models
 import json
 import logging
 import webapp2
@@ -29,16 +29,16 @@ class CreateElectionHandler(webapp2.RequestHandler):
         voter = get_voter()
         if not voter:
             require_login(self)
-        status = database.get_admin_status(voter)
+        status = models.get_admin_status(voter)
         if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             if voter.net_id != 'wa1':
                 return
             # TODO: Temp hard-code
             for new_net_id, new_email in {'wa1': 'wa1@rice.edu', 'jcc7': 'jcc7@rice.edu', 'apc1': 'apc1@rice.edu'}.items():
-                voter = database.get_voter(new_net_id, create=True)
-                organization = database.get_organization('Brown College')
-                database.put_admin(voter, new_email, organization)
+                voter = models.get_voter(new_net_id, create=True)
+                organization = models.get_organization('Brown College')
+                models.put_admin(voter, new_email, organization)
             return
         
         render_page(self, PAGE_NAME, {})
@@ -59,7 +59,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
             electionData = json.loads(formData)
 
             # Get organization
-            organization = database.get_organization('Brown College')
+            organization = models.get_organization('Brown College')
             if not organization:
                 msg = 'Organization not found!'
                 self.respond('ERROR', msg)
@@ -72,14 +72,14 @@ class CreateElectionHandler(webapp2.RequestHandler):
                 self.respond('ERROR', 'You are not logged in!')
                 return
             
-            status = database.get_admin_status(voter, organization)
+            status = models.get_admin_status(voter, organization)
             
             if not status:
                 self.respond('ERROR', MSG_NOT_AUTHORIZED)
                 return
             
             # Store election
-            election = database.Election(
+            election = models.Election(
                 name=electionData['name'],
                 start=datetime.fromtimestamp(electionData['start']),
                 end=datetime.fromtimestamp(electionData['end']),
@@ -100,18 +100,18 @@ class CreateElectionHandler(webapp2.RequestHandler):
             # Store positions
             for position in electionData['positions']:
                 position_name = position['name']
-                position_entry = database.get_position(position_name,
+                position_entry = models.get_position(position_name,
                                                        organization,
                                                        create=True)
                 if position['type'] == 'Ranked-Choice':
-                    ep = database.RankedVotingPosition(
+                    ep = models.RankedVotingPosition(
                         election=election,
                         position=position_entry,
                         vote_required=position['vote_required'],
                         write_in_slots=position['write_in'])
                     ep.put()
                 elif position['type'] == 'Cumulative-Voting':
-                    ep = database.CumulativeVotingPosition(
+                    ep = models.CumulativeVotingPosition(
                         election=election,
                         position=position_entry,
                         vote_required=position['vote_required'],
@@ -124,7 +124,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
 
                 # Store candidates
                 for candidate in position['candidates']:
-                    database.ElectionPositionCandidate(
+                    models.ElectionPositionCandidate(
                         election_position=ep,
                         net_id=candidate['netId'],
                         name=candidate['name']).put()

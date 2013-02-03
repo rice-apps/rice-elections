@@ -4,7 +4,7 @@ Back-end for the Election Panel.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import database
+import models
 import json
 import logging
 import webapp2
@@ -15,7 +15,7 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_html, render_page
 
-PAGE_NAME = '/election-panel'
+PAGE_NAME = 'organization-panel/election-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
                      'if you are interested in conducting elections for your organization.')
 
@@ -26,14 +26,14 @@ class AdminHandler(webapp2.RequestHandler):
         voter = get_voter()
         if not voter:
             require_login(self)
-        status = database.get_admin_status(voter)
+        status = models.get_admin_status(voter)
         if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
 
         # Get organization information
-        admin = database.Admin.gql('WHERE voter=:1', voter).get()
-        org_admin = database.OrganizationAdmin.gql('WHERE admin=:1',
+        admin = models.Admin.gql('WHERE voter=:1', voter).get()
+        org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
         org = org_admin.organization
 
@@ -49,7 +49,7 @@ class AdminHandler(webapp2.RequestHandler):
         election_id = data['id']
         election = {}
         if election_id:
-            election_entry = database.Election.get(election_id)
+            election_entry = models.Election.get(election_id)
             election = election_entry.to_json()
         render_html(self, '/election-panel-information', election)
         return None

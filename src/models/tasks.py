@@ -5,7 +5,7 @@ web request.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import database
+import models
 import logging
 import json
 import reportresults
@@ -21,10 +21,10 @@ class ElectionVoterFactory(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.get('data'))
         election_key = data['election_key']
-        election = database.Election.get(election_key)
+        election = models.Election.get(election_key)
         voters = data['voter_list']
         if election and voters:
-            database.add_eligible_voters(election, voters)
+            models.add_eligible_voters(election, voters)
         else:
             logging.error('Task Error, database or voters could not be found.')
             return
@@ -53,7 +53,7 @@ class ElectionResultsFactory(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.get('data'))
         election_key = data['election_key']
-        election = database.Election.get(election_key)
+        election = models.Election.get(election_key)
 
         # Assert validity
         if not election:

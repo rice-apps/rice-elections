@@ -5,7 +5,7 @@ Script to report election results including ballots in detail to election admin.
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
-import database
+import models
 import logging
 import webapp2
 
@@ -28,7 +28,7 @@ def email_report(election):
 	message.to = ', '.join([admin.email for admin in admins])
 
 	results = []
-	ranked_positions = database.RankedVotingPosition.gql("WHERE election=:1",
+	ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1",
 														 election)
 	for pos in ranked_positions:
 		json = pos.to_json()
@@ -50,7 +50,7 @@ Winners: {4}""".format(pos.position.name,
 		string += '\nBallots Cast:\n' + '\n'.join(ballots) + '\n'
 		results.append(string)
 
-	cumulative_positions = database.CumulativeVotingPosition.gql("WHERE election=:1",
+	cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1",
 															 election)
 	for pos in cumulative_positions:
 		json = pos.to_json()

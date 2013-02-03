@@ -28,17 +28,20 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: /vote
-  script: vote.app
-
 - url: /organization-panel
-  script: organizationpanel.app
+  script: organization-panel.organization-panel.app
 
 - url: /election-panel
-  script: electionpanel.app
+  script: organization-panel.election-panel.election-panel.app
+
+- url: /vote
+  script: vote.vote.app
 
 - url: /cast-ballot
-  script: castballot.app
+  script: vote.cast-ballot.cast-ballot.app
+
+- url: /view-results
+  script: vote.view-results.view-results.app
 
 - url: /create-election
   script: createelection.app
@@ -53,17 +56,11 @@ handlers:
   script: authentication.app
 
 - url: /cleanup-sessions
-  script: cleanupsessions.app
-
-- url: /view-results
-  script: viewresults.app
+  script: authentication.cleanupsessions.app
 
 - url: /tasks/.*
-  script: tasks.app
+  script: model.tasks.app
   login: admin
-
-- url: /over-quota
-  script: overquota.app
 
 - url: /.*
   script: main.app

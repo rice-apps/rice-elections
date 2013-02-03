@@ -4,7 +4,7 @@ Back-end for the Organization Panel.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import database
+import models
 import json
 import logging
 import webapp2
@@ -26,14 +26,14 @@ class AdminHandler(webapp2.RequestHandler):
         voter = get_voter()
         if not voter:
             require_login(self)
-        status = database.get_admin_status(voter)
+        status = models.get_admin_status(voter)
         if not status:
             render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
 
         # Get organization information
-        admin = database.Admin.gql('WHERE voter=:1', voter).get()
-        org_admin = database.OrganizationAdmin.gql('WHERE admin=:1',
+        admin = models.Admin.gql('WHERE voter=:1', voter).get()
+        org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
         org = org_admin.organization
 
@@ -51,7 +51,7 @@ class AdminHandler(webapp2.RequestHandler):
         if not voter:
             self.respond('ERROR', MSG_NOT_AUTHORIZED)
             return
-        status = database.get_admin_status(voter)
+        status = models.get_admin_status(voter)
         if not status:
             self.respond('ERROR', MSG_NOT_AUTHORIZED)
             return
@@ -78,8 +78,8 @@ class AdminHandler(webapp2.RequestHandler):
         """
         logging.info('Updating profile')
         org_id = data['id']
-        org = database.Organization.get(org_id)
-        assert database.get_admin_status(get_voter(), org)
+        org = models.Organization.get(org_id)
+        assert models.get_admin_status(get_voter(), org)
         for field in ['name', 'description', 'website']:
             setattr(org, field, data[field].strip())
         org.put()
