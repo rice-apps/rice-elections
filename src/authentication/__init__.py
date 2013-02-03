@@ -110,8 +110,9 @@ class LoginResponseHandler(webapp2.RequestHandler):
 class LogoutHandler(webapp2.RequestHandler):
     def get(self):
         """Logs out the user from CAS."""
+        logging.info('Loggin out')
         app_url = self.request.headers.get('host', 'no host')    # URL of the app itself
-        service_url = 'http://%s/logout-response' % app_url
+        service_url = 'http://%s/authenticate/logout-response' % app_url
         self.redirect(CAS_SERVER + '/cas/logout?service=' + service_url)
 
 
@@ -121,9 +122,9 @@ class LogoutResponseHandler(webapp2.RequestHandler):
         session = get_current_session()
         if session.has_key('net_id'):
             session.terminate()
-            render_page(self, '/message', {'status': 'Logged Out', 'msg': 'You\'ve been logged out. See you again soon!'})
+            render_page(self, '/templates/message', {'status': 'Logged Out', 'msg': 'You\'ve been logged out. See you again soon!'})
         else:
-            render_page(self, '/message', {'status': 'Silly', 'msg': 'You weren\'t logged in.'})
+            render_page(self, '/templates/message', {'status': 'Silly', 'msg': 'You weren\'t logged in.'})
 
 def redirect_to_cas(request_handler):
     """
@@ -139,7 +140,7 @@ def require_login(request_handler):
     """
     destination_url = request_handler.request.url
     app_url = request_handler.request.headers.get('host', 'no host')    # URL of the app itself
-    service_url = 'http://%s/login-response' % app_url
+    service_url = 'http://%s/authenticate/login-response' % app_url
     cas_url = CAS_SERVER + '/cas/login?service=' + service_url + '?destination=' + destination_url
     request_handler.redirect(cas_url, abort=True)
 
@@ -155,9 +156,3 @@ def get_voter():
         return models.get_voter(session['net_id'])
     else:
         return None
-
-app = webapp2.WSGIApplication([
-        ('/login-response', LoginResponseHandler),
-        ('/logout', LogoutHandler),
-        ('/logout-response', LogoutResponseHandler)
-], debug=True)

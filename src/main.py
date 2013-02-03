@@ -14,10 +14,10 @@ import webapp2
 from authentication.gaesessions import get_current_session
 
 MAIN_DIR = os.path.dirname(__file__)
-PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
+PAGES_DIR = os.path.join(MAIN_DIR, 'views')
 
 JINJA_ENV = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(MAIN_DIR))
+    loader=jinja2.FileSystemLoader(PAGES_DIR))
 
 NAV_BAR = [
     {'text': 'Home', 'link': '/home'},
@@ -41,7 +41,7 @@ def render_page(handler, page_name, page_data):
         else:
             item['active'] = False
 
-    template = JINJA_ENV.get_template('pages/template.html')
+    template = JINJA_ENV.get_template('templates/page.html')
     template_vals = {'nav_bar': NAV_BAR,
                      'page_content': page}
     
@@ -66,12 +66,9 @@ def get_page(page_name, page_data):
     
     # Get page info
     try:
-        path = page_name.split('/')
-        file_path = '/'.join(path[:-1]) + '/{0}/{0}.html'.format(path[-1])
-        logging.info(file_path)
-        page = JINJA_ENV.get_template(file_path).render(page_data)
+        page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
     except jinja2.TemplateNotFound:
-        page = JINJA_ENV.get_template('pages/not-found.html').render()
+        page = JINJA_ENV.get_template('templates/not-found.html').render()
 
     return page
 

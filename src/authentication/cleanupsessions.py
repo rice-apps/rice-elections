@@ -6,6 +6,3 @@ class CleanupSessionsHandler(webapp2.RequestHandler):
         while not delete_expired_sessions():
             pass
 
-app = webapp2.WSGIApplication([
-        ('/cleanup-sessions', CleanupSessionsHandler)
-], debug=True)

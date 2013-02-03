@@ -1,0 +1,138 @@
+<script type='text/javascript' src='/static/js/organization-panel.js'></script>
+<section id="main" class='container-narrow'>
+
+<h3>{{ organization.name }}</h3>
+<a class="btn btn-primary pull-right" href="/election-panel" role="button">
+  <i class="icon-plus icon-white"></i> New Election
+</a>
+<ul id="myTab" class="nav nav-tabs">
+  <li class="active"><a href="#elections" data-toggle="tab">Elections</a></li>
+  <li><a href="#voters" data-toggle="tab">Voter Lists</a></li>
+  <!-- <li><a href="#profile" data-toggle="tab">Organization Profile</a></li> -->
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+      <li><a href="#profile" data-toggle="tab"><i class='icon-pencil'></i> Profile</a></li>
+      <li><a href="#admins" data-toggle="tab"><i class='icon-user'></i> Admins</a></li>
+    </ul>
+  </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+  <!-- ===================================================================== -->
+  <div class="tab-pane fade active in" id="elections">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th width='150px'>Name</th>
+          <th>Election Open</th>
+          <th>Votes Cast</th>
+          <th>Status</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if not elections %}
+          <td colspan='5'>No elections yet. Create one now!</td>
+        {% endif %}
+        {% for elec in elections|reverse %}
+          {% set status_flag = 'error' %}
+
+          {% if now > elec.start %}
+            {% set status_flag = 'info' %}
+            {% set status = 'Voting in progress.' %}
+          {% endif %}
+
+          {% if now > elec.end %}
+            {% set status_flag = 'warning' %}
+            {% set status = 'Voting has ended.' %}
+          {% endif %}
+
+          {% if elec.result_computed %}
+            {% set status_flag = 'success' %}
+            {% set status = 'Result computed' %}
+          {% endif %}
+
+          <tr>
+            <td>
+              {% if elec.end > now %}
+                <a href="/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
+              {% else %}
+                <a href="/view-results?id={{ elec.id }}">{{ elec.name }}</a>
+              {% endif %}
+            </td>
+            <td>
+              <span class="date-format">{{ elec.start | datetime('small') }}</span><br>
+              <span class="date-format">{{ elec.end | datetime('small') }}</span>
+            </td>
+            <td><span>{{ elec.voted_count }} / {{ elec.voter_count }}</span></td>
+            <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
+            <td><a href="/election-panel?id={{ elec.id }}">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- ===================================================================== -->
+  <div class="tab-pane fade" id="voters">
+    <p>Voters list goes here</p>
+  </div>
+  <!-- ===================================================================== -->
+  <div class="tab-pane fade" id="profile">
+    <div id='server-response'></div>
+    <form class="form-horizontal well">
+      <fieldset>
+        <legend>Organization Profile</legend>
+        <div class="control-group">
+          <label class="control-label" for="name">Name</label>
+          <div class="controls">
+            <input type="text"
+                   class="input-xlarge span4"
+                   id="organization-name"
+                   value='{{ organization.name }}'>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="description">Description</label>
+          <div class="controls">
+            <textarea class="input-xlarge span4"
+                      rows='4'
+                      id="organization-description"
+                      placeholder="We like to hold elections">{{ organization.description }}</textarea>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="website">Website</label>
+          <div class="controls">
+            <input type="text"
+                   class="input-xlarge span4"
+                   id="organization-website"
+                   placeholder='http://awesome.com'
+                   value='{{ organization.website }}'>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="updateProfile"></label>
+          <div class="controls">
+            <input id='updateProfile'
+                   class="input-large btn btn-primary"
+                   value='Update Profile'>
+          </div>
+        </div>
+        <input type="hidden"
+               id="organization-id"
+               value='{{ organization.key() }}'>
+      </fieldset>
+
+    </form>
+  </div>
+  <!-- ===================================================================== -->
+  <div class="tab-pane fade" id="admins">
+    <h4>Admins</h4>
+    <ul>
+      {% for admin in admins %}
+        <li><a href="mailto:{{ admin.email }}">{{ admin.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+</section>

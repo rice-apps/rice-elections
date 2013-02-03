@@ -1,0 +1,57 @@
+<script src="/static/js/organization-panel/election-panel.js"></script>
+
+<section id="main" class='container-narrow'>
+
+  <h3>Create Election</h3>
+
+  <div id='election-panel' data-election-id='{{ id }}'>
+    <ul id="myTab" class="nav nav-tabs">
+      <li class="active"><a href="#election-information" data-toggle="tab">Election Information</a></li>
+      <li class=""><a href="#positions" data-toggle="tab">Positions</a></li>
+      <li class=""><a href="#voters" data-toggle="tab">Voters</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade active in" id="election-information"></div>
+
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="voters">
+        <p>Edit who can vote for this election</p>
+      </div>
+
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="positions">
+        <p>See positions and voter counts for each here.</p>
+      </div>
+
+      <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="profile">
+      </div>
+      <div class="tab-pane fade" id="admins">
+        <h4>Admins</h4>
+        <ul>
+          {% for admin in admins %}
+            <li><a href="mailto:{{ admin.email }}">{{ admin.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Create Election Modal -->
+<div id="createElection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Create Election</h3>
+  </div>
+  <div class="modal-body">
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Create</button>
+  </div>
+</div>

@@ -19,52 +19,21 @@ inbound_services:
 
 handlers:
 
-- url: /css
-  static_dir: css
+- url: /static
+  static_dir: static
 
-- url: /img
-  static_dir: img
+- url: /admin/.*
+  script: controllers.admin.app
 
-- url: /js
-  static_dir: js
+- url: /vote/.*
+  script: controllers.vote.app
 
-- url: /organization-panel
-  script: organization-panel.organization-panel.app
-
-- url: /election-panel
-  script: organization-panel.election-panel.election-panel.app
-
-- url: /vote
-  script: vote.vote.app
-
-- url: /cast-ballot
-  script: vote.cast-ballot.cast-ballot.app
-
-- url: /view-results
-  script: vote.view-results.view-results.app
-
-- url: /create-election
-  script: create-election.create-election.app
-
-- url: /login-response
-  script: authentication.app
-
-- url: /logout
-  script: authentication.app
-
-- url: /logout-response
-  script: authentication.app
-
-- url: /cleanup-sessions
-  script: authentication.cleanupsessions.app
+- url: /authenticate/.*
+  script: controllers.authenticate.app
 
 - url: /tasks/.*
-  script: model.tasks.app
+  script: controllers.tasks.app
   login: admin
 
 - url: /.*
   script: main.app
-
-error_handlers:
-  - error_code: over_quota
-    file: /over-quota

@@ -1,0 +1,97 @@
+<!-- Load JS / CSS
+================================================== -->
+<script src="/static/js/shared/timezone.js"></script>
+<script src="/static/js/vote.js"></script>
+
+<section id="main" class='container-narrow'>
+ <!-- PUT CONTENT IN HERE
+================================================== -->
+
+  <!-- Open elections table -->
+  <h3>Elections</h3>
+  <p>Below is a list of elections that you are eligible to vote in.</p>
+  <table class='table table-striped table-bordered'>
+    <tr>
+      <th>
+        Election Name
+      </th>
+      <th>
+        Status
+      </th>
+      <th>
+        Action
+      </th>
+    </tr>
+    {# All of these variables will be switched to whatever is handed down from
+         above, but the structure is the same. Just shooting in the dark for now. #}
+    {% if open_elections %}
+      {% for open_election in open_elections %}
+      <tr>
+        <td>
+          {{ open_election.name }}
+        </td>
+        <td>
+          {{ open_election.status.text }} <span class='date-format'>{{ open_election.status.date }}</span>
+        </td>
+        <td>
+          {% if open_election.user_action == 'voted' %}
+            <a class='btn btn-success disabled'>Voted</a>
+          {% elif open_election.user_action == 'vote' %}
+            <a class='btn btn-primary' href='/cast-ballot?id={{ open_election.id }}'>Vote</a>
+          {% else %}
+            <a class='btn btn-primary disabled'>Vote</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan='3'>
+          <small>There are no open or upcoming elections available to you.</small>
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+
+  <!-- Election results table -->
+  <h3>Results</h3>
+  <p>Below is a list of elections for which voting has concluded.</p>
+  <table class='table table-striped table-bordered'>
+    <tr>
+      <th>
+        Election Name
+      </th>
+      <th>
+        Time Ended
+      </th>
+      <th>
+        Results
+      </th>
+    </tr>
+    {% if election_results %}
+      {% for election in election_results %}
+      <tr>
+        <td>
+          {{ election.name }}
+        </td>
+        <td>
+          <span class="date-format">{{ election.end_date }}</span>
+        </td>
+        <td>
+          {% if election.time_remaining > 0 %}
+            <a href='#' data-href='/view-results?id={{ election.id }}' class='countdown btn btn-primary disabled' data-time-remaining='{{election.time_remaining}}' data-result-delay='{{election.result_delay}}' data-countdown-over-text='View Results'>00:00:00</a>
+          {% else %}
+            <a href='/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan='3'>
+          <small>There are no election results to show.</small>
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+</section>
