@@ -22,7 +22,7 @@ JINJA_ENV = jinja2.Environment(
 NAV_BAR = [
     {'text': 'Home', 'link': '/home'},
     {'text': 'Vote', 'link': '/vote'},
-    {'text': 'Admin', 'link': '/organization-panel'},
+    {'text': 'Admin', 'link': '/admin/organization-panel'},
     {'text': 'Contact', 'link': '/contact'}]
 
 class StaticHandler(webapp2.RequestHandler):
@@ -36,15 +36,28 @@ def render_page(handler, page_name, page_data):
 
     # Mark all links in the nav bar as inactive except the page open
     for item in NAV_BAR:
-        if '/'+item['link'] == page_name:
-            item['active'] = True
-        else:
-            item['active'] = False
+        item['active'] = (item['link'] == page_name)
 
     template = JINJA_ENV.get_template('templates/page.html')
     template_vals = {'nav_bar': NAV_BAR,
                      'page_content': page}
     
+    # If logged in, display NetID with logout option
+    session = get_current_session()
+    if session.has_key('net_id'):
+        template_vals['net_id'] = session['net_id']
+    
+    handler.response.out.write(template.render(template_vals))
+
+def render_page_content(handler, page_name, page_content):
+    # Mark all links in the nav bar as inactive except the page open
+    for item in NAV_BAR:
+        item['active'] = (item['link'] == page_name)
+
+    template = JINJA_ENV.get_template('templates/page.html')
+    template_vals = {'nav_bar': NAV_BAR,
+                     'page_content': page_content}
+
     # If logged in, display NetID with logout option
     session = get_current_session()
     if session.has_key('net_id'):

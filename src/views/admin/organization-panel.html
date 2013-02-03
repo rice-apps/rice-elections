@@ -1,4 +1,4 @@
-<script type='text/javascript' src='/static/js/organization-panel.js'></script>
+<script type='text/javascript' src='/static/js/admin/organization-panel.js'></script>
 <section id="main" class='container-narrow'>
 
 <h3>{{ organization.name }}</h3>
@@ -66,7 +66,7 @@
             </td>
             <td><span>{{ elec.voted_count }} / {{ elec.voter_count }}</span></td>
             <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
-            <td><a href="/election-panel?id={{ elec.id }}">Edit</a></td>
+            <td><a href="/admin/organization-panel/election-panel/information?id={{ elec.id }}">Edit</a></td>
           </tr>
         {% endfor %}
       </tbody>

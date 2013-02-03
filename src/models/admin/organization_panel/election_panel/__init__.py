@@ -13,11 +13,16 @@ from authentication import require_login, get_voter
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
-from main import render_html, render_page
+from main import render_html, render_page, render_page_content, get_page, JINJA_ENV
 
-PAGE_NAME = 'organization-panel/election-panel'
+PAGE_NAME = '/admin/organization-panel/election-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
                      'if you are interested in conducting elections for your organization.')
+PANEL_BAR = [
+    {'text': 'Election Information', 'link': PAGE_NAME+'/information'},
+    {'text': 'Positions', 'link': PAGE_NAME+'/positions'},
+    {'text': 'Voters', 'link': PAGE_NAME+'/voters'}]
+
 
 class ElectionPanelHandler(webapp2.RequestHandler):
     
@@ -40,8 +45,9 @@ class ElectionPanelHandler(webapp2.RequestHandler):
         # Construct page information
         page_data = {}
         page_data['id'] = self.request.get('id')
-        
-        render_page(self, PAGE_NAME, page_data)
+        panel = get_panel(self.request.path, page_data, page_data['id'])
+        logging.info(panel)
+        render_page_content(self, PAGE_NAME, panel)
 
     def post(self):
         data = json.loads(self.request.get('data'))
@@ -53,4 +59,20 @@ class ElectionPanelHandler(webapp2.RequestHandler):
             election = election_entry.to_json()
         render_html(self, '/election-panel-information', election)
         return None
-        
+
+
+def get_panel(page_name, page_data, election_id):
+    logging.info(page_name)
+    panel_content = get_page(page_name, page_data)
+    logging.info(panel_content)
+    # Mark all links in the panel bar as inactive except the page open
+    for item in PANEL_BAR:
+        item['active'] = (item['link'] == page_name)
+
+    panel = JINJA_ENV.get_template(
+        'admin/organization-panel/election-panel.html')
+    panel_vals = {'id': election_id,
+                  'panel_bar': PANEL_BAR,
+                  'panel_content': panel_content}
+
+    return panel.render(panel_vals)

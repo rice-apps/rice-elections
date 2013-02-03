@@ -15,7 +15,7 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_page
 
-PAGE_NAME = '/organization-panel'
+PAGE_NAME = '/admin/organization-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
                      'if you are interested in conducting elections for your organization.')
 
