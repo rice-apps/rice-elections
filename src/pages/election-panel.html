@@ -1,41 +1,43 @@
 <script src="/js/election-panel.js"></script>
+
 <section id="main" class='container-narrow'>
-<div class="bs-docs-example" style="background-color:#f5f5f5;" id='election-panel' data-election-id='{{ id }}'>
-  <ul id="myTab" class="nav nav-tabs">
-    <li class="active"><a href="#election-information" data-toggle="tab">Election Information</a></li>
-    <li class=""><a href="#voters" data-toggle="tab">Voter Lists</a></li>
-    <li class=""><a href="#profile" data-toggle="tab">Organization Profile</a></li>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Organization <b class="caret"></b></a>
-      <ul class="dropdown-menu">
-        <li class=""><a href="#profile" data-toggle="tab">Profile</a></li>
-        <li class=""><a href="#admins" data-toggle="tab">Admins</a></li>
-      </ul>
-    </li>
-  </ul>
-  <div id="myTabContent" class="tab-content">
 
-    <!-- Elections Tab -->
-    <div class="tab-pane fade active in" id="election-information">
-      
-    </div>
+  <h3>Create Election</h3>
 
+  <div id='election-panel' data-election-id='{{ id }}'>
+    <ul id="myTab" class="nav nav-tabs">
+      <li class="active"><a href="#election-information" data-toggle="tab">Election Information</a></li>
+      <li class=""><a href="#positions" data-toggle="tab">Positions</a></li>
+      <li class=""><a href="#voters" data-toggle="tab">Voters</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
 
-    <div class="tab-pane fade" id="viters">
-      <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
-    </div>
-    <div class="tab-pane fade" id="profile">
-    </div>
-    <div class="tab-pane fade" id="admins">
-      <h4>Admins</h4>
-      <ul>
-        {% for admin in admins %}
-          <li><a href="mailto:{{ admin.email }}">{{ admin.name }}</a></li>
-        {% endfor %}
-      </ul>
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade active in" id="election-information"></div>
+
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="voters">
+        <p>Edit who can vote for this election</p>
+      </div>
+
+    <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="positions">
+        <p>See positions and voter counts for each here.</p>
+      </div>
+
+      <!-- ===================================================================== -->
+      <div class="tab-pane fade" id="profile">
+      </div>
+      <div class="tab-pane fade" id="admins">
+        <h4>Admins</h4>
+        <ul>
+          {% for admin in admins %}
+            <li><a href="mailto:{{ admin.email }}">{{ admin.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 </section>
 
 <!-- Create Election Modal -->
@@ -45,7 +47,7 @@
     <h3 id="myModalLabel">Create Election</h3>
   </div>
   <div class="modal-body">
-    
+
 
   </div>
   <div class="modal-footer">

@@ -55,11 +55,11 @@
       <label class="control-label" for="position-select-type">Time Until Results are Publically Available</label>
       <div class="controls">
         <select id="result-delay" name="result-delay">
-          <option id="time-1-hour" value="3600">1 hour</option>
-          <option id="time-3-hours" value="10800">3 hours</option>
-          <option id="time-6-hours" value="21600">6 hours</option>
-          <option id="time-1-day" value="86400">1 day</option>
-          <option id="time-2-days" value="172800">2 days</option>
+          <option id="time-1-hour" value="3600"   {% if result_delay == 3600 %} selected {% endif %}>1 hour</option>
+          <option id="time-3-hours" value="10800" {% if result_delay == 10800 %} selected {% endif %}>3 hours</option>
+          <option id="time-6-hours" value="21600" {% if result_delay == 21600 %} selected {% endif %}>6 hours</option>
+          <option id="time-1-day" value="86400"   {% if result_delay == 86400 %} selected {% endif %}>1 day</option>
+          <option id="time-2-days" value="172800" {% if result_delay == 172800 %} selected {% endif %}>2 days</option>
         </select>
       </div>
     </div>
@@ -69,14 +69,14 @@
       <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone will be able to vote.">Universal Election</label>
       <div class="controls">
         <label class="checkbox">
-          <input type="checkbox" id="universal-election">
+          <input type="checkbox" id="universal-election" {% if universal %} checked {% endif %}>
           Enabled
         </label>
       </div>
     </div>
   </fieldset>
   <!-- Form Actions -->
-  <div class="form-actions" sty>
+  <div class="form-actions" style='background:none'>
     <a type="submit" class="btn btn-primary" id="election-submit">Create</a>
     <button type="reset" class="btn">Cancel</button>
   </div>
