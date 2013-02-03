@@ -6,11 +6,14 @@ jQuery ->
 # Tell the backend to update orgnaizational information
 updateOrganizationInformation = (event) ->
 	event.preventDefault()
-	postData =
+	data =
 		'id': $('#organization-id').val()
 		'name': $('#organization-name').val()
 		'description': $('#organization-description').val(),
 		'website' : $('#organization-website').val()
+	postData =
+		'method': 'update_profile'
+		'data': data
 	console.log(postData)
 	$.ajax
 		url: '/organization-panel'

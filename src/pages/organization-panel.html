@@ -114,14 +114,13 @@
           <label class="control-label" for="updateProfile"></label>
           <div class="controls">
             <input id='updateProfile'
-                   type='submit'
                    class="input-large btn btn-primary"
                    value='Update Profile'>
           </div>
         </div>
         <input type="hidden"
                id="organization-id"
-               value='{{ organization.id }}'>
+               value='{{ organization.key() }}'>
       </fieldset>
 
     </form>

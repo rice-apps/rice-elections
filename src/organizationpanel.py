@@ -45,6 +45,13 @@ class AdminHandler(webapp2.RequestHandler):
 
         render_page(self, PAGE_NAME, page_data)
 
+    def post(self):
+        # Get method and data
+        logging.info('Received call')
+        data = json.loads(self.request.get('data'))
+        methods = {'update_profile': self.update_profile}
+        methods[data['method']](data['data'])
+
     def respond(self, status, message):
         """
         Sends a response to the front-end.
@@ -54,6 +61,18 @@ class AdminHandler(webapp2.RequestHandler):
             message: response message
         """
         self.response.write(json.dumps({'status': status, 'msg': message}))
+
+    def update_profile(self, data):
+        """
+        Updates the organization profile.
+        """
+        logging.info('Updating profile')
+        org_id = data['id']
+        org = database.Organization.get(org_id)
+        for field in ['name', 'description', 'website']:
+            setattr(org, field, data[field])
+        org.put()
+        self.respond('OK', 'Updated')
 
     @staticmethod
     def admin_list(organization):

@@ -8,13 +8,17 @@ jQuery(function() {
 });
 
 updateOrganizationInformation = function(event) {
-  var postData;
+  var data, postData;
   event.preventDefault();
-  postData = {
+  data = {
     'id': $('#organization-id').val(),
     'name': $('#organization-name').val(),
     'description': $('#organization-description').val(),
     'website': $('#organization-website').val()
+  };
+  postData = {
+    'method': 'update_profile',
+    'data': data
   };
   console.log(postData);
   return $.ajax({
