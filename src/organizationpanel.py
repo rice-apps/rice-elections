@@ -20,7 +20,7 @@ MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. 
                      'if you are interested in conducting elections for your organization.')
 
 class AdminHandler(webapp2.RequestHandler):
-    
+
     def get(self):
         # Authenticate user
         voter = get_voter()
@@ -39,15 +39,16 @@ class AdminHandler(webapp2.RequestHandler):
 
         # Construct page information
         page_data = {}
+        page_data['organization'] = org
         page_data['admins'] = self.admin_list(org)
         page_data['elections'] = [elec.to_json() for elec in org.elections]
-        
+
         render_page(self, PAGE_NAME, page_data)
 
     def respond(self, status, message):
         """
         Sends a response to the front-end.
-        
+
         Args:
             status: response status
             message: response message
@@ -63,7 +64,7 @@ class AdminHandler(webapp2.RequestHandler):
             admin['email'] = organization_admin.admin.email
             admins.append(admin)
         return admins
-        
+
 app = webapp2.WSGIApplication([
         ('/organization-panel', AdminHandler)
 ], debug=True)

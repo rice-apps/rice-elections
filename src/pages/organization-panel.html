@@ -1,7 +1,7 @@
 <!-- <link href="css/docs.css" rel="stylesheet"> -->
 <section id="main" class='container-narrow'>
 
-<h3>Brown College</h3>
+<h3>{{ organization.name }}</h3>
 <a class="btn btn-primary pull-right" href="/election-panel" role="button">
   <i class="icon-plus icon-white"></i> New Election
 </a>
@@ -84,7 +84,11 @@
         <div class="control-group">
           <label class="control-label" for="name">Name</label>
           <div class="controls">
-            <input type="text" class="input-xlarge" id="name" name="election-name">
+            <input type="text"
+                   class="input-xlarge"
+                   id="name"
+                   name="election-name"
+                   value='{{ organization.name }}'>
           </div>
         </div>
         <div class="control-group">
@@ -94,7 +98,7 @@
                       rows='4'
                       id="description"
                       name="election-name"
-                      placeholder="We like to hold elections"></textarea>
+                      placeholder="We like to hold elections">{{ organization.description }}</textarea>
           </div>
         </div>
         <div class="control-group">
@@ -104,7 +108,8 @@
                    class="input-xlarge"
                    id="website"
                    name="election-name"
-                   placeholder='http://awesome.com'>
+                   placeholder='http://awesome.com'
+                   value='{{ organization.website }}'>
           </div>
         </div>
         <div class="control-group">
