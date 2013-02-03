@@ -1,10 +1,11 @@
 # JS for organization-panel.html
 jQuery ->
-	$('#updateProfile').click(updateOrganizationInformation)
+	$('#updateProfile').click (event) ->
+		updateOrganizationInformation(event)
 
 # Tell the backend to update orgnaizational information
-updateOrganizationInformation = ->
-	# console.log($('#election-panel li[class=active]').text())
+updateOrganizationInformation = (event) ->
+	event.preventDefault()
 	postData =
 		'id': $('#organization-id').val()
 		'name': $('#organization-name').val()

@@ -2,11 +2,14 @@
 var updateOrganizationInformation;
 
 jQuery(function() {
-  return $('#updateProfile').click(updateOrganizationInformation);
+  return $('#updateProfile').click(function(event) {
+    return updateOrganizationInformation(event);
+  });
 });
 
-updateOrganizationInformation = function() {
+updateOrganizationInformation = function(event) {
   var postData;
+  event.preventDefault();
   postData = {
     'id': $('#organization-id').val(),
     'name': $('#organization-name').val(),
