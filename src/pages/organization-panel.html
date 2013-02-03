@@ -18,7 +18,7 @@
     <!-- Elections Tab -->
     <div class="tab-pane fade active in" id="elections">
       <div>
-        <a class="btn btn-primary" href="#createElection" role="button" data-toggle="modal"><i class="icon-plus icon-white"></i> Create</a>
+        <a class="btn btn-primary" href="/election-panel" role="button"><i class="icon-plus icon-white"></i> Create</a>
       </div>
       <table class="table">
         <thead>
@@ -68,7 +68,74 @@
       <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
     </div>
     <div class="tab-pane fade" id="profile">
-      <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+    <form class="form-horizontal well" id="createForm" action="createElection" method="post">
+      <fieldset>
+        <legend>Election Information</legend>
+        <!-- Election Name -->
+        <div class="control-group">
+          <label class="control-label" for="name">Election Name</label>
+          <div class="controls">
+            <input type="text" class="input-xlarge" id="name" name="election-name">
+          </div>
+        </div>
+
+        <!-- Start and End Date Time -->
+        <div class="control-group">
+          <label class="control-label">Voting Times</label>
+          <div class="controls controls-row">
+            <!-- Start Date -->
+            <div class="input-append date" data-date-format="mm/dd/yy">
+              <input class="input-mini" size="16" type="text" readonly="" id="startDate" name="startDate">
+              <span class="add-on"><i class="icon-calendar"></i></span>
+            </div>
+            <!-- Start Time -->
+            <div class="input-append bootstrap-timepicker-component">
+              <input class="input-mini timepicker-default" type="text" id="startTime" name="startTime">
+              <span class="add-on"><i class="icon-time"></i></span>
+            </div>
+
+            <span class="help-inline">-</span>
+
+            <!-- End Date -->
+            <div class="input-append date" data-date-format="mm/dd/yy">
+              <input class="input-mini" size="16" type="text" readonly="" id="endDate" name="endDate">
+              <span class="add-on"><i class="icon-calendar"></i></span>
+            </div>
+            <!-- End Time -->
+            <div class="input-append bootstrap-timepicker-component">
+              <input class="input-mini timepicker-default" type="text" id="endTime" name="endTime">
+              <span class="add-on"><i class="icon-time"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Election results available to voters. -->
+        <!-- Results Available to Public: [1 hour, 3 hours, 6 hours, 1 day, 2 days] -->
+        <div class="control-group">
+          <label class="control-label" for="position-select-type">Time Until Results are Publically Available</label>
+          <div class="controls">
+            <select id="result-delay" name="result-delay">
+              <option id="time-1-hour" value="3600">1 hour</option>
+              <option id="time-3-hours" value="10800">3 hours</option>
+              <option id="time-6-hours" value="21600">6 hours</option>
+              <option id="time-1-day" value="86400">1 day</option>
+              <option id="time-2-days" value="172800">2 days</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Vote Required -->
+        <div class="control-group">
+          <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone will be able to vote.">Universal Election</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" id="universal-election">
+              Enabled
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </form>
     </div>
     <div class="tab-pane fade" id="admins">
       <h4>Admins</h4>
@@ -86,13 +153,14 @@
 <div id="createElection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Modal header</h3>
+    <h3 id="myModalLabel">Create Election</h3>
   </div>
   <div class="modal-body">
-    <p>One fine body…</p>
+    
+
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Save changes</button>
+    <button class="btn btn-primary">Create</button>
   </div>
 </div>

@@ -1,5 +1,5 @@
 """
-Back-end for the Admin.
+Back-end for the Organization Panel.
 """
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
@@ -15,7 +15,7 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_page
 
-PAGE_NAME = '/admin'
+PAGE_NAME = '/organization-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
                      'if you are interested in conducting elections for your organization.')
 
@@ -65,5 +65,5 @@ class AdminHandler(webapp2.RequestHandler):
         return admins
         
 app = webapp2.WSGIApplication([
-        ('/admin', AdminHandler)
+        ('/organization-panel', AdminHandler)
 ], debug=True)

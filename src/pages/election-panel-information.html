@@ -1,0 +1,72 @@
+<div class="form-horizontal" id="createForm" style="margin-top:20px">
+  <fieldset>
+    <!-- Election Name -->
+    <div class="control-group">
+      <label class="control-label" for="name">Election Name</label>
+      <div class="controls">
+        <input type="text" class="input-xlarge" id="name" name="election-name">
+      </div>
+    </div>
+
+    <!-- Start and End Date Time -->
+    <div class="control-group">
+      <label class="control-label">Voting Times</label>
+      <div class="controls controls-row">
+        <!-- Start Date -->
+        <div class="input-append date" data-date-format="mm/dd/yy">
+          <input class="input-mini" size="16" type="text" readonly="" id="startDate" name="startDate">
+          <span class="add-on"><i class="icon-calendar"></i></span>
+        </div>
+        <!-- Start Time -->
+        <div class="input-append bootstrap-timepicker-component">
+          <input class="input-mini timepicker-default" type="text" id="startTime" name="startTime">
+          <span class="add-on"><i class="icon-time"></i></span>
+        </div>
+
+        <span class="help-inline">-</span>
+
+        <!-- End Date -->
+        <div class="input-append date" data-date-format="mm/dd/yy">
+          <input class="input-mini" size="16" type="text" readonly="" id="endDate" name="endDate">
+          <span class="add-on"><i class="icon-calendar"></i></span>
+        </div>
+        <!-- End Time -->
+        <div class="input-append bootstrap-timepicker-component">
+          <input class="input-mini timepicker-default" type="text" id="endTime" name="endTime">
+          <span class="add-on"><i class="icon-time"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Election results available to voters. -->
+    <!-- Results Available to Public: [1 hour, 3 hours, 6 hours, 1 day, 2 days] -->
+    <div class="control-group">
+      <label class="control-label" for="position-select-type">Time Until Results are Publically Available</label>
+      <div class="controls">
+        <select id="result-delay" name="result-delay">
+          <option id="time-1-hour" value="3600">1 hour</option>
+          <option id="time-3-hours" value="10800">3 hours</option>
+          <option id="time-6-hours" value="21600">6 hours</option>
+          <option id="time-1-day" value="86400">1 day</option>
+          <option id="time-2-days" value="172800">2 days</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Vote Required -->
+    <div class="control-group">
+      <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone will be able to vote.">Universal Election</label>
+      <div class="controls">
+        <label class="checkbox">
+          <input type="checkbox" id="universal-election">
+          Enabled
+        </label>
+      </div>
+    </div>
+  </fieldset>
+  <!-- Form Actions -->
+  <div class="form-actions" sty>
+    <a type="submit" class="btn btn-primary" id="election-submit">Create</a>
+    <button type="reset" class="btn">Cancel</button>
+  </div>
+</div>

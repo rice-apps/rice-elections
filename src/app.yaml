@@ -31,8 +31,11 @@ handlers:
 - url: /vote
   script: vote.app
 
-- url: /admin
-  script: admin.app
+- url: /organization-panel
+  script: organizationpanel.app
+
+- url: /election-panel
+  script: electionpanel.app
 
 - url: /cast-ballot
   script: castballot.app
