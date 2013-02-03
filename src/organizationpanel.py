@@ -46,6 +46,16 @@ class AdminHandler(webapp2.RequestHandler):
         render_page(self, PAGE_NAME, page_data)
 
     def post(self):
+        # Authenticate user
+        voter = get_voter()
+        if not voter:
+            self.respond('ERROR', MSG_NOT_AUTHORIZED)
+            return
+        status = database.get_admin_status(voter)
+        if not status:
+            self.respond('ERROR', MSG_NOT_AUTHORIZED)
+            return
+
         # Get method and data
         logging.info('Received call')
         data = json.loads(self.request.get('data'))
@@ -69,8 +79,9 @@ class AdminHandler(webapp2.RequestHandler):
         logging.info('Updating profile')
         org_id = data['id']
         org = database.Organization.get(org_id)
+        assert database.get_admin_status(get_voter(), org)
         for field in ['name', 'description', 'website']:
-            setattr(org, field, data[field])
+            setattr(org, field, data[field].strip())
         org.put()
         self.respond('OK', 'Updated')
 
