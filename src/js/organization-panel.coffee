@@ -17,9 +17,20 @@ updateOrganizationInformation = (event) ->
 		type: 'POST'
 		data: 'data': JSON.stringify(postData)
 		success: (data) ->
-			console.log('Success!')
-			console.log(data)
-			$('#election-information').append(data)
+			successHandler(data)
 		error: (data) ->
-			console.log('Error...')
-			console.log(data)
+			errorHandler(data)
+
+successHandler = (data) ->
+	s = $('#server-response')
+	s.append('Succesfully updated your ogranization profile')
+	s.addClass('alert')
+	s.addClass('alert-success')
+	s.show()
+
+errorHandler = (data) ->
+	s = $('#server-response')
+	s.append('Sorry, there was a server error.')
+	s.addClass('alert')
+	s.addClass('alert-error')
+	s.show()
