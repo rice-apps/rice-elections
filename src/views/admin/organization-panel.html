@@ -55,9 +55,9 @@
           <tr>
             <td>
               {% if elec.end > now %}
-                <a href="/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
+                <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
               {% else %}
-                <a href="/view-results?id={{ elec.id }}">{{ elec.name }}</a>
+                <a href="/vote/view-results?id={{ elec.id }}">{{ elec.name }}</a>
               {% endif %}
             </td>
             <td>
