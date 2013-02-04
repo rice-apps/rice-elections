@@ -9,7 +9,7 @@ import models
 import logging
 import webapp2
 
-from authentication import require_login, get_voter
+from authentication import auth
 from datetime import datetime, timedelta
 from main import render_page
 
@@ -28,9 +28,7 @@ class ResultsHandler(webapp2.RequestHandler):
         page_data = {}
 
         # Authenticate user
-        voter = get_voter()
-        if not voter:
-            require_login(self)
+        voter = get_voter(self)
         net_id = voter.net_id
 
         # Serve the election the user has requested

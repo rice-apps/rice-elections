@@ -1,0 +1,1 @@
+information-panel.coffee

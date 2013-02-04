@@ -5,7 +5,6 @@ web request.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import models
 import logging
 import json
 import reportresults
@@ -13,6 +12,7 @@ import webapp2
 
 from datetime import datetime
 from google.appengine.api import mail
+from models import models
 
 class ElectionVoterFactory(webapp2.RequestHandler):
     """

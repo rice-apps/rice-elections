@@ -5,15 +5,15 @@ Back-end for serving and accepting a ballot for an election.
 __authors__ = ['Waseem Ahmad <waseem@rice.edu>',
                'Andrew Capshaw <capshaw@rice.edu>']
 
-import models
 import json
 import logging
 import random
 import webapp2
 
-from authentication import require_login, get_voter
+from authentication import auth
 from google.appengine.ext import db
 from main import render_page
+from models import models
 
 
 PAGE_NAME = 'vote/cast-ballot'
@@ -31,9 +31,7 @@ class BallotHandler(webapp2.RequestHandler):
         page_data = {}
 
         # Authenticate user
-        voter = get_voter()
-        if not voter:
-            require_login(self)
+        voter = auth.get_voter(self)
         net_id = voter.net_id
         
         # Serve the election the user has requested
@@ -94,7 +92,7 @@ class BallotHandler(webapp2.RequestHandler):
         logging.info(formData)
         
         # Authenticate user
-        voter = get_voter()
+        voter = auth.get_voter()
         if not voter:
             self.respond('ERROR', 'You\'re not logged in!')
             return

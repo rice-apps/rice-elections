@@ -8,7 +8,7 @@
 <script src="/static/js/shared/bootstrap-timepicker.js"></script>
 <script src="/static/js/shared/bootstrap-tooltip.js"></script>
 <script src="/static/js/shared/jquery.form.js"></script>
-<script src="/static/js/create-election.js"></script>
+<script src="/static/js/admin/organization-panel/election-panel/information.js"></script>
 {% if not election %}
   {% set election = None %}
 {% endif %}
@@ -81,7 +81,7 @@
   <!-- Form Actions -->
   <div class="form-actions" style='background:none'>
     <a type="submit" class="btn btn-primary" id="election-submit">Create</a>
-    <button type="reset" class="btn">Cancel</button>
+    <a class="btn" href="../">Back</a>
   </div>
 </div>
 

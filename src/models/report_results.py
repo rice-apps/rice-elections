@@ -5,13 +5,13 @@ Script to report election results including ballots in detail to election admin.
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
-import models
 import logging
 import webapp2
 
 from google.appengine.ext import db
 from google.appengine.api import mail
 from datetime import datetime
+from models import models
 
 def encode(string):
 	return string.encode('ascii', 'replace')

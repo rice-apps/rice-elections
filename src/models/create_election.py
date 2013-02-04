@@ -9,7 +9,7 @@ import json
 import logging
 import webapp2
 
-from authentication import require_login, get_voter
+from authentication.auth import require_login, get_voter
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
@@ -31,7 +31,7 @@ class CreateElectionHandler(webapp2.RequestHandler):
             require_login(self)
         status = models.get_admin_status(voter)
         if not status:
-            render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+            render_page(self, '/templates/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             if voter.net_id != 'wa1':
                 return
             # TODO: Temp hard-code

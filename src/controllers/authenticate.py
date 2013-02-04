@@ -4,9 +4,9 @@ Controller for authentication related requests.
 
 import webapp2
 
-from authentication import LoginResponseHandler
-from authentication import LogoutHandler
-from authentication import LogoutResponseHandler
+from authentication.auth import LoginResponseHandler
+from authentication.auth import LogoutHandler
+from authentication.auth import LogoutResponseHandler
 from authentication.cleanupsessions import CleanupSessionsHandler
 
 app = webapp2.WSGIApplication([

@@ -4,16 +4,16 @@ Back-end for the Organization Panel.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import authentication as auth
-import models
 import json
 import logging
 import webapp2
 
+from authentication import auth
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from main import render_page
+from models import models
 
 PAGE_NAME = '/admin/organization-panel'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator. Please contact the website administration '
@@ -27,7 +27,8 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         status = models.get_admin_status(voter)
         if not status:
             logging.info('Not authorized')
-            render_page(self, 'templates/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+            render_page(self, '/templates/message',
+                {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
 
         # Get organization information
