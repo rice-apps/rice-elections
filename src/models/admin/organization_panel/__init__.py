@@ -28,13 +28,16 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
             require_login(self)
         status = models.get_admin_status(voter)
         if not status:
-            render_page(self, '/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+            logging.info('Not authorized')
+            render_page(self, 'templates/message', {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
 
         # Get organization information
         admin = models.Admin.gql('WHERE voter=:1', voter).get()
+        logging.info(admin)
         org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
+        logging.info(org_admin)
         org = org_admin.organization
 
         # Construct page information
@@ -42,7 +45,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         page_data['organization'] = org
         page_data['admins'] = self.admin_list(org)
         page_data['elections'] = [elec.to_json() for elec in org.elections]
-
+        logging.info(page_data)
         render_page(self, PAGE_NAME, page_data)
 
     def post(self):

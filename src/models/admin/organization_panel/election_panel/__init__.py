@@ -45,7 +45,7 @@ class ElectionPanelHandler(webapp2.RequestHandler):
         # Construct page information
         page_data = {}
         page_data['id'] = self.request.get('id')
-        panel = get_panel(self.request.path, page_data, page_data['id'])
+        panel = get_panel(self.request.path + '/information', page_data, page_data['id'])
         logging.info(panel)
         render_page_content(self, PAGE_NAME, panel)
 

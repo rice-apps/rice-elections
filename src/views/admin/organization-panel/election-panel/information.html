@@ -9,6 +9,9 @@
 <script src="/static/js/shared/bootstrap-tooltip.js"></script>
 <script src="/static/js/shared/jquery.form.js"></script>
 <script src="/static/js/create-election.js"></script>
+{% if not election %}
+  {% set election = None %}
+{% endif %}
 <div class="form-horizontal" id="createForm" style="margin-top:20px" data-election-id="{{ election.id }}">
   <fieldset>
     <!-- Election Name -->
