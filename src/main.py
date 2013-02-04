@@ -52,7 +52,7 @@ def render_page(handler, page_name, page_data):
 def render_page_content(handler, page_name, page_content):
     # Mark all links in the nav bar as inactive except the page open
     for item in NAV_BAR:
-        item['active'] = (item['link'] == page_name)
+        item['active'] = page_name.startswith(item['link'])
 
     template = JINJA_ENV.get_template('templates/page.html')
     template_vals = {'nav_bar': NAV_BAR,

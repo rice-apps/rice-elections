@@ -22,7 +22,7 @@ updateOrganizationInformation = function(event) {
   };
   console.log(postData);
   return $.ajax({
-    url: '/organization-panel',
+    url: '/admin/organization-panel',
     type: 'POST',
     data: {
       'data': JSON.stringify(postData)

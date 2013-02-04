@@ -16,7 +16,7 @@ updateOrganizationInformation = (event) ->
 		'data': data
 	console.log(postData)
 	$.ajax
-		url: '/organization-panel'
+		url: '/admin/organization-panel'
 		type: 'POST'
 		data: 'data': JSON.stringify(postData)
 		success: (data) ->

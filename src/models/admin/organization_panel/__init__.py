@@ -4,12 +4,12 @@ Back-end for the Organization Panel.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
+import authentication as auth
 import models
 import json
 import logging
 import webapp2
 
-from authentication import require_login, get_voter
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
 from google.appengine.ext import db
@@ -23,9 +23,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
 
     def get(self):
         # Authenticate user
-        voter = get_voter()
-        if not voter:
-            require_login(self)
+        voter = auth.get_voter(self)
         status = models.get_admin_status(voter)
         if not status:
             logging.info('Not authorized')
@@ -39,6 +37,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
                                                     admin).get()
         logging.info(org_admin)
         org = org_admin.organization
+        auth.set_organization(org)
 
         # Construct page information
         page_data = {}
@@ -50,7 +49,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
 
     def post(self):
         # Authenticate user
-        voter = get_voter()
+        voter = auth.get_voter()
         if not voter:
             self.respond('ERROR', MSG_NOT_AUTHORIZED)
             return
@@ -82,7 +81,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         logging.info('Updating profile')
         org_id = data['id']
         org = models.Organization.get(org_id)
-        assert models.get_admin_status(get_voter(), org)
+        assert models.get_admin_status(auth.get_voter(), org)
         for field in ['name', 'description', 'website']:
             setattr(org, field, data[field].strip())
         org.put()
