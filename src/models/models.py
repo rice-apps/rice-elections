@@ -72,8 +72,9 @@ class Election(db.Model, CacheableJson):
             'id': str(self.key()),
             'name': self.name,
             'organization': self.organization.name,
-            'start': self.start,
-            'end': self.end,
+            'times': {
+                'start': str(self.start),
+                'end': str(self.end)},
             'result_computed': self.result_computed,
             'result_delay': self.result_delay,
             'universal': self.universal,

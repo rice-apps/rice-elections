@@ -62,7 +62,7 @@ def render_html(handler, page_name, page_data):
 def get_page(page_name, page_data):
     # Add Jinja Filters
     JINJA_ENV.filters['datetime'] = format_datetime
-    JINJA_ENV.globals['now'] = datetime.datetime.now()
+    JINJA_ENV.globals['now'] = str(datetime.datetime.now())
 
     # Get the page name being requested assume home.html if none specified
     if page_name == '/':

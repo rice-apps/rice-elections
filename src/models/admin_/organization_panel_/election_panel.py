@@ -48,10 +48,7 @@ class ElectionPanelHandler(webapp2.RequestHandler):
             auth.clear_election()
 
         # Construct page information
-        if self.request.path.endswith('/election-panel'):
-            panel = get_panel(PAGE_NAME + '/information', {}, election_id)
-        else:
-            panel = get_panel(self.request.path, {}, election_id)
+        panel = get_panel(PAGE_NAME + '/information', {}, election_id)
         webapputils.render_page_content(self, PAGE_NAME, panel)
 
 

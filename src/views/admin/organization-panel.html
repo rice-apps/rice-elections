@@ -37,12 +37,12 @@
         {% for elec in elections|reverse %}
           {% set status_flag = 'error' %}
 
-          {% if now > elec.start %}
+          {% if now > elec.times.start %}
             {% set status_flag = 'info' %}
             {% set status = 'Voting in progress.' %}
           {% endif %}
 
-          {% if now > elec.end %}
+          {% if now > elec.times.end %}
             {% set status_flag = 'warning' %}
             {% set status = 'Voting has ended.' %}
           {% endif %}
@@ -54,19 +54,19 @@
 
           <tr>
             <td>
-              {% if elec.end > now %}
+              {% if elec.times.end > now %}
                 <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
               {% else %}
                 <a href="/vote/view-results?id={{ elec.id }}">{{ elec.name }}</a>
               {% endif %}
             </td>
             <td>
-              <span class="date-format">{{ elec.start | datetime('small') }}</span><br>
-              <span class="date-format">{{ elec.end | datetime('small') }}</span>
+              <span class="date-format">{{ elec.times.start }}</span><br>
+              <span class="date-format">{{ elec.times.end }}</span>
             </td>
             <td><span>{{ elec.voted_count }} / {{ elec.voter_count }}</span></td>
             <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
-            <td><a href="/admin/organization-panel/election-panel/information?id={{ elec.id }}">Edit</a></td>
+            <td><a href="/admin/organization-panel/election-panel/?id={{ elec.id }}">Edit</a></td>
           </tr>
         {% endfor %}
       </tbody>

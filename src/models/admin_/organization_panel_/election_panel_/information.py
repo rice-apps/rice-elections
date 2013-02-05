@@ -43,6 +43,22 @@ class ElectionInformationHandler(webapp2.RequestHandler):
             webapputils.respond(self, 'ERROR', 'Not Authorized')
             return
 
+        election = auth.get_election()
+        if election:
+            data = {'status': 'OK', 'election': election.to_json()}
+        else:
+            data = {'status': 'OK'}
+        logging.info(data)
+        self.response.write(json.dumps(data))
+
+class ElectionUpdateHandler(webapp2.RequestHandler):
+    def post(self):
+        # Authenticate user
+        org = auth.get_organization()
+        if not org:
+            webapputils.respond(self, 'ERROR', 'Not Authorized')
+            return
+
         # Get form data
         formData = self.request.get('formData')
         data = json.loads(formData)
@@ -62,13 +78,15 @@ class ElectionInformationHandler(webapp2.RequestHandler):
                 universal=data['universal'],
                 result_delay=data['result_delay'])
             election.put()
+            election.clear_cache()
             webapputils.respond(self, 'OK', 'Created')
             auth.set_election(election)
         else:
             election.name = data['name']
-            election.start = datetime.fromtimestamp(data['start'])
-            election.end = datetime.fromtimestamp(data['end'])
+            election.start = datetime.fromtimestamp(data['times']['start'])
+            election.end = datetime.fromtimestamp(data['times']['end'])
             election.universal = data['universal']
             election.result_delay = data['result_delay']
             election.put()
+            election.clear_cache()
             webapputils.respond(self, 'OK', 'Updated')

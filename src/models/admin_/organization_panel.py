@@ -44,6 +44,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         page_data['organization'] = org
         page_data['admins'] = self.admin_list(org)
         page_data['elections'] = [elec.to_json() for elec in org.elections]
+        logging.info(page_data['elections'])
         logging.info(page_data)
         webapputils.render_page(self, PAGE_NAME, page_data)
 
