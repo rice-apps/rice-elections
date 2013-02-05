@@ -1,7 +1,20 @@
 <script type='text/javascript' src='/static/js/admin/organization-panel.js'></script>
 <section id="main" class='container-narrow'>
 
-<h3>{{ organization.name }}</h3>
+<div class="btn-group">
+  <a class="btn btn-large dropdown-toggle" data-toggle="dropdown" href="#">
+    {{ organization.name }}
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a href='#'>{{ organization.name }} I</a></li>
+    <li><a href='#'>{{ organization.name }} II</a></li>
+    <li class="divider"></li>
+    <li><a href='#'><i class='icon-plus'></i> New Organization</a></li>
+  </ul>
+</div>
+<br><br>
+
 <a class="btn btn-primary pull-right" href="organization-panel/election-panel" role="button">
   <i class="icon-plus icon-white"></i> New Election
 </a>
