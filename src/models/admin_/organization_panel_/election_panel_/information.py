@@ -72,8 +72,8 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
             # User must be trying to create new election
             election = models.Election(
                 name=data['name'],
-                start=datetime.fromtimestamp(data['start']),
-                end=datetime.fromtimestamp(data['end']),
+                start=datetime.fromtimestamp(data['times']['start']),
+                end=datetime.fromtimestamp(data['times']['end']),
                 organization=org,
                 universal=data['universal'],
                 result_delay=data['result_delay'])
