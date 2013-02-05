@@ -4,9 +4,12 @@ Back end for election panel information.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
+import json
+import logging
 import webapp2
 
 from authentication import auth
+from datetime import datetime
 from models import models, webapputils
 from models.admin_.organization_panel_.election_panel import get_panel
 
@@ -31,10 +34,41 @@ class ElectionInformationHandler(webapp2.RequestHandler):
             data = {'id': str(election.key()),
                     'election': election.to_json()}
         panel = get_panel(PAGE_NAME, data, data.get('id'))
-        render_page_content(self, PAGE_NAME, panel)
+        webapputils.render_page_content(self, PAGE_NAME, panel)
 
     def post(self):
         # Authenticate user
         org = auth.get_organization()
         if not org:
-            None
+            webapputils.respond(self, 'ERROR', 'Not Authorized')
+            return
+
+        # Get form data
+        formData = self.request.get('formData')
+        data = json.loads(formData)
+        logging.info(data)
+        if not formData:
+            webapputils.respond(self, 'ERROR', 'No Form Data Sent!')
+            return
+
+        election = auth.get_election()
+        if not election:
+            # User must be trying to create new election
+            election = models.Election(
+                name=data['name'],
+                start=datetime.fromtimestamp(data['start']),
+                end=datetime.fromtimestamp(data['end']),
+                organization=org,
+                universal=data['universal'],
+                result_delay=data['result_delay'])
+            election.put()
+            webapputils.respond(self, 'OK', 'Created')
+            auth.set_election(election)
+        else:
+            election.name = data['name']
+            election.start = datetime.fromtimestamp(data['start'])
+            election.end = datetime.fromtimestamp(data['end'])
+            election.universal = data['universal']
+            election.result_delay = data['result_delay']
+            election.put()
+            webapputils.respond(self, 'OK', 'Updated')

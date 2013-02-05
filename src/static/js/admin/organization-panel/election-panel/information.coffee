@@ -15,8 +15,6 @@ jQuery ->
 # Called when the submit button is clicked. Validates & makes an AJAX call.
 submitForm = ->
     # Validate
-    return false if $('#election-submit').hasClass('disabled')
-    
     postData =
         'name': getElectionName()
         'start': getElectionTimes()['start']
@@ -29,22 +27,21 @@ submitForm = ->
             scrollToTop()
             return false
 
-    $('#election-submit').addClass('disabled')
-
     $.ajax
         url: '/admin/organization-panel/election-panel/information'
         type: 'POST'
         data: 'formData': JSON.stringify(postData)
         success: (data) ->
             response = JSON.parse(data)
-            scrollToTop()
-            $('#server-response').addClass('alert')
-            if response['status'] == 'OK'
-                $('#server-response').addClass('alert-success')
-            else
-                $('#server-response').addClass('alert-error')
-            $('#server-response').html(response['msg'])
-            $('#server-response').hide().slideDown(1000)
+            setButton('btn-success', response['msg'])
+        error: (data) ->
+            setButton('btn-danger', 'Error')
+
+setButton = (type, text) ->
+    btn = $('#election-submit')
+    btn.attr('class', 'btn')
+    btn.addClass(type)
+    btn.text(text)
 
 scrollToTop = ->
     $('html, body').animate scrollTop: $('#createForm').offset().top, 500

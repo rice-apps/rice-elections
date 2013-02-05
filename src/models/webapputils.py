@@ -7,6 +7,7 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 import datetime
 import os
 import jinja2
+import json
 import main
 
 from authentication.gaesessions import get_current_session
@@ -92,4 +93,4 @@ def respond(handler, status, message):
             status {String}: response status
             message {String}: response message
         """
-        self.response.write(json.dumps({'status': status, 'msg': message}))
+        handler.response.write(json.dumps({'status': status, 'msg': message}))
