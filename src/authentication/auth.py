@@ -11,8 +11,8 @@ import urllib
 import webapp2
 
 from gaesessions import get_current_session
-from main import render_page
 from models import models
+from models.webapputils import render_page
 
 CAS_SERVER  = "https://netid.rice.edu"
 
