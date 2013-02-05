@@ -302,14 +302,6 @@ def get_organization(name):
     Returns:
         Organization from models. None if it doesn't exist.
     """
-    temp_hard_code = True
-    
-    if not name:
-        if temp_hard_code:
-            name = 'Brown College'
-        else:
-            return None
-    
     query_result = db.GqlQuery('SELECT * FROM Organization WHERE name=:1 LIMIT 1', name).run()
     for organization in query_result:
         return organization
