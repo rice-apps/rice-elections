@@ -44,7 +44,7 @@ InformationForm = ->
     @endTime = $('#endTime')
 
     # Input Choice: The delay in results to public
-    @resultDelay = $('#result-delay') 
+    @resultDelay = $('#result-delay')
 
     # Checkbox: Whether the election is universal
     @universal = $('#universal-election')
@@ -65,7 +65,7 @@ InformationForm = ->
         postData = self.toJson()
 
         return false if not postData
-        
+
         self.submitBtn.addClass('disabled')
 
         $.ajax
@@ -127,9 +127,9 @@ InformationForm = ->
 
     # Resets the submit button ready for use
     InformationForm::resetSubmitBtn = ->
-        text = 'Create'
+        text = 'Create Election'
         if self.id
-            text = 'Update'
+            text = 'Update Election'
         self.setSubmitBtn('btn-primary', text)
         self.submitBtn.removeClass('disabled')
 
@@ -137,10 +137,17 @@ InformationForm = ->
     # Sets the submit button to the specified message
     InformationForm::setSubmitBtn = (type, text) ->
         disabled = true if @submitBtn.hasClass('disabled')
-        @submitBtn.attr('class', 'btn')     # Wipe all btn classes
+        # @submitBtn.attr('class', 'btn')     # Wipe all btn classes
         @submitBtn.addClass('disabled') if disabled
+        self.restoreDefaultButtonState()
         @submitBtn.addClass(type)
         @submitBtn.text(text)
+
+    InformationForm::restoreDefaultButtonState = ->
+        @submitBtn.removeClass('btn-success')
+        @submitBtn.removeClass('btn-error')
+        @submitBtn.removeClass('btn-primary')
+        @submitBtn.addClass('btn-primary')
 
     # Validates and returns the election name
     InformationForm::getName = ->
@@ -160,7 +167,7 @@ InformationForm = ->
         errorMsg = ''
         for field in [@startDate, @startTime, @endDate, @endTime]
             errorMsg = 'Missing information.' if not field.val()
-        
+
         if not errorMsg
             start = new Date("#{@startDate.val()} #{@startTime.val()}").getTime()
             end = new Date("#{@endDate.val()} #{@endTime.val()}").getTime()
@@ -170,7 +177,7 @@ InformationForm = ->
                 errorMsg = 'Start time is later than end time.'
             if start == end
                 errorMsg = 'Start time is the same as end time.'
-        
+
         if errorMsg
             timeContainer.addClass('error')
             $('.errorMsgTime').remove()
@@ -181,7 +188,7 @@ InformationForm = ->
             timeContainer.removeClass('error')
             $('.errorMsgTime').remove()
             return 'start': start, 'end': end
-    
+
     # Returns the election result delay
     InformationForm::getResultDelay = -> parseInt(@resultDelay.val())
 

@@ -96,7 +96,7 @@
         {% endfor %}
         <tr>
           <td colspan='5'>
-            <a class="btn btn-primary" href="organization-panel/election-panel" role="button"><i class="icon-plus icon-white"></i> New Election</a>
+            <a class="btn btn-primary pull-right" href="organization-panel/election-panel" role="button"><i class="icon-plus icon-white"></i> New Election</a>
           </td>
         </tr>
       </tbody>
@@ -108,7 +108,6 @@
   </div>
   <!-- ===================================================================== -->
   <div class="tab-pane fade" id="profile">
-    <div id='server-response'></div>
     <form class="form-horizontal well">
       <fieldset>
         <legend>Organization Profile</legend>
@@ -116,7 +115,7 @@
           <label class="control-label" for="name">Name</label>
           <div class="controls">
             <input type="text"
-                   class="input-xlarge span4"
+                   class="input-xlarge span4 profile-input"
                    id="organization-name"
                    value='{{ organization.name }}'>
           </div>
@@ -124,7 +123,7 @@
         <div class="control-group">
           <label class="control-label" for="description">Description</label>
           <div class="controls">
-            <textarea class="input-xlarge span4"
+            <textarea class="input-xlarge span4 profile-input"
                       rows='4'
                       id="organization-description"
                       placeholder="We like to hold elections">{{ organization.description }}</textarea>
@@ -134,7 +133,7 @@
           <label class="control-label" for="website">Website</label>
           <div class="controls">
             <input type="text"
-                   class="input-xlarge span4"
+                   class="input-xlarge span4 profile-input"
                    id="organization-website"
                    placeholder='http://awesome.com'
                    value='{{ organization.website }}'>
@@ -143,9 +142,10 @@
         <div class="control-group">
           <label class="control-label" for="updateProfile"></label>
           <div class="controls">
-            <input id='updateProfile'
-                   class="input-large btn btn-primary"
-                   value='Update Profile'>
+            <a href='#' id='updateProfile'
+                   class="input-large btn btn-primary disabled"
+                   data-default-text='Update Profile'
+                   value=''>Update Profile</a>
           </div>
         </div>
         <input type="hidden"

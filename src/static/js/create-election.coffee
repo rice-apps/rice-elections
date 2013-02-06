@@ -5,10 +5,10 @@ jQuery ->
     $('#startDate, #endDate').parent().datepicker()
     $('#startTime, #endTime').timepicker
         minuteStep: 5
-    
+
     # Initialize tooltips
     $('label[rel="tooltip"]').tooltip()
-    
+
     # Form validation
     $('#election-submit').click(submitForm)
     $('#createForm').bind 'reset', ->
@@ -31,7 +31,7 @@ submitForm = ->
     if not valid
         scrollToTop()
         return false
-    
+
     postData =
         'name': formData[0]
         'start': formData[1]['start']
@@ -82,7 +82,7 @@ getElectionTimes = ->
     errorMsg = ''
     for field in [startDate, startTime, endDate, endTime]
         errorMsg = 'Missing information.' if not field.val()
-    
+
     if not errorMsg
         start = new Date("#{startDate.val()} #{startTime.val()}").getTime()
         end = new Date("#{endDate.val()} #{endTime.val()}").getTime()
@@ -92,7 +92,7 @@ getElectionTimes = ->
             errorMsg = 'Start time is later than end time.'
         if start == end
             errorMsg = 'Start time is the same as end time.'
-    
+
     if errorMsg
         timeContainer.addClass('error')
         $('.errorMsgTime').remove()
@@ -103,7 +103,7 @@ getElectionTimes = ->
         timeContainer.removeClass('error')
         $('.errorMsgTime').remove()
         return 'start': start, 'end': end
-            
+
 getResultDelay = -> parseInt($('#result-delay').val())
 
 getEligibleVoters = ->
@@ -164,16 +164,16 @@ Position = (type) ->
 
     # Generator for candidate IDs
     @candidateIDGen = 0
-    
+
     # List of HTML IDs of candidates added to the form
     @candidateIDs = []
-    
+
     # Generator for candidate IDs
     @candidateIDPrefix = "position-#{@type}-candidate-"
-    
-    # HTML ID prefix for candidates, 
+
+    # HTML ID prefix for candidates,
     @addCandidate = $("#position-#{@type}-add-candidate")
-    
+
     # Div: list of candidates
     @candidates = $("#position-#{@type}-candidates")
 
@@ -226,7 +226,7 @@ Position = (type) ->
         self.candidates.append(candidateInput)
         candidateInput.hide().fadeIn(500)
         self.candidateIDs.push(index)
-        
+
         # Delete candidate button
         $("##{id}").click ->
             indexPtr = self.candidateIDs.indexOf(index)
@@ -250,7 +250,7 @@ Position = (type) ->
         missing = false
         container = @candidates.parent().parent()
         canList = []    # Function output
-        
+
         # Make sure the candidate name is defined for all candidates
         for can in @candidateIDs
             nameInput = $("#position-#{@type}-candidate-#{can}-name")
@@ -262,7 +262,7 @@ Position = (type) ->
                     'name': nameInput.val()
                     'netId': netIdInput.val()
                 )
-        
+
         $('.errorMsgCandidateName').remove()
         container.removeClass('error')
         if missing
@@ -270,7 +270,7 @@ Position = (type) ->
             $('<span class="help-inline errorMsgSlots">Number of ' +
                 'Missing information.</span>').insertAfter(@candidates)
             return null
-        
+
         return canList
 
     # Validates and returns the write-in slots input number.
@@ -390,28 +390,28 @@ addPositionModal = ->
 
     # Drop-down: Position type
     @selectType = $("#position-select-type")
-    
+
     # Divs: selected position types
     @selectionContent = $(".selection-content")
-    
+
     # Ranked Voting Position instance
     @rankedVotingPosition = new RankedVotingPosition()
 
     # Cumulative Voting Position instance
     @cumulativeVotingPosition = new CumulativeVotingPosition()
-    
+
     # Current position selected
     @positionSelected = @rankedVotingPosition
 
     # Submit Button
     @addSubmit = $('#position-add-submit');
-    
+
     # Resets the HTML forms in the modal box on the page.
-    addPositionModal::reset = -> 
+    addPositionModal::reset = ->
         @selectType.val('0').change()
         @rankedVotingPosition.reset()
         @cumulativeVotingPosition.reset()
-    
+
     # Updates the form when the position type is changed
     @selectType.change ->
         self.selectionContent.hide()
@@ -429,5 +429,5 @@ addPositionModal = ->
         displayPosition(position)
         $('#addPositions').modal('hide')
         @reset()
-    
+
 currentModal = new addPositionModal()

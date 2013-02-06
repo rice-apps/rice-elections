@@ -22,7 +22,7 @@
     <div class="control-group">
       <label class="control-label" for="name">Election Name</label>
       <div class="controls">
-        <input type="text" class="input-xlarge" id="name" name="election-name">
+        <input type="text" class="input-xlarge span3" id="name" name="election-name">
       </div>
     </div>
 
@@ -61,7 +61,7 @@
     <div class="control-group">
       <label class="control-label" for="position-select-type">Time Until Results are Publically Available</label>
       <div class="controls">
-        <select id="result-delay" name="result-delay">
+        <select id="result-delay" name="result-delay" class='span3'>
           <option id="time-1-hour" value="3600"   {% if result_delay == 3600 %} selected {% endif %}>1 hour</option>
           <option id="time-3-hours" value="10800" {% if result_delay == 10800 %} selected {% endif %}>3 hours</option>
           <option id="time-6-hours" value="21600" {% if result_delay == 21600 %} selected {% endif %}>6 hours</option>
@@ -83,8 +83,10 @@
     </div>
   </fieldset>
   <!-- Form Actions -->
-  <div class="form-actions" style='background:none'>
-    <a type="submit" class="btn btn-primary" id="election-submit">Create</a>
+  <div class="control-group">
+    <div class="controls">
+      <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-left:0;'>Create Election</a>
+    </div>
   </div>
 </div>
 

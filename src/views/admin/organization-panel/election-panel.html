@@ -3,29 +3,27 @@
 
 <section id="main" class='container-narrow'>
 
-<ul class="breadcrumb">
-  <li><a href="/admin/organization-panel">Organization Name</a> <span class="divider">/</span></li>
-  <li class="active">Create Election</li>
-</ul>
+  <p>
+    <a href="/admin/organization-panel">&laquo; Go Back to Organization Page</a>
+  </p>
 
-  <h3>Create Election</h3>
-  <ul class="nav nav-pills pull-right">
-    {% for nav_item in panel_bar %}
-      {% if nav_item.active %}
-        <li class="active">
-      {% else %}
-        <li>
-      {% endif %}
-      <a href="{{ nav_item.link }}">{{ nav_item.text }}</a></li>
-    {% endfor %}
-  </ul>
+  <div class='navbar'>
+    <div class='navbar-inner'>
+      <!-- <span class='brand'>Create Election</span> -->
+      <ul class='nav'>
+      {% for nav_item in panel_bar %}
+        {% if nav_item.active %}
+          <li class="active">
+        {% else %}
+          <li>
+        {% endif %}
+        <a href="{{ nav_item.link }}">{{ nav_item.text }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
 
   <div id='election-panel' data-election-id='{{ id }}'>
-    <ul id="myTab" class="nav nav-tabs">
-      <li class="active"><a href="#election-information" data-toggle="tab">Election Information</a></li>
-      <li class=""><a href="#positions" data-toggle="tab">Positions</a></li>
-      <li class=""><a href="#voters" data-toggle="tab">Voters</a></li>
-    </ul>
     <div id="myTabContent" class="tab-content">
 
     <!-- ===================================================================== -->
@@ -57,19 +55,3 @@
     </div>
   </div>
 </section>
-
-<!-- Create Election Modal -->
-<div id="createElection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Create Election</h3>
-  </div>
-  <div class="modal-body">
-
-
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Create</button>
-  </div>
-</div>
