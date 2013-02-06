@@ -88,18 +88,30 @@ InformationForm = function() {
     return json;
   };
   InformationForm.prototype.setFromJson = function(json) {
-    var delay, end, start;
+    var delay, end, endDate, endTime, start, startDate, startTime;
     if (!json) {
       return;
     }
     this.id = json['id'];
     this.name.val(json['name']);
-    start = json['times']['start'];
-    end = json['times']['end'];
-    this.startDate.parent().datepicker('setValue', start);
-    this.startTime.timepicker('setTime', start.slice(start.length - 8, +start.length + 1 || 9e9));
-    this.endDate.parent().datepicker('setValue', end);
-    this.endTime.timepicker('setTime', end.slice(end.length - 8, +end.length + 1 || 9e9));
+    start = new Date(json['times']['start'] + ' UTC');
+    end = new Date(json['times']['end'] + ' UTC');
+    startDate = formatDate(start);
+    startTime = start.toLocaleTimeString();
+    endDate = formatDate(end);
+    endTime = end.toLocaleTimeString();
+    this.startDate.parent().data({
+      date: startDate
+    });
+    this.startDate.parent().datepicker('update');
+    this.startDate.val(startDate);
+    this.endDate.parent().data({
+      date: endDate
+    });
+    this.endDate.parent().datepicker('update');
+    this.endDate.val(endDate);
+    this.startTime.timepicker('setTime', startTime);
+    this.endTime.timepicker('setTime', endTime);
     delay = json['result_delay'];
     if (!$("#result-delay option[value=" + delay + "]")) {
       this.resultDelay.append("<option id='custom' value='" + delay + "'>" + delay + "</option>");
@@ -109,8 +121,8 @@ InformationForm = function() {
   };
   InformationForm.prototype.resetSubmitBtn = function() {
     var text;
-    text = 'Submit';
-    if (this.id) {
+    text = 'Create';
+    if (self.id) {
       text = 'Update';
     }
     self.setSubmitBtn('btn-primary', text);

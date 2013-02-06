@@ -95,14 +95,24 @@ InformationForm = ->
         return if not json
         @id = json['id']
         @name.val(json['name'])
-        start = json['times']['start']
-        end = json['times']['end']
-        @startDate.parent().datepicker('setValue', start)
-        @startTime.timepicker('setTime',
-                              start[start.length - 8 .. start.length])
-        @endDate.parent().datepicker('setValue', end)
-        @endTime.timepicker('setTime',
-                            end[end.length - 8 .. end.length])
+        start = new Date(json['times']['start'] + ' UTC')
+        end = new Date(json['times']['end'] + ' UTC')
+        startDate = formatDate(start)
+        startTime = start.toLocaleTimeString()
+        endDate = formatDate(end)
+        endTime = end.toLocaleTimeString()
+
+        # Set date / time picker components
+        @startDate.parent().data({date: startDate})
+        @startDate.parent().datepicker('update')
+        @startDate.val(startDate)
+
+        @endDate.parent().data({date: endDate})
+        @endDate.parent().datepicker('update')
+        @endDate.val(endDate)
+
+        @startTime.timepicker('setTime', startTime)
+        @endTime.timepicker('setTime', endTime)
 
         # Set result delay
         delay = json['result_delay']
@@ -117,8 +127,8 @@ InformationForm = ->
 
     # Resets the submit button ready for use
     InformationForm::resetSubmitBtn = ->
-        text = 'Submit'
-        if @id
+        text = 'Create'
+        if self.id
             text = 'Update'
         self.setSubmitBtn('btn-primary', text)
         self.submitBtn.removeClass('disabled')
