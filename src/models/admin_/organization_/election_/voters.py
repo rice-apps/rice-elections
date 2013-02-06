@@ -8,7 +8,7 @@ import webapp2
 
 from authentication import auth
 from models import models, webapputils
-from models.admin_.organization_panel_.election_panel import get_panel
+from models.admin_.organization_.election import get_panel
 
 PAGE_NAME = '/admin/organization-panel/election-panel/voters'
 

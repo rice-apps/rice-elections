@@ -14,7 +14,7 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import db
 from models import models, webapputils
 
-PAGE_NAME = '/admin/organization-panel/election-panel'
+PAGE_NAME = '/admin/organization/election'
 MSG_NOT_AUTHORIZED = ('We\'re sorry, you\'re not an organization administrator.'
     ' Please contact the website administration if you are interested in '
     'conducting elections for your organization.')
@@ -67,7 +67,7 @@ def get_panel(page_name, page_data, election_id=None):
         item['active'] = page_name.startswith(item['link'])
 
     panel = webapputils.JINJA_ENV.get_template(
-        'admin/organization-panel/election-panel.html')
+        'admin/organization/election.html')
     panel_vals = {'id': election_id,
                   'panel_bar': PANEL_BAR,
                   'panel_content': panel_content}

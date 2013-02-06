@@ -14,7 +14,7 @@ import models.webapputils
 NAV_BAR = [
     {'text': 'Home', 'link': '/home'},
     {'text': 'Vote', 'link': '/vote'},
-    {'text': 'Admin', 'link': '/admin/organization-panel'},
+    {'text': 'Admin', 'link': '/admin/organization'},
     {'text': 'Contact', 'link': '/contact'}]
 
 class StaticHandler(webapp2.RequestHandler):
