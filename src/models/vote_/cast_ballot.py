@@ -12,8 +12,7 @@ import webapp2
 
 from authentication import auth
 from google.appengine.ext import db
-from main import render_page
-from models import models
+from models import models, webapputils
 
 
 PAGE_NAME = 'vote/cast-ballot'
@@ -38,7 +37,7 @@ class BallotHandler(webapp2.RequestHandler):
         election_id = self.request.get('id')
         if not election_id:
             page_data['error_msg'] = 'No election was specified.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
         logging.info('%s requested election: %s', net_id, election_id)
 
@@ -46,7 +45,7 @@ class BallotHandler(webapp2.RequestHandler):
         election = db.get(election_id)
         if not election:
             page_data['error_msg'] = 'Election not found.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
 
         # Make sure user is eligible to vote
@@ -58,7 +57,7 @@ class BallotHandler(webapp2.RequestHandler):
         elif status == 'invalid_time':
             page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
         if status != 'eligible':
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
 
         # Write election information
@@ -78,7 +77,7 @@ class BallotHandler(webapp2.RequestHandler):
 
         logging.info(page_data)
 
-        render_page(self, PAGE_NAME, page_data)
+        webapputils.render_page(self, PAGE_NAME, page_data)
     
     def post(self):
         """

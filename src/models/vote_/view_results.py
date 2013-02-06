@@ -11,7 +11,7 @@ import webapp2
 
 from authentication import auth
 from datetime import datetime, timedelta
-from main import render_page
+from models import models, webapputils
 
 
 PAGE_NAME = '/vote/view-results'
@@ -35,7 +35,7 @@ class ResultsHandler(webapp2.RequestHandler):
         election_id = self.request.get('id')
         if not election_id:
             page_data['error_msg'] = 'No election was specified.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
         logging.info('%s requested election: %s', net_id, election_id)
 
@@ -43,19 +43,19 @@ class ResultsHandler(webapp2.RequestHandler):
         election = models.Election.get(election_id)
         if not election:
             page_data['error_msg'] = 'Election not found.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
         
         # Make sure user is eligible to vote
         status = models.voter_status(voter, election)
         if status != 'invalid_time' and not models.get_admin_status(voter, election.organization):
             page_data['error_msg'] = 'You are not eligible to view results.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
         
         if not election.result_computed:
             page_data['error_msg'] = 'Election results are not available yet.'
-            render_page(self, PAGE_NAME, page_data)
+            webapputils.render_page(self, PAGE_NAME, page_data)
             return
         
         public_result_time = election.end
@@ -69,7 +69,7 @@ class ResultsHandler(webapp2.RequestHandler):
                 page_data['error_msg'] = ('Election results are not available to the public yet. '
                                          'Please wait for %s longer.' % 
                                          str(public_result_time - datetime.now())[:6])
-                render_page(self, PAGE_NAME, page_data)
+                webapputils.render_page(self, PAGE_NAME, page_data)
                 return
 
         # Write election information
@@ -88,7 +88,7 @@ class ResultsHandler(webapp2.RequestHandler):
 
         logging.info(page_data)
 
-        render_page(self, PAGE_NAME, page_data)
+        webapputils.render_page(self, PAGE_NAME, page_data)
 
 app = webapp2.WSGIApplication([
         ('/view-results', ResultsHandler)

@@ -25,7 +25,7 @@ handlers:
 - url: /admin/.*
   script: controllers.admin.app
 
-- url: /vote/.*
+- url: /vote.*
   script: controllers.vote.app
 
 - url: /authenticate/.*

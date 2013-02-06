@@ -9,9 +9,10 @@ import datetime
 import logging
 import models
 import webapp2
+import webapputils
 
 from authentication import auth
-from main import render_page
+
 
 class VoteHandler(webapp2.RequestHandler):
     """
@@ -74,7 +75,7 @@ class VoteHandler(webapp2.RequestHandler):
                 page_data['open_elections'].append(data)
             logging.info(data)
 
-        render_page(self, '/vote', page_data)
+        webapputils.render_page(self, '/vote', page_data)
 
 
 app = webapp2.WSGIApplication([
