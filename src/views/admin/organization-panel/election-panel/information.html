@@ -9,15 +9,19 @@
 <script src="/static/js/shared/bootstrap-tooltip.js"></script>
 <script src="/static/js/shared/jquery.form.js"></script>
 <script src="/static/js/admin/organization-panel/election-panel/information.js"></script>
+
 {% if not election %}
   {% set election = None %}
 {% endif %}
+
 <div id="information-data"
-  data-election-id="{{ election.id }}"
-  data-election-json="{{ election }}"
-></div>
-<div class="form-horizontal" id="createForm" style="margin-top:20px" data-election-id="{{ election.id }}">
+     data-election-id="{{ election.id }}"
+     data-election-json="{{ election }}"></div>
+<div class="form-horizontal well"
+     id="createForm"
+     data-election-id="{{ election.id }}">
   <fieldset>
+    <legend>Election Information</legend>
     <!-- Election Name -->
     <div class="control-group">
       <label class="control-label" for="name">Election Name</label>
@@ -89,4 +93,3 @@
     </div>
   </div>
 </div>
-
