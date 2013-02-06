@@ -13,7 +13,7 @@ from datetime import datetime
 from models import models, webapputils
 from models.admin_.organization_.election import get_panel
 
-PAGE_NAME = '/admin/organization-panel/election-panel/information'
+PAGE_NAME = '/admin/organization/election/information'
 
 class ElectionInformationHandler(webapp2.RequestHandler):
 

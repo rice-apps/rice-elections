@@ -1,0 +1,165 @@
+<!-- Load JS / CSS
+================================================== -->
+
+{% if msg %}
+  <div class='well' style="margin-top: 20px;">
+    <h3>{{ status }}</h3>
+    <p>{{ msg }}</p>
+    <p><a href="/">Let us take you home.</a></p>
+  </div>
+{% endif %}
+<div class="form-horizontal well">
+  <fieldset>
+    <legend>Positions</legend>
+    <div class="control-group">
+      <div class="controls" id="positions">
+
+
+        <!-- Dropdown Add Position Button -->
+        <div class="btn-group">
+          <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">Add Position<span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a data-toggle="modal" href="#modal-ranked">Ranked Choice Voting</a></li>
+            <li><a data-toggle="modal" href="#modal-cumulative">Cumulative Voting</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-left:0;'>Save</a>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<!-- Ranked Choice Voting Position Modal -->
+<div id="modal-ranked" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ranked-label" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="ranked-label">Ranked Choice Voting Position</h3>
+  </div>
+  <div class="modal-body">
+
+    <!-- Ranked Choice Voting -->
+    <p>Ranked-Choice Voting (also known as instant runoff voting) allows voters to rank a first, second, third (and onwards) choice candidate for a single position. This makes it possible to elect people by majority vote without the need for a separate run-off election.</p>
+    <hr>
+    <form class="form-horizontal">
+      <fieldset>
+        <!-- Position Name -->
+        <div class="control-group">
+          <label class="control-label" for="position-ranked-name">Position Name</label>
+          <div class="controls">
+            <input type="text" class="input-xlarge" id="position-ranked-name" name="position-ranked-name-txt">
+          </div>
+        </div>
+
+        <!-- Candidates -->
+        <div class="control-group">
+          <label class="control-label" for="position-ranked-candidates">Candidates<br /></label>
+          <div class="controls">
+            <div class="add-on btn btn-success" id="position-ranked-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+            <div style="margin-bottom: 5px;" id="position-ranked-candidates"></div>
+          </div>
+        </div>
+
+        <!-- Write-in Slots -->
+        <div class="control-group">
+          <label class="control-label" for="position-ranked-write-in" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Write-in Slots</label>
+          <div class="controls">
+            <input type="number" class="input-mini" name="position-ranked-write-in" min="0" max="10" id="position-ranked-write-in" value="0">
+          </div>
+        </div>
+
+        <!-- Vote Required -->
+        <div class="control-group">
+          <label class="control-label">Vote Required</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" id="position-ranked-required">
+              Enabled
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">Close</button>
+    <span id="modal-ranked-submit" class="btn btn-primary">Save</span>
+  </div>
+</div>
+
+    <!-- Cumulative Voting Position Modal -->
+<div id="modal-cumulative" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cumulative-label" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="cumulative-label">Ranked Choice Voting Position</h3>
+  </div>
+  <div class="modal-body">
+      <p>In cumulative voting, voters cast as many votes as there are positions available. But unlike winner-take-all systems, voters are not limited to giving only one vote to a candidate. Instead, they can put multiple votes on one or more candidates.</p>
+      <hr>
+      <form class="form-horizontal">
+        <fieldset>
+          <!-- Position Name -->
+          <div class="control-group">
+            <label class="control-label" for="position-cumulative-name">Position Name</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="position-cumulative-name" name="position-cumulative-name-txt">
+            </div>
+          </div>
+
+          <!-- Position Slots -->
+          <div class="control-group">
+            <label class="control-label" for="position-cumulative-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
+            <div class="controls">
+              <input type="number" class="input-mini" name="position-cumulative-slots" min="1" max="10" id="position-cumulative-slots" value="1">
+            </div>
+          </div>
+
+          <!-- Candidates -->
+          <div class="control-group">
+            <label class="control-label" for="position-cumulative-candidates">Candidates<br /></label>
+            <div class="controls">
+              <div class="add-on btn btn-success" id="position-cumulative-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+              <div style="margin-bottom: 5px;" id="position-cumulative-candidates"></div>
+            </div>
+          </div>
+
+          <!-- Points -->
+          <div class="control-group">
+            <label class="control-label" for="position-cumulative-points" rel="tooltip" data-placement="right" data-original-title="Number of points each voter has to assign to candidates.">Points per voter</label>
+            <div class="controls">
+              <input type="number" class="input-mini" name="position-cumulative-points" min="1" max="100" id="position-cumulative-points" value="1">
+            </div>
+          </div>
+
+          <!-- Write-in Slots -->
+          <div class="control-group">
+            <label class="control-label" for="position-cumulative-write-in" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Write-in Slots</label>
+            <div class="controls">
+              <input type="number" class="input-mini" name="position-cumulative-write-in" min="0" max="10" id="position-cumulative-write-in" value="0">
+            </div>
+          </div>
+
+          <!-- Vote Required -->
+          <div class="control-group">
+            <label class="control-label">Vote Required</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="position-cumulative-required">
+                Enabled
+              </label>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal">Close</button>
+      <span id="modal-cumulative-submit" class="btn btn-primary">Save</span>
+    </div>
+</div>
