@@ -16,7 +16,7 @@ from models import models
 def encode(string):
 	return string.encode('ascii', 'replace')
 
-def email_report(election):
+def email_report(to, election):
 	"""
 	Sends an email to the election admin with the results and ballots.
 	"""
@@ -25,7 +25,7 @@ def email_report(election):
 	message = mail.EmailMessage(
 		sender="no-reply@owlection.appspotmail.com",
 		subject="Election Report for %s" % election.name)
-	message.to = ', '.join([admin.email for admin in admins])
+	message.to = ', '.join(to)
 
 	results = []
 	ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1",
