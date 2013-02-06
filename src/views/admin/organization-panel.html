@@ -104,7 +104,43 @@
   </div>
   <!-- ===================================================================== -->
   <div class="tab-pane fade" id="voters">
-    <p>Voters list goes here</p>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th width='150px'>List Name</th>
+          <th>Voters</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if not elections %}
+          <td colspan='3'>No voters list yet. Create one now!</td>
+        {% endif %}
+          <tr>
+            <td>
+              Brown Seniors
+            </td>
+            <td>
+              <!-- TODO: Use list id as id. Four instances -->
+              <div class='span4' id='net-ids-1-paragraph'>apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3</div>
+              <textarea class='span4' rows='5' style='display:none' id='net-ids-1-textarea'>apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3, apc1, wa1, asdf2, df3</textarea>
+              <p style='display:none' id='net-ids-1-buttons'>
+                <a href='#' class='btn btn-primary'>Save</a>
+                <a href='#' class='btn'>Cancel</a>
+              </p>
+            </td>
+            <td>
+              <!-- TODO: use list id as id to open-->
+              <a class='edit-voter-list' href="#net-ids-1" data-editing='0'>Edit</a>
+            </td>
+          </tr>
+        <tr>
+          <td colspan='5'>
+            <a class="btn btn-primary pull-right" href="organization-panel/election-panel" role="button"><i class="icon-plus icon-white"></i> New Election</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <!-- ===================================================================== -->
   <div class="tab-pane fade" id="profile">
@@ -157,10 +193,10 @@
   </div>
   <!-- ===================================================================== -->
   <div class="tab-pane fade" id="admins">
-    <h4>Admins</h4>
+    <h4>{{organization.name }} Admins</h4>
     <ul>
       {% for admin in admins %}
-        <li><a href="mailto:{{ admin.email }}">{{ admin.name }}</a></li>
+        <li><a href="mailto:{{ admin.email }}">{{ admin.email }}</a></li>
       {% endfor %}
     </ul>
   </div>

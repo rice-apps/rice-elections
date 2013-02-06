@@ -1,6 +1,7 @@
 # JS for create-election.html
 
 jQuery ->
+
     # Initialize date / time pickers
     $('#startDate, #endDate').parent().datepicker()
     $('#startTime, #endTime').timepicker
@@ -15,7 +16,6 @@ jQuery ->
         currentModal.resetForm()
         all_positions = []
         $('#positions-list').children().remove()
-
 
 # Positions added in the election where each position is an object literal
 all_positions = []
