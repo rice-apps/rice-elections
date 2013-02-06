@@ -1,35 +1,45 @@
 <script type='text/javascript' src='/static/js/admin/organization-panel.js'></script>
 <section id="main" class='container-narrow'>
 
-<div class="btn-group">
-  <a class="btn btn-large dropdown-toggle" data-toggle="dropdown" href="#">
-    {{ organization.name }}
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li><a href='#'>{{ organization.name }} I</a></li>
-    <li><a href='#'>{{ organization.name }} II</a></li>
-    <li class="divider"></li>
-    <li><a href='#'><i class='icon-plus'></i> New Organization</a></li>
-  </ul>
-</div>
-<br><br>
-
-<a class="btn btn-primary pull-right" href="organization-panel/election-panel" role="button">
-  <i class="icon-plus icon-white"></i> New Election
-</a>
-<ul id="myTab" class="nav nav-tabs">
-  <li class="active"><a href="#elections" data-toggle="tab">Elections</a></li>
-  <li><a href="#voters" data-toggle="tab">Voter Lists</a></li>
-  <!-- <li><a href="#profile" data-toggle="tab">Organization Profile</a></li> -->
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-    <ul class="dropdown-menu">
-      <li><a href="#profile" data-toggle="tab"><i class='icon-pencil'></i> Profile</a></li>
-      <li><a href="#admins" data-toggle="tab"><i class='icon-user'></i> Admins</a></li>
+<div class='navbar'>
+  <div class='navbar-inner'>
+    <ul class='nav'>
+      <li>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          {{ organization.name }}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href='#'>Other Organization</a></li>
+          <li><a href='#'>Other Organization II</a></li>
+          <li class="divider"></li>
+          <li><a href='#'><i class='icon-plus'></i> New Organization</a></li>
+        </ul>
+      </li>
+      <li  class='active' >
+        <a href="#elections" data-toggle="tab">
+          <i class='icon-envelope'></i> Elections
+        </a>
+      </li>
+      <li>
+        <a href="#voters" data-toggle="tab">
+          <i class='icon-th-list'></i> Voter Lists
+        </a>
+      </li>
+      <li>
+        <a href="#profile" data-toggle="tab">
+          <i class='icon-pencil'></i> Profile
+        </a>
+      </li>
+      <li>
+        <a href="#admins" data-toggle="tab">
+          <i class='icon-user'></i> Admins
+        </a>
+      </li>
     </ul>
-  </li>
-</ul>
+  </div>
+</div>
+
 <div id="myTabContent" class="tab-content">
   <!-- ===================================================================== -->
   <div class="tab-pane fade active in" id="elections">
@@ -38,7 +48,7 @@
         <tr>
           <th width='150px'>Name</th>
           <th>Election Open</th>
-          <th>Votes Cast</th>
+          <th>Participation</th>
           <th>Status</th>
           <th>Edit</th>
         </tr>
@@ -77,11 +87,18 @@
               <span class="date-format">{{ elec.times.start }}</span><br>
               <span class="date-format">{{ elec.times.end }}</span>
             </td>
-            <td><span>{{ elec.voted_count }} / {{ elec.voter_count }}</span></td>
+            <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
             <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
-            <td><a href="/admin/organization-panel/election-panel/?id={{ elec.id }}">Edit</a></td>
+            <td>
+              <a href="/admin/organization-panel/election-panel/?id={{ elec.id }}">Edit</a>
+            </td>
           </tr>
         {% endfor %}
+        <tr>
+          <td colspan='5'>
+            <a class="btn btn-primary" href="organization-panel/election-panel" role="button"><i class="icon-plus icon-white"></i> New Election</a>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
