@@ -23,7 +23,7 @@ class ElectionInformationHandler(webapp2.RequestHandler):
         status = models.get_admin_status(voter)
         if not status:
             webapputils.render_page(self, '/templates/message', 
-                {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+                {'status': 'Error', 'msg': 'Not Authorized'})
             return
         
         data = {}

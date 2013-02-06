@@ -1,6 +1,7 @@
-<!-- Load JS / CSS
+<!-- Load CSS
 ================================================== -->
 
+<!-- Server Response -->
 {% if msg %}
   <div class='well' style="margin-top: 20px;">
     <h3>{{ status }}</h3>
@@ -8,16 +9,23 @@
     <p><a href="/">Let us take you home.</a></p>
   </div>
 {% endif %}
+
+<!-- Positions Canvas -->
 <div class="form-horizontal well">
   <fieldset>
     <legend>Positions</legend>
     <div class="control-group">
-      <div class="controls" id="positions">
+      <div class="controls">
+
+        <ol id="positions">
+          <!-- HTML for Positions Goes Here -->
+        </ol>
 
 
         <!-- Dropdown Add Position Button -->
         <div class="btn-group">
-          <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">Add Position<span class="caret"></span></button>
+          <a class='btn btn-success'><i class='icon-plus icon-white'></i> Add Position</a>
+          <a class='btn btn-success dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></a>
           <ul class="dropdown-menu">
             <li><a data-toggle="modal" href="#modal-ranked">Ranked Choice Voting</a></li>
             <li><a data-toggle="modal" href="#modal-cumulative">Cumulative Voting</a></li>
@@ -92,11 +100,11 @@
   </div>
 </div>
 
-    <!-- Cumulative Voting Position Modal -->
+<!-- Cumulative Voting Position Modal -->
 <div id="modal-cumulative" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cumulative-label" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-    <h3 id="cumulative-label">Ranked Choice Voting Position</h3>
+    <h3 id="cumulative-label">Cumulative Voting Position</h3>
   </div>
   <div class="modal-body">
       <p>In cumulative voting, voters cast as many votes as there are positions available. But unlike winner-take-all systems, voters are not limited to giving only one vote to a candidate. Instead, they can put multiple votes on one or more candidates.</p>
@@ -163,3 +171,8 @@
       <span id="modal-cumulative-submit" class="btn btn-primary">Save</span>
     </div>
 </div>
+
+<!-- Load JS
+================================================== --> 
+<script src="/static/js/admin/organization/election/positions.js"></script>
+<link href="/static/css/admin/organization/election/positions.css" rel="stylesheet">

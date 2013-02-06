@@ -5,7 +5,7 @@ jQuery ->
 
     # Get election information from the server
     $.ajax
-        url: '/admin/organization-panel/election-panel/information'
+        url: '/admin/organization/election/information'
         type: 'POST'
         success: (data) ->
             response = JSON.parse(data)
@@ -69,7 +69,7 @@ InformationForm = ->
         self.submitBtn.addClass('disabled')
 
         $.ajax
-            url: '/admin/organization-panel/election-panel/information/update'
+            url: '/admin/organization/election/information/update'
             type: 'POST'
             data: 'formData': JSON.stringify(postData)
             success: (data) ->
