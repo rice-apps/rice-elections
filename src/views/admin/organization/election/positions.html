@@ -2,44 +2,43 @@
 ================================================== -->
 
 <!-- Server Response -->
-{% if msg %}
+
+<!-- Put this back when / if you need it. -->
+<!-- {% if msg %}
   <div class='well' style="margin-top: 20px;">
     <h3>{{ status }}</h3>
     <p>{{ msg }}</p>
     <p><a href="/">Let us take you home.</a></p>
   </div>
-{% endif %}
+{% endif %} -->
 
 <!-- Positions Canvas -->
-<div class="form-horizontal well">
-  <fieldset>
-    <legend>Positions</legend>
-    <div class="control-group">
-      <div class="controls">
+<div class="well row">
+  <div class='span4'>
+    <h4>Current Positions</h4>
+    <ol id="positions">
+      <!-- HTML for Positions Goes Here -->
+    </ol>
+    <span id='no-positions'>No positions yet. Add one now!</span>
+    <br class='clearfix'>
+  </div>
 
-        <ol id="positions">
-          <!-- HTML for Positions Goes Here -->
-        </ol>
+  <div class='span2'>
+    <h4>Add Positions</h4>
+    <ul class='unstyled'>
+      <li>
+        <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
+      </li>
+      <li>
+        <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
+      </li>
+    </ul>
+    <br class='clearfix'>
+  </div>
 
+  <br class='clearfix'>
+  <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-top:50px'>Save</a>
 
-        <!-- Dropdown Add Position Button -->
-        <div class="btn-group">
-          <a class='btn btn-success'><i class='icon-plus icon-white'></i> Add Position</a>
-          <a class='btn btn-success dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></a>
-          <ul class="dropdown-menu">
-            <li><a data-toggle="modal" href="#modal-ranked">Ranked Choice Voting</a></li>
-            <li><a data-toggle="modal" href="#modal-cumulative">Cumulative Voting</a></li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-    <div class="control-group">
-      <div class="controls">
-        <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-left:0;'>Save</a>
-      </div>
-    </div>
-  </fieldset>
 </div>
 
 <!-- Ranked Choice Voting Position Modal -->
@@ -173,6 +172,6 @@
 </div>
 
 <!-- Load JS
-================================================== --> 
+================================================== -->
 <script src="/static/js/admin/organization/election/positions.js"></script>
 <link href="/static/css/admin/organization/election/positions.css" rel="stylesheet">
