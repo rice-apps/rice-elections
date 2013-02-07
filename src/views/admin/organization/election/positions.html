@@ -13,32 +13,32 @@
 {% endif %} -->
 
 <!-- Positions Canvas -->
-<div class="well row">
-  <div class='span4'>
-    <h4>Current Positions</h4>
-    <ol id="positions">
-      <!-- HTML for Positions Goes Here -->
-    </ol>
-    <span id='no-positions'>No positions yet. Add one now!</span>
-    <br class='clearfix'>
+<div class="well">
+  <fieldset>
+    <legend>Positions</legend>
+  </fieldset>
+  <div class='row'>
+    <div class='span4' style='width:425px;'>
+      <table id="positions" class='table table-striped' style='margin-top:10px'>
+        <!-- HTML for Positions Goes Here -->
+      </table>
+      <span id='no-positions'>No positions yet. Add one now!</span>
+      <br class='clearfix'>
+    </div>
+    <div class='span2 pull-right' style='width:200px;'>
+      <h4>Add A Position</h4>
+      <ul class='unstyled'>
+        <li>
+          <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
+        </li>
+        <li>
+          <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
+        </li>
+      </ul>
+      <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-top:50px; margin-left:0'>Save Positions</a>
+      <br class='clearfix'>
+    </div>
   </div>
-
-  <div class='span2'>
-    <h4>Add Positions</h4>
-    <ul class='unstyled'>
-      <li>
-        <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
-      </li>
-      <li>
-        <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
-      </li>
-    </ul>
-    <br class='clearfix'>
-  </div>
-
-  <br class='clearfix'>
-  <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-top:50px'>Save</a>
-
 </div>
 
 <!-- Ranked Choice Voting Position Modal -->

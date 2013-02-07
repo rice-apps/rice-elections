@@ -29,9 +29,10 @@ Form = function() {
   createPositionHTML = function(position) {
     var html, id;
     id = position['pageId'];
-    html = $("        <li class='btn-group' id='position-" + id + "'>            <a class='btn btn-info'><i class='icon-user icon-white'></i>                " + position['name'] + "            </a>            <a class='btn btn-info dropdown-toggle' data-toggle='dropdown'>                <span class='caret'></span>            </a>            <ul class='dropdown-menu'>                <li>                    <a id='position-" + id + "-edit'><i class='icon-pencil'></i>                        Edit                    </a>                </li>                <li>                    <a id='position-" + id + "-delete'><i class='icon-trash'></i>                        Delete                    </a>                </li>            </ul>        </li>        ");
+    html = $("        <tr id='position-" + id + "' style='padding-bottom:5px;'>            <td>                <i class='icon-user'></i> " + position['name'] + "            </td>            <td>                <a href='#' id='position-" + id + "-edit'>Edit</a> &middot;                <a href='#' class='delete-position' id='position-" + id + "-delete'>Delete</a>            </td>        </tr>        ");
     console.log(html);
     $('#positions').append(html);
+    $('#no-positions').hide();
     return html.hide().slideDown(500);
   };
 };

@@ -10,7 +10,7 @@ from authentication import auth
 from models import models, webapputils
 from models.admin_.organization_.election import get_panel
 
-PAGE_NAME = '/admin/organization-panel/election-panel/voters'
+PAGE_NAME = '/admin/organization/election/voters'
 
 class ElectionVotersHandler(webapp2.RequestHandler):
 
@@ -19,10 +19,10 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         voter = auth.get_voter(self)
         status = models.get_admin_status(voter)
         if not status:
-            webapputils.render_page(self, '/templates/message', 
+            webapputils.render_page(self, '/templates/message',
                 {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
-        
+
         # Get election
         election_id = self.request.get('id')
         data = {'voters': [], 'id': election_id}

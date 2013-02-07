@@ -1,5 +1,9 @@
-<ul>
-  {% for voter in voters %}
-    <li>{{ voter.net_id }}</li>
-  {% endfor %}
-</ul>
+
+<div class='well'>
+    <legend>Voters</legend>
+    <ul>
+      {% for voter in voters %}
+        <li>{{ voter.net_id }}</li>
+      {% endfor %}
+    </ul>
+</div>
