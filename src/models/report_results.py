@@ -6,12 +6,12 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 
 import logging
+import models
 import webapp2
 
 from google.appengine.ext import db
 from google.appengine.api import mail
 from datetime import datetime
-from models import models
 
 def encode(string):
 	return string.encode('ascii', 'replace')
@@ -30,7 +30,11 @@ def email_report(to, election):
 	results = []
 	ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1",
 														 election)
+	print "Number of positions: %d" % ranked_positions.count()
+	i = 1
 	for pos in ranked_positions:
+		print "Processing position", i
+		i += 1
 		json = pos.to_json()
 		string = """
 Position Name: {0},
@@ -42,12 +46,23 @@ Winners: {4}""".format(pos.position.name,
 					   pos.write_in_slots,
 					   ', '.join([encode(can.name) for can in pos.election_position_candidates]),
 					   ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+		counts = {}
 		ballots = []
-		for ballot in pos.ballots:
-			ballots.append('[' +
-				', '.join([db.get(can).name for can in ballot.preferences]) +
-				']')
+		ballots_db = pos.ballots.fetch(100)
+		while ballots_db:
+			for ballot in ballots_db:
+				can_names = [db.get(can).name for can in ballot.preferences]
+				ballots.append('[' +
+					', '.join(can_names) +
+					']')
+				if can_names:
+					if can_names[0] in counts:
+						counts[can_names[0]] += 1
+					else:
+						counts[can_names[0]] = 1
+			ballots_db = pos.ballots.filter('__key__ >', ballots_db[-1].key()).fetch(100)
 		string += '\nBallots Cast:\n' + '\n'.join(ballots) + '\n'
+		string += 'Total First Preference Counts: %s' % counts
 		results.append(string)
 
 	cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1",
@@ -94,5 +109,6 @@ Voting for {1} has concluded. Below are the detailed results of the election.
 	message.body += '\nPosition Results\n' + '\n'.join(results)
 	message.body += '\n\nAt your service,\n\nOwlection Team'
 	logging.info(message.body)
+	print message.body
 	message.send()
 
