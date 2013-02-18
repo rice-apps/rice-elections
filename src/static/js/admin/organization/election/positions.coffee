@@ -43,87 +43,63 @@ Form = ->
 
 
 # Abstract base class different position types, replace type in subclasses
-Position = (type) ->
-    # Closure reference
-    self = this
+class Position
+    constructor: (@type) ->
+        # Position ID for page reference
+        @pageId = null
 
-    # Position ID for page reference
-    @pageId = null
+        # Datastore entity ID
+        @entityId = null
 
-    # Datastore entity ID
-    @entityId = null
+        # Position type
+        @type = type
 
-    # Position type
-    @type = type
+        # Generator for candidate IDs
+        @candidateIDGen = 0
 
-    # Generator for candidate IDs
-    @candidateIDGen = 0
+        # List of HTML IDs of candidates added to the form
+        @candidateIDs = []
 
-    # List of HTML IDs of candidates added to the form
-    @candidateIDs = []
+        # Generator for candidate IDs
+        @candidateIDPrefix = "position-#{@type}-candidate-"
 
-    # Generator for candidate IDs
-    @candidateIDPrefix = "position-#{@type}-candidate-"
+        # HTML ID prefix for candidates,
+        @addCandidate = $("#position-#{@type}-add-candidate")
 
-    # HTML ID prefix for candidates,
-    @addCandidate = $("#position-#{@type}-add-candidate")
+        # Div: list of candidates
+        @candidates = $("#position-#{@type}-candidates")
 
-    # Div: list of candidates
-    @candidates = $("#position-#{@type}-candidates")
+        # Text input: Position name input
+        @name = $("#position-#{@type}-name")
 
-    # Text input: Position name input
-    @name = $("#position-#{@type}-name")
+        # Number input: Write-in slots
+        @writeInSlots = $("#position-#{@type}-write-in")
 
-    # Number input: Write-in slots
-    @writeInSlots = $("#position-#{@type}-write-in")
+        # Checkbox: Whether voting is required
+        @voteRequired = $("#position-#{@type}-required")
 
-    # Checkbox: Whether voting is required
-    @voteRequired = $("#position-#{@type}-required")
+        # Submit button for the modal
+        @submit = $("#modal-#{@type}-submit")
 
-    # Submit button for the modal
-    @submit = $("#modal-#{@type}-submit")
+        console.log(@addCandidate)
+        # Bind events
+        @submit.click(@submitData)
+        @addCandidate.click(@addCandidateSlot)
 
     # Gives the contents of the form in json form if valid, otherwise null
-    @toJson = =>
+    toJson: =>
         position =
             'pageId': @pageId
             'entityId': @entityId
+            'name': @getName()
+            'candidates': @getCandidates()
+            'write_in': @getWriteInSlots()
+            'vote_required': @hasVoteRequirement()
+        for key in ['name', 'candidates', 'write_in', 'vote_required']
+            return null if position[key] == null
         return position
 
-    # Resets the HTML form
-    @reset = =>
-        @candidateIDs = []
-        @candidates.children().remove()
-        @name.val('').change()
-        @voteRequired.attr('checked', false)
-
-    # Validates and adds / updates the modal
-    @submit.click (e) =>
-        json = @toJson()
-        return false if json == null
-        $("#modal-#{@type}").modal('hide')
-        @reset()
-        form.processPosition(json)
-
-    # Resets the submit button ready for use
-    @resetSubmitBtn = =>
-        text = 'Create Position'
-        if @entityId
-            text = 'Update Position'
-        @setSubmitBtn('btn-primary', text)
-        @submit.removeClass('disabled')
-
-    # Sets the submit button to the specified message
-    @setSubmitBtn = (type, text) =>
-        @restoreDefaultButtonState()
-        @submit.addClass(type)
-        @submit.text(text)
-
-    @restoreDefaultButtonState = =>
-        for cl in ['btn-success', 'btn-danger', 'btn-primary']
-            @submit.removeClass(cl)
-
-    @setFromJson = (json) =>
+    setFromJson: (json) =>
         return if not json
         @reset()
         @entityId = json['entityId']
@@ -136,12 +112,42 @@ Position = (type) ->
             index = @candidateIDGen - 1
             id = @candidateIDPrefix + index
             $("##{id}-name").val(candidate)
-            console.log("#{id}-name")
-            console.log(candidate)
-        @resetSubmitBtn()
+
+    # Resets the HTML form
+    reset: =>
+        @candidateIDs = []
+        @candidates.children().remove()
+        @name.val('').change()
+        @voteRequired.attr('checked', false)
+
+    # Validates and adds / updates the modal
+    submitData: (e) =>
+        json = @toJson()
+        return false if json == null
+        $("#modal-#{@type}").modal('hide')
+        @reset()
+        form.processPosition(json)
+
+    # Resets the submit button ready for use
+    resetSubmitBtn: =>
+        text = 'Create Position'
+        if @entityId
+            text = 'Update Position'
+        @setSubmitBtn('btn-primary', text)
+        @submit.removeClass('disabled')
+
+    # Sets the submit button to the specified message
+    setSubmitBtn: (type, text) =>
+        @restoreDefaultButtonState()
+        @submit.addClass(type)
+        @submit.text(text)
+
+    restoreDefaultButtonState: =>
+        for cl in ['btn-success', 'btn-danger', 'btn-primary']
+            @submit.removeClass(cl)
 
     # Adds an input field for a candidate to the form
-    @addCandidateSlot = =>
+    addCandidateSlot: =>
         index = @candidateIDGen++
         id = @candidateIDPrefix + index
         candidateInput = $('<div/>',
@@ -168,10 +174,9 @@ Position = (type) ->
             indexPtr = @candidateIDs.indexOf(index)
             @candidateIDs.splice(indexPtr, 1) if indexPtr != -1
             $(this).parent().fadeOut(500)
-    @addCandidate.click(@addCandidateSlot)
 
     # Validates and returns the position name typed.
-    Position::getName = ->
+    getName: ->
         nameContainer = @name.parent().parent()
         nameContainer.removeClass('error')
         $('.errorMsgPositionName').remove()
@@ -183,7 +188,7 @@ Position = (type) ->
         return @name.val()
 
     # Validates and returns a list of candidates
-    Position::getCandidates = ->
+    getCandidates: ->
         missing = false
         container = @candidates.parent().parent()
         canList = []    # Function output
@@ -200,14 +205,14 @@ Position = (type) ->
         container.removeClass('error')
         if missing
             container.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Number of ' +
+            $('<span class="help-inline errorMsgCandidateName">' +
                 'Missing information.</span>').insertAfter(@candidates)
             return null
 
         return canList
 
     # Validates and returns the write-in slots input number.
-    Position::getWriteInSlots = ->
+    getWriteInSlots: ->
         slotsContainer = @writeInSlots.parent().parent()
         val = parseInt(@writeInSlots.val())
         min = parseInt(@writeInSlots.attr('min'))
@@ -228,46 +233,34 @@ Position = (type) ->
         return val
 
     # Whether voting is required for this position
-    Position::hasVoteRequirement = -> @voteRequired.attr('checked') == 'checked'
+    hasVoteRequirement: -> @voteRequired.attr('checked') == 'checked'
 
-    return # Stops compiler from returning last defined function
-
-RankedVotingPosition = ->
-    Position.call(this, "ranked")
+class RankedVotingPosition extends Position
+    constructor: ->
+        super('ranked')
 
     # Gives the contents of the form in json form if valid, otherwise null
-    RankedVotingPosition::toJson = ->
-        position = Position::toJson.call(this)
-        json =
-            'type': 'Ranked-Choice'
-            'name': @getName()
-            'candidates': @getCandidates()
-            'write_in': @getWriteInSlots()
-            'vote_required': @hasVoteRequirement()
-        for key, value of json
-            return null if value == null
-            position[key] = value
+    toJson: =>
+        position = super()
+        return null if position == null
+        position['type'] = 'Ranked-Choice'
         return position
 
-    return # Stops compiler from returning last defined function
+    setFromJson: (json) =>
+        console.log('Child')
 
-# Inherit from Position
-RankedVotingPosition:: = new Position
-RankedVotingPosition::constructor = RankedVotingPosition
+class CumulativeVotingPosition extends Position
+    constructor: ->
+        super('cumulative')
 
-CumulativeVotingPosition = ->
-    Position.call(this, "cumulative")
+        # Number Input: Points
+        @points = $('#position-cumulative-points')
 
-    self = this
-
-    # Number Input: Points
-    @points = $('#position-cumulative-points')
-
-    # Number Input: Position slots
-    @slots = $('#position-cumulative-slots')
+        # Number Input: Position slots
+        @slots = $('#position-cumulative-slots')
 
     # Validates and returns the points input number
-    CumulativeVotingPosition::getPoints = ->
+    getPoints: ->
         pointsContainer = @points.parent().parent()
         val = parseInt(@points.val())
         min = parseInt(@points.attr('min'))
@@ -282,7 +275,7 @@ CumulativeVotingPosition = ->
         return val
 
     # Validates and returns the slot input number
-    CumulativeVotingPosition::getSlots = ->
+    getSlots: ->
         slotsContainer = @slots.parent().parent()
         val = parseInt(@slots.val())
         min = parseInt(@slots.attr('min'))
@@ -302,29 +295,20 @@ CumulativeVotingPosition = ->
         return val
 
     # Resets the HTML form
-    CumulativeVotingPosition::reset = ->
-        Position::reset.call(this)      # Call to super
+    reset: ->
+        super()
         @slots.val('1').change()
 
     # Gives the contents of the form in json form if valid, otherwise null
-    CumulativeVotingPosition::toJson = ->
-        position = Position::toJson.call(this)
+    toJson: =>
+        position = super()
+        return null if position == null
         json =
             'type': 'Cumulative-Voting'
-            'name': @getName()
-            'candidates': @getCandidates()
-            'write_in': @getWriteInSlots()
-            'vote_required': @hasVoteRequirement()
             'slots': @getSlots()
             'points': @getPoints()
         for key, value of json
             return null if value == null
             position[key] = value
         return position
-
-    return # Stops compiler from returning last defined function
-
-# Inherit from Position
-CumulativeVotingPosition:: = new Position
-CumulativeVotingPosition::constructor = CumulativeVotingPosition
 
