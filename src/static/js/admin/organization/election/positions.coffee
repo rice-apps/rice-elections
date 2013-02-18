@@ -19,7 +19,6 @@ Form = ->
         if not position['pageId']
             position['pageId'] = @positions.length
         @positions[position['pageId']] = position
-        console.log(@positions)
         createPositionHTML(position)
 
     createPositionHTML = (position) ->
@@ -35,7 +34,6 @@ Form = ->
             </td>
         </tr>
         ")
-        console.log(html)
         $('#positions').append(html)
         $('#no-positions').hide()
         html.hide().slideDown(500)
@@ -119,13 +117,6 @@ Position = (type) ->
             name: "#{id}-name"
             width: '200px'
             placeholder: 'Full Name'
-        )).append($('<input>',
-            type: 'text'
-            class: 'input-xlarge'
-            id: "#{id}-net-id"
-            name: "#{id}-net-id"
-            width: '50px'
-            placeholder: 'NetID'
         )).append($('<span/>',
             class: 'add-on'
             id: "#{id}"
@@ -163,14 +154,10 @@ Position = (type) ->
         # Make sure the candidate name is defined for all candidates
         for can in @candidateIDs
             nameInput = $("#position-#{@type}-candidate-#{can}-name")
-            netIdInput = $("#position-#{@type}-candidate-#{can}-net-id")
-            if nameInput.val() == '' or netIdInput.val() == ''
+            if nameInput.val() == ''
                 missing = true
             else
-                canList.push(
-                    'name': nameInput.val()
-                    'netId': netIdInput.val()
-                )
+                canList.push(nameInput.val())
 
         $('.errorMsgCandidateName').remove()
         container.removeClass('error')
@@ -233,6 +220,8 @@ RankedVotingPosition::constructor = RankedVotingPosition
 
 CumulativeVotingPosition = ->
     Position.call(this, "cumulative")
+
+    self = this
 
     # Number Input: Points
     @points = $('#position-cumulative-points')

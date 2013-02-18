@@ -23,14 +23,12 @@ Form = function() {
       position['pageId'] = this.positions.length;
     }
     this.positions[position['pageId']] = position;
-    console.log(this.positions);
     return createPositionHTML(position);
   };
   createPositionHTML = function(position) {
     var html, id;
     id = position['pageId'];
     html = $("        <tr id='position-" + id + "' style='padding-bottom:5px;'>            <td>                <i class='icon-user'></i> " + position['name'] + "            </td>            <td>                <a href='#' id='position-" + id + "-edit'>Edit</a> &middot;                <a href='#' class='delete-position' id='position-" + id + "-delete'>Delete</a>            </td>        </tr>        ");
-    console.log(html);
     $('#positions').append(html);
     $('#no-positions').hide();
     return html.hide().slideDown(500);
@@ -90,13 +88,6 @@ Position = function(type) {
       name: "" + id + "-name",
       width: '200px',
       placeholder: 'Full Name'
-    })).append($('<input>', {
-      type: 'text',
-      "class": 'input-xlarge',
-      id: "" + id + "-net-id",
-      name: "" + id + "-net-id",
-      width: '50px',
-      placeholder: 'NetID'
     })).append($('<span/>', {
       "class": 'add-on',
       id: "" + id
@@ -128,7 +119,7 @@ Position = function(type) {
     return this.name.val();
   };
   Position.prototype.getCandidates = function() {
-    var can, canList, container, missing, nameInput, netIdInput, _i, _len, _ref;
+    var can, canList, container, missing, nameInput, _i, _len, _ref;
     missing = false;
     container = this.candidates.parent().parent();
     canList = [];
@@ -136,14 +127,10 @@ Position = function(type) {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       can = _ref[_i];
       nameInput = $("#position-" + this.type + "-candidate-" + can + "-name");
-      netIdInput = $("#position-" + this.type + "-candidate-" + can + "-net-id");
-      if (nameInput.val() === '' || netIdInput.val() === '') {
+      if (nameInput.val() === '') {
         missing = true;
       } else {
-        canList.push({
-          'name': nameInput.val(),
-          'netId': netIdInput.val()
-        });
+        canList.push(nameInput.val());
       }
     }
     $('.errorMsgCandidateName').remove();
@@ -208,7 +195,9 @@ RankedVotingPosition.prototype = new Position;
 RankedVotingPosition.prototype.constructor = RankedVotingPosition;
 
 CumulativeVotingPosition = function() {
+  var self;
   Position.call(this, "cumulative");
+  self = this;
   this.points = $('#position-cumulative-points');
   this.slots = $('#position-cumulative-slots');
   CumulativeVotingPosition.prototype.getPoints = function() {
