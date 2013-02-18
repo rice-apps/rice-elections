@@ -136,18 +136,14 @@ InformationForm = ->
 
     # Sets the submit button to the specified message
     InformationForm::setSubmitBtn = (type, text) ->
-        disabled = true if @submitBtn.hasClass('disabled')
-        # @submitBtn.attr('class', 'btn')     # Wipe all btn classes
-        @submitBtn.addClass('disabled') if disabled
         self.restoreDefaultButtonState()
         @submitBtn.addClass(type)
         @submitBtn.text(text)
 
     InformationForm::restoreDefaultButtonState = ->
         @submitBtn.removeClass('btn-success')
-        @submitBtn.removeClass('btn-error')
+        @submitBtn.removeClass('btn-danger')
         @submitBtn.removeClass('btn-primary')
-        @submitBtn.addClass('btn-primary')
 
     # Validates and returns the election name
     InformationForm::getName = ->

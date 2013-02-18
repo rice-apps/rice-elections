@@ -8,8 +8,12 @@ form = null
 
 jQuery ->
     rankedModal = new RankedVotingPosition()
+    rankedModal.self = rankedModal
     cumulativeModal = new CumulativeVotingPosition()
+    cumulativeModal.self = cumulativeModal
+    rankedModal.self = rankedModal
     form = new Form()
+    json = {'entityId': 'diwEVwjioxcWEq', 'write_in': 4, 'vote_required': true, 'name': 'Hello!', 'candidates': ['CanA', 'CanB', 'CanC']}
 
 # Form for managing positions
 Form = ->
@@ -77,7 +81,7 @@ Position = (type) ->
     @writeInSlots = $("#position-#{@type}-write-in")
 
     # Checkbox: Whether voting is required
-    @voteRequired = $('#position-required')
+    @voteRequired = $("#position-#{@type}-required")
 
     # Submit button for the modal
     @submit = $("#modal-#{@type}-submit")
@@ -104,8 +108,43 @@ Position = (type) ->
         @reset()
         form.processPosition(json)
 
+    # Resets the submit button ready for use
+    Position::resetSubmitBtn = ->
+        text = 'Create Position'
+        if self.entityId
+            text = 'Update Position'
+        self.setSubmitBtn('btn-primary', text)
+        @submit.removeClass('disabled')
+
+    # Sets the submit button to the specified message
+    Position::setSubmitBtn = (type, text) ->
+        self.restoreDefaultButtonState()
+        @submit.addClass(type)
+        @submit.text(text)
+
+    Position::restoreDefaultButtonState = ->
+        for cl in ['btn-success', 'btn-danger', 'btn-primary']
+            @submit.removeClass(cl)
+
+    Position::setFromJson = (json) ->
+        return if not json
+        self.reset()
+        @entityId = json['entityId']
+        @pageId = json['pageId']
+        @writeInSlots.val(json['write_in'])
+        @voteRequired.attr('checked', json['vote_required'])
+        @name.val(json['name'])
+        for candidate in json['candidates']
+            self.addCandidateSlot()
+            index = self.candidateIDGen - 1
+            id = self.candidateIDPrefix + index
+            $("##{id}-name").val(candidate)
+            console.log("#{id}-name")
+            console.log(candidate)
+        self.resetSubmitBtn()
+
     # Adds an input field for a candidate to the form
-    @addCandidate.click  ->
+    Position::addCandidateSlot = ->
         index = self.candidateIDGen++
         id = self.candidateIDPrefix + index
         candidateInput = $('<div/>',
@@ -132,6 +171,7 @@ Position = (type) ->
             indexPtr = self.candidateIDs.indexOf(index)
             self.candidateIDs.splice(indexPtr, 1) if indexPtr != -1
             $(this).parent().fadeOut(500)
+    @addCandidate.click(self.addCandidateSlot)
 
     # Validates and returns the position name typed.
     Position::getName = ->

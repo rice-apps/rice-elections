@@ -10,9 +10,20 @@ cumulativeModal = null;
 form = null;
 
 jQuery(function() {
+  var json;
   rankedModal = new RankedVotingPosition();
+  rankedModal.self = rankedModal;
   cumulativeModal = new CumulativeVotingPosition();
-  return form = new Form();
+  cumulativeModal.self = cumulativeModal;
+  rankedModal.self = rankedModal;
+  form = new Form();
+  return json = {
+    'entityId': 'diwEVwjioxcWEq',
+    'write_in': 4,
+    'vote_required': true,
+    'name': 'Hello!',
+    'candidates': ['CanA', 'CanB', 'CanC']
+  };
 });
 
 Form = function() {
@@ -49,7 +60,7 @@ Position = function(type) {
   this.candidates = $("#position-" + this.type + "-candidates");
   this.name = $("#position-" + this.type + "-name");
   this.writeInSlots = $("#position-" + this.type + "-write-in");
-  this.voteRequired = $('#position-required');
+  this.voteRequired = $("#position-" + this.type + "-required");
   this.submit = $("#modal-" + this.type + "-submit");
   Position.prototype.toJson = function() {
     var position;
@@ -75,7 +86,54 @@ Position = function(type) {
     _this.reset();
     return form.processPosition(json);
   });
-  this.addCandidate.click(function() {
+  Position.prototype.resetSubmitBtn = function() {
+    var text;
+    text = 'Create Position';
+    if (self.entityId) {
+      text = 'Update Position';
+    }
+    self.setSubmitBtn('btn-primary', text);
+    return this.submit.removeClass('disabled');
+  };
+  Position.prototype.setSubmitBtn = function(type, text) {
+    self.restoreDefaultButtonState();
+    this.submit.addClass(type);
+    return this.submit.text(text);
+  };
+  Position.prototype.restoreDefaultButtonState = function() {
+    var cl, _i, _len, _ref, _results;
+    _ref = ['btn-success', 'btn-danger', 'btn-primary'];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cl = _ref[_i];
+      _results.push(this.submit.removeClass(cl));
+    }
+    return _results;
+  };
+  Position.prototype.setFromJson = function(json) {
+    var candidate, id, index, _i, _len, _ref;
+    if (!json) {
+      return;
+    }
+    self.reset();
+    this.entityId = json['entityId'];
+    this.pageId = json['pageId'];
+    this.writeInSlots.val(json['write_in']);
+    this.voteRequired.attr('checked', json['vote_required']);
+    this.name.val(json['name']);
+    _ref = json['candidates'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      candidate = _ref[_i];
+      self.addCandidateSlot();
+      index = self.candidateIDGen - 1;
+      id = self.candidateIDPrefix + index;
+      $("#" + id + "-name").val(candidate);
+      console.log("" + id + "-name");
+      console.log(candidate);
+    }
+    return self.resetSubmitBtn();
+  };
+  Position.prototype.addCandidateSlot = function() {
     var candidateInput, id, index;
     index = self.candidateIDGen++;
     id = self.candidateIDPrefix + index;
@@ -105,7 +163,8 @@ Position = function(type) {
       }
       return $(this).parent().fadeOut(500);
     });
-  });
+  };
+  this.addCandidate.click(self.addCandidateSlot);
   Position.prototype.getName = function() {
     var nameContainer;
     nameContainer = this.name.parent().parent();
