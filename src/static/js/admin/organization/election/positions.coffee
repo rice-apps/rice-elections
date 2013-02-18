@@ -8,10 +8,7 @@ form = null
 
 jQuery ->
     rankedModal = new RankedVotingPosition()
-    rankedModal.self = rankedModal
     cumulativeModal = new CumulativeVotingPosition()
-    cumulativeModal.self = cumulativeModal
-    rankedModal.self = rankedModal
     form = new Form()
     json = {'entityId': 'diwEVwjioxcWEq', 'write_in': 4, 'vote_required': true, 'name': 'Hello!', 'candidates': ['CanA', 'CanB', 'CanC']}
 
@@ -87,14 +84,14 @@ Position = (type) ->
     @submit = $("#modal-#{@type}-submit")
 
     # Gives the contents of the form in json form if valid, otherwise null
-    Position::toJson = ->
+    @toJson = =>
         position =
             'pageId': @pageId
             'entityId': @entityId
         return position
 
     # Resets the HTML form
-    Position::reset = ->
+    @reset = =>
         @candidateIDs = []
         @candidates.children().remove()
         @name.val('').change()
@@ -109,44 +106,44 @@ Position = (type) ->
         form.processPosition(json)
 
     # Resets the submit button ready for use
-    Position::resetSubmitBtn = ->
+    @resetSubmitBtn = =>
         text = 'Create Position'
-        if self.entityId
+        if @entityId
             text = 'Update Position'
-        self.setSubmitBtn('btn-primary', text)
+        @setSubmitBtn('btn-primary', text)
         @submit.removeClass('disabled')
 
     # Sets the submit button to the specified message
-    Position::setSubmitBtn = (type, text) ->
-        self.restoreDefaultButtonState()
+    @setSubmitBtn = (type, text) =>
+        @restoreDefaultButtonState()
         @submit.addClass(type)
         @submit.text(text)
 
-    Position::restoreDefaultButtonState = ->
+    @restoreDefaultButtonState = =>
         for cl in ['btn-success', 'btn-danger', 'btn-primary']
             @submit.removeClass(cl)
 
-    Position::setFromJson = (json) ->
+    @setFromJson = (json) =>
         return if not json
-        self.reset()
+        @reset()
         @entityId = json['entityId']
         @pageId = json['pageId']
         @writeInSlots.val(json['write_in'])
         @voteRequired.attr('checked', json['vote_required'])
         @name.val(json['name'])
         for candidate in json['candidates']
-            self.addCandidateSlot()
-            index = self.candidateIDGen - 1
-            id = self.candidateIDPrefix + index
+            @addCandidateSlot()
+            index = @candidateIDGen - 1
+            id = @candidateIDPrefix + index
             $("##{id}-name").val(candidate)
             console.log("#{id}-name")
             console.log(candidate)
-        self.resetSubmitBtn()
+        @resetSubmitBtn()
 
     # Adds an input field for a candidate to the form
-    Position::addCandidateSlot = ->
-        index = self.candidateIDGen++
-        id = self.candidateIDPrefix + index
+    @addCandidateSlot = =>
+        index = @candidateIDGen++
+        id = @candidateIDPrefix + index
         candidateInput = $('<div/>',
             class: 'input-append'
         ).append($('<input>',
@@ -162,16 +159,16 @@ Position = (type) ->
         ).append($('<i/>',
             class: 'icon-remove'
         )))
-        self.candidates.append(candidateInput)
+        @candidates.append(candidateInput)
         candidateInput.hide().fadeIn(500)
-        self.candidateIDs.push(index)
+        @candidateIDs.push(index)
 
         # Delete candidate button
         $("##{id}").click ->
-            indexPtr = self.candidateIDs.indexOf(index)
-            self.candidateIDs.splice(indexPtr, 1) if indexPtr != -1
+            indexPtr = @candidateIDs.indexOf(index)
+            @candidateIDs.splice(indexPtr, 1) if indexPtr != -1
             $(this).parent().fadeOut(500)
-    @addCandidate.click(self.addCandidateSlot)
+    @addCandidate.click(@addCandidateSlot)
 
     # Validates and returns the position name typed.
     Position::getName = ->

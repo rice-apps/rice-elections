@@ -12,10 +12,7 @@ form = null;
 jQuery(function() {
   var json;
   rankedModal = new RankedVotingPosition();
-  rankedModal.self = rankedModal;
   cumulativeModal = new CumulativeVotingPosition();
-  cumulativeModal.self = cumulativeModal;
-  rankedModal.self = rankedModal;
   form = new Form();
   return json = {
     'entityId': 'diwEVwjioxcWEq',
@@ -62,19 +59,19 @@ Position = function(type) {
   this.writeInSlots = $("#position-" + this.type + "-write-in");
   this.voteRequired = $("#position-" + this.type + "-required");
   this.submit = $("#modal-" + this.type + "-submit");
-  Position.prototype.toJson = function() {
+  this.toJson = function() {
     var position;
     position = {
-      'pageId': this.pageId,
-      'entityId': this.entityId
+      'pageId': _this.pageId,
+      'entityId': _this.entityId
     };
     return position;
   };
-  Position.prototype.reset = function() {
-    this.candidateIDs = [];
-    this.candidates.children().remove();
-    this.name.val('').change();
-    return this.voteRequired.attr('checked', false);
+  this.reset = function() {
+    _this.candidateIDs = [];
+    _this.candidates.children().remove();
+    _this.name.val('').change();
+    return _this.voteRequired.attr('checked', false);
   };
   this.submit.click(function(e) {
     var json;
@@ -86,57 +83,57 @@ Position = function(type) {
     _this.reset();
     return form.processPosition(json);
   });
-  Position.prototype.resetSubmitBtn = function() {
+  this.resetSubmitBtn = function() {
     var text;
     text = 'Create Position';
-    if (self.entityId) {
+    if (_this.entityId) {
       text = 'Update Position';
     }
-    self.setSubmitBtn('btn-primary', text);
-    return this.submit.removeClass('disabled');
+    _this.setSubmitBtn('btn-primary', text);
+    return _this.submit.removeClass('disabled');
   };
-  Position.prototype.setSubmitBtn = function(type, text) {
-    self.restoreDefaultButtonState();
-    this.submit.addClass(type);
-    return this.submit.text(text);
+  this.setSubmitBtn = function(type, text) {
+    _this.restoreDefaultButtonState();
+    _this.submit.addClass(type);
+    return _this.submit.text(text);
   };
-  Position.prototype.restoreDefaultButtonState = function() {
+  this.restoreDefaultButtonState = function() {
     var cl, _i, _len, _ref, _results;
     _ref = ['btn-success', 'btn-danger', 'btn-primary'];
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cl = _ref[_i];
-      _results.push(this.submit.removeClass(cl));
+      _results.push(_this.submit.removeClass(cl));
     }
     return _results;
   };
-  Position.prototype.setFromJson = function(json) {
+  this.setFromJson = function(json) {
     var candidate, id, index, _i, _len, _ref;
     if (!json) {
       return;
     }
-    self.reset();
-    this.entityId = json['entityId'];
-    this.pageId = json['pageId'];
-    this.writeInSlots.val(json['write_in']);
-    this.voteRequired.attr('checked', json['vote_required']);
-    this.name.val(json['name']);
+    _this.reset();
+    _this.entityId = json['entityId'];
+    _this.pageId = json['pageId'];
+    _this.writeInSlots.val(json['write_in']);
+    _this.voteRequired.attr('checked', json['vote_required']);
+    _this.name.val(json['name']);
     _ref = json['candidates'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       candidate = _ref[_i];
-      self.addCandidateSlot();
-      index = self.candidateIDGen - 1;
-      id = self.candidateIDPrefix + index;
+      _this.addCandidateSlot();
+      index = _this.candidateIDGen - 1;
+      id = _this.candidateIDPrefix + index;
       $("#" + id + "-name").val(candidate);
       console.log("" + id + "-name");
       console.log(candidate);
     }
-    return self.resetSubmitBtn();
+    return _this.resetSubmitBtn();
   };
-  Position.prototype.addCandidateSlot = function() {
+  this.addCandidateSlot = function() {
     var candidateInput, id, index;
-    index = self.candidateIDGen++;
-    id = self.candidateIDPrefix + index;
+    index = _this.candidateIDGen++;
+    id = _this.candidateIDPrefix + index;
     candidateInput = $('<div/>', {
       "class": 'input-append'
     }).append($('<input>', {
@@ -152,19 +149,19 @@ Position = function(type) {
     }).append($('<i/>', {
       "class": 'icon-remove'
     })));
-    self.candidates.append(candidateInput);
+    _this.candidates.append(candidateInput);
     candidateInput.hide().fadeIn(500);
-    self.candidateIDs.push(index);
+    _this.candidateIDs.push(index);
     return $("#" + id).click(function() {
       var indexPtr;
-      indexPtr = self.candidateIDs.indexOf(index);
+      indexPtr = this.candidateIDs.indexOf(index);
       if (indexPtr !== -1) {
-        self.candidateIDs.splice(indexPtr, 1);
+        this.candidateIDs.splice(indexPtr, 1);
       }
       return $(this).parent().fadeOut(500);
     });
   };
-  this.addCandidate.click(self.addCandidateSlot);
+  this.addCandidate.click(this.addCandidateSlot);
   Position.prototype.getName = function() {
     var nameContainer;
     nameContainer = this.name.parent().parent();
