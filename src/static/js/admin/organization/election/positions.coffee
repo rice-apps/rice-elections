@@ -176,15 +176,15 @@ Position = (type) ->
         min = parseInt(@writeInSlots.attr('min'))
         max = parseInt(@writeInSlots.attr('max'))
         slotsContainer.removeClass('error')
-        $('.errorMsgSlots').remove()
+        $('.errorMsgWSlots').remove()
         if not (min <= val and val <= max)
             slotsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Out of valid range.' +
+            $('<span class="help-inline errorMsgWSlots">Out of valid range.' +
                 '</span>').insertAfter(@writeInSlots)
             return null
         if @candidateIDs.length == 0 and val == 0
             slotsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Must have atleast a ' +
+            $('<span class="help-inline errorMsgWSlots">Must have atleast a ' +
                 'single write in slot if no candidates are specified.' +
                 '</span>').insertAfter(@writeInSlots)
             return null
@@ -236,10 +236,10 @@ CumulativeVotingPosition = ->
         min = parseInt(@points.attr('min'))
         max = parseInt(@points.attr('max'))
         pointsContainer.removeClass('error')
-        $('.errorMsgSlots').remove()
+        $('.errorMsgPoints').remove()
         if not (min <= val and val <= max)
             pointsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Out of valid range.' +
+            $('<span class="help-inline errorMsgPoints">Out of valid range.' +
                 '</span>').insertAfter(@points)
             return null
         return val
@@ -251,15 +251,15 @@ CumulativeVotingPosition = ->
         min = parseInt(@slots.attr('min'))
         max = parseInt(@slots.attr('max'))
         slotsContainer.removeClass('error')
-        $('.errorMsgSlots').remove()
+        $('.errorMsgPSlots').remove()
         if not (min <= val and val <= max)
             slotsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Out of valid range.' +
+            $('<span class="help-inline errorMsgPSlots">Out of valid range.' +
                 '</span>').insertAfter(@slots)
             return null
         else if (val > @candidateIDs.length and @getWriteInSlots() < 1)
             slotsContainer.addClass('error')
-            $('<span class="help-inline errorMsgSlots">Number of ' +
+            $('<span class="help-inline errorMsgPSlots">Number of ' +
                 'slots exceed number of candidates.</span>').insertAfter(@slots)
             return null
         return val

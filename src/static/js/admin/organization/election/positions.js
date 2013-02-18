@@ -149,15 +149,15 @@ Position = function(type) {
     min = parseInt(this.writeInSlots.attr('min'));
     max = parseInt(this.writeInSlots.attr('max'));
     slotsContainer.removeClass('error');
-    $('.errorMsgSlots').remove();
+    $('.errorMsgWSlots').remove();
     if (!(min <= val && val <= max)) {
       slotsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.writeInSlots);
+      $('<span class="help-inline errorMsgWSlots">Out of valid range.' + '</span>').insertAfter(this.writeInSlots);
       return null;
     }
     if (this.candidateIDs.length === 0 && val === 0) {
       slotsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Must have atleast a ' + 'single write in slot if no candidates are specified.' + '</span>').insertAfter(this.writeInSlots);
+      $('<span class="help-inline errorMsgWSlots">Must have atleast a ' + 'single write in slot if no candidates are specified.' + '</span>').insertAfter(this.writeInSlots);
       return null;
     }
     return val;
@@ -207,10 +207,10 @@ CumulativeVotingPosition = function() {
     min = parseInt(this.points.attr('min'));
     max = parseInt(this.points.attr('max'));
     pointsContainer.removeClass('error');
-    $('.errorMsgSlots').remove();
+    $('.errorMsgPoints').remove();
     if (!(min <= val && val <= max)) {
       pointsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.points);
+      $('<span class="help-inline errorMsgPoints">Out of valid range.' + '</span>').insertAfter(this.points);
       return null;
     }
     return val;
@@ -222,14 +222,14 @@ CumulativeVotingPosition = function() {
     min = parseInt(this.slots.attr('min'));
     max = parseInt(this.slots.attr('max'));
     slotsContainer.removeClass('error');
-    $('.errorMsgSlots').remove();
+    $('.errorMsgPSlots').remove();
     if (!(min <= val && val <= max)) {
       slotsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Out of valid range.' + '</span>').insertAfter(this.slots);
+      $('<span class="help-inline errorMsgPSlots">Out of valid range.' + '</span>').insertAfter(this.slots);
       return null;
     } else if (val > this.candidateIDs.length && this.getWriteInSlots() < 1) {
       slotsContainer.addClass('error');
-      $('<span class="help-inline errorMsgSlots">Number of ' + 'slots exceed number of candidates.</span>').insertAfter(this.slots);
+      $('<span class="help-inline errorMsgPSlots">Number of ' + 'slots exceed number of candidates.</span>').insertAfter(this.slots);
       return null;
     }
     return val;
