@@ -78,7 +78,6 @@ Position = (function() {
     this.writeInSlots = $("#position-" + this.type + "-write-in");
     this.voteRequired = $("#position-" + this.type + "-required");
     this.submit = $("#modal-" + this.type + "-submit");
-    console.log(this.addCandidate);
     this.submit.click(this.submitData);
     this.addCandidate.click(this.addCandidateSlot);
   }
@@ -172,7 +171,8 @@ Position = (function() {
   };
 
   Position.prototype.addCandidateSlot = function() {
-    var candidateInput, id, index;
+    var candidateInput, id, index,
+      _this = this;
     index = this.candidateIDGen++;
     id = this.candidateIDPrefix + index;
     candidateInput = $('<div/>', {
@@ -195,11 +195,11 @@ Position = (function() {
     this.candidateIDs.push(index);
     return $("#" + id).click(function() {
       var indexPtr;
-      indexPtr = this.candidateIDs.indexOf(index);
+      indexPtr = _this.candidateIDs.indexOf(index);
       if (indexPtr !== -1) {
-        this.candidateIDs.splice(indexPtr, 1);
+        _this.candidateIDs.splice(indexPtr, 1);
       }
-      return $(this).parent().fadeOut(500);
+      return $("#" + id).parent().fadeOut(500);
     });
   };
 
@@ -292,7 +292,7 @@ RankedVotingPosition = (function(_super) {
   };
 
   RankedVotingPosition.prototype.setFromJson = function(json) {
-    return console.log('Child');
+    return RankedVotingPosition.__super__.setFromJson.call(this, json);
   };
 
   return RankedVotingPosition;
@@ -304,6 +304,8 @@ CumulativeVotingPosition = (function(_super) {
   __extends(CumulativeVotingPosition, _super);
 
   function CumulativeVotingPosition() {
+    this.setFromJson = __bind(this.setFromJson, this);
+
     this.toJson = __bind(this.toJson, this);
     CumulativeVotingPosition.__super__.constructor.call(this, 'cumulative');
     this.points = $('#position-cumulative-points');
@@ -370,6 +372,12 @@ CumulativeVotingPosition = (function(_super) {
       position[key] = value;
     }
     return position;
+  };
+
+  CumulativeVotingPosition.prototype.setFromJson = function(json) {
+    CumulativeVotingPosition.__super__.setFromJson.call(this, json);
+    this.points.val(json['points']);
+    return this.slots.val(json['slots']);
   };
 
   return CumulativeVotingPosition;

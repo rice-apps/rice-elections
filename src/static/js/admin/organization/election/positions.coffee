@@ -81,7 +81,6 @@ class Position
         # Submit button for the modal
         @submit = $("#modal-#{@type}-submit")
 
-        console.log(@addCandidate)
         # Bind events
         @submit.click(@submitData)
         @addCandidate.click(@addCandidateSlot)
@@ -170,10 +169,10 @@ class Position
         @candidateIDs.push(index)
 
         # Delete candidate button
-        $("##{id}").click ->
+        $("##{id}").click =>
             indexPtr = @candidateIDs.indexOf(index)
             @candidateIDs.splice(indexPtr, 1) if indexPtr != -1
-            $(this).parent().fadeOut(500)
+            $("##{id}").parent().fadeOut(500)
 
     # Validates and returns the position name typed.
     getName: ->
@@ -247,7 +246,7 @@ class RankedVotingPosition extends Position
         return position
 
     setFromJson: (json) =>
-        console.log('Child')
+        super(json)
 
 class CumulativeVotingPosition extends Position
     constructor: ->
@@ -312,3 +311,7 @@ class CumulativeVotingPosition extends Position
             position[key] = value
         return position
 
+    setFromJson: (json) =>
+        super(json)
+        @points.val(json['points'])
+        @slots.val(json['slots'])
