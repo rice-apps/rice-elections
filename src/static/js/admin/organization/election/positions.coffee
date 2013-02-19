@@ -54,6 +54,8 @@ class Form
         $('#positions').append(html)
         $('#no-positions').hide()
         html.hide().slideDown(500)
+
+        # Add event listener for edit position link
         html.children().children().filter('.edit-position').click =>
             data =
                 'method': 'get_position'
@@ -67,6 +69,21 @@ class Form
                     response = JSON.parse(data)
                     position = response['position']
                     @editPosition(position)
+
+        # Add event listener for delete position link
+        html.children().children().filter('.delete-position').click =>
+            data =
+                'method': 'delete_position'
+                'id': position['id']
+            $.ajax
+                url: postUrl
+                type: 'POST'
+                data:
+                    'data': JSON.stringify(data)
+                success: (data) =>
+                    response = JSON.parse(data)
+                    if response['status'] == 'OK'
+                        html.slideUp(500)
 
     editPosition: (position) =>
         if position['type'] == 'Ranked-Choice'

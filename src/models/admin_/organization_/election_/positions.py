@@ -45,7 +45,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             'get_positions': self.get_positions,
             'add_position': self.add_position,
             'get_position': self.get_position,
-            'update_position': self.update_position
+            'update_position': self.update_position,
+            'delete_position': self.delete_position
         }
 
         # Get election
@@ -102,14 +103,22 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         self.response.write(json.dumps(out))
 
     def get_position(self, election, data):
-        position_entry = models.ElectionPosition.get(data['id'])
-        if position_entry:
-            self.response.write(json.dumps(
-                {'position': position_entry.to_json()}))
-            logging.info(position_entry.to_json())
+        ep = models.ElectionPosition.get(data['id'])
+        if ep:
+            self.response.write(json.dumps({'position': ep.to_json()}))
         else:
             webapputils.respond(self, 'ERROR', 'Not found')
 
     def update_position(self, election, data):
         webapputils.respond(self, 'ERROR', 'Feature not available')
+
+    def delete_position(self, election, data):
+        ep = models.ElectionPosition.get(data['id'])
+        if ep:
+            for epc in ep.election_position_candidates:
+                epc.delete()
+            ep.delete()
+            webapputils.respond(self, 'OK', 'Deleted')
+        else:
+            webapputils.respond(self, 'ERROR', 'Not found')
 

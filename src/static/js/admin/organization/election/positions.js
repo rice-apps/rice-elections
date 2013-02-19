@@ -70,7 +70,7 @@ Form = (function() {
     $('#positions').append(html);
     $('#no-positions').hide();
     html.hide().slideDown(500);
-    return html.children().children().filter('.edit-position').click(function() {
+    html.children().children().filter('.edit-position').click(function() {
       var data;
       data = {
         'method': 'get_position',
@@ -87,6 +87,27 @@ Form = (function() {
           response = JSON.parse(data);
           position = response['position'];
           return _this.editPosition(position);
+        }
+      });
+    });
+    return html.children().children().filter('.delete-position').click(function() {
+      var data;
+      data = {
+        'method': 'delete_position',
+        'id': position['id']
+      };
+      return $.ajax({
+        url: postUrl,
+        type: 'POST',
+        data: {
+          'data': JSON.stringify(data)
+        },
+        success: function(data) {
+          var response;
+          response = JSON.parse(data);
+          if (response['status'] === 'OK') {
+            return html.slideUp(500);
+          }
         }
       });
     });

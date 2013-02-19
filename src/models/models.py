@@ -254,10 +254,8 @@ class ElectionPositionCandidate(db.Model):
     election_position = db.ReferenceProperty(ElectionPosition,
                                              required=True,
                                              collection_name='election_position_candidates')
-    net_id = db.StringProperty()
     name = db.StringProperty(required=True)
     written_in = db.BooleanProperty(required=True, default=False)
-
 
 
 class RankedBallot(db.Model):
