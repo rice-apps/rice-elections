@@ -13,16 +13,28 @@ jQuery ->
     json = {'entityId': 'diwEVwjioxcWEq', 'write_in': 4, 'vote_required': true, 'name': 'Hello!', 'candidates': ['CanA', 'CanB', 'CanC']}
 
 # Form for managing positions
-Form = ->
-    @positions = []
+class Form
+    constructor: ->
+        data =
+            'method': 'get_elections'
+        $.ajax
+            url: '/admin/organization/election/positions'
+            type: 'POST'
+            data: 
+                'data': JSON.stringify(data)
+            success: (data) ->
+                response = JSON.parse(data)
+                console.log(response)
+            error: (data) ->
+                console.log('Unknown error')
 
-    Form::processPosition = (position) ->
+    processPosition: (position) =>
         if not position['pageId']
             position['pageId'] = @positions.length
         @positions[position['pageId']] = position
         createPositionHTML(position)
 
-    createPositionHTML = (position) ->
+    createPositionHTML: (position) =>
         id = position['pageId']
         html = $("
         <tr id='position-#{id}' style='padding-bottom:5px;'>
@@ -38,8 +50,6 @@ Form = ->
         $('#positions').append(html)
         $('#no-positions').hide()
         html.hide().slideDown(500)
-
-    return # Stops compiler from returning last defined function
 
 
 # Abstract base class different position types, replace type in subclasses
@@ -136,6 +146,7 @@ class Position
     submitData: (e) =>
         json = @toJson()
         return false if json == null
+
         $("#modal-#{@type}").modal('hide')
         @reset()
         form.processPosition(json)

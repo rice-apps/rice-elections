@@ -26,9 +26,34 @@ jQuery(function() {
   };
 });
 
-Form = function() {
-  var createPositionHTML;
-  this.positions = [];
+Form = (function() {
+
+  function Form() {
+    this.createPositionHTML = __bind(this.createPositionHTML, this);
+
+    this.processPosition = __bind(this.processPosition, this);
+
+    var data;
+    data = {
+      'method': 'get_elections'
+    };
+    $.ajax({
+      url: '/admin/organization/election/positions',
+      type: 'POST',
+      data: {
+        'data': JSON.stringify(data)
+      },
+      success: function(data) {
+        var response;
+        response = JSON.parse(data);
+        return console.log(response);
+      },
+      error: function(data) {
+        return console.log('Unknown error');
+      }
+    });
+  }
+
   Form.prototype.processPosition = function(position) {
     if (!position['pageId']) {
       position['pageId'] = this.positions.length;
@@ -36,7 +61,8 @@ Form = function() {
     this.positions[position['pageId']] = position;
     return createPositionHTML(position);
   };
-  createPositionHTML = function(position) {
+
+  Form.prototype.createPositionHTML = function(position) {
     var html, id;
     id = position['pageId'];
     html = $("        <tr id='position-" + id + "' style='padding-bottom:5px;'>            <td>                <i class='icon-user'></i> " + position['name'] + "            </td>            <td>                <a href='#' id='position-" + id + "-edit'>Edit</a> &middot;                <a href='#' class='delete-position' id='position-" + id + "-delete'>Delete</a>            </td>        </tr>        ");
@@ -44,7 +70,10 @@ Form = function() {
     $('#no-positions').hide();
     return html.hide().slideDown(500);
   };
-};
+
+  return Form;
+
+})();
 
 Position = (function() {
 
