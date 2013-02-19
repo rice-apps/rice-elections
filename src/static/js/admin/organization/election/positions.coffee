@@ -11,12 +11,17 @@ jQuery ->
     rankedModal = new RankedVotingPosition()
     cumulativeModal = new CumulativeVotingPosition()
     form = new Form()
-    json = {'entityId': 'diwEVwjioxcWEq', 'write_in': 4, 'vote_required': true, 'name': 'Hello!', 'candidates': ['CanA', 'CanB', 'CanC']}
 
 # Form for managing positions
 class Form
     constructor: ->
         @positions = []
+
+        # Reset modal each time add position is clicked
+        $("a[href=#modal-ranked]").click =>
+            rankedModal.reset()
+        $("a[href=#modal-cumulative]").click =>
+            cumulativeModal.reset()
 
         # Load all of the existing positions into the form
         data =
@@ -30,42 +35,56 @@ class Form
                 response = JSON.parse(data)
                 console.log(response)
                 for position in response['positions']
-                    @processPosition(position)
+                    @createPositionHTML(position)
             error: (data) =>
                 console.log('Unknown error')
 
-    processPosition: (position) =>
-        if not position['pageId']
-            position['pageId'] = @positions.length
-        @positions[position['pageId']] = position
-        @createPositionHTML(position)
-
     createPositionHTML: (position) =>
-        id = position['pageId']
         html = $("
-        <tr id='position-#{id}' style='padding-bottom:5px;'>
+        <tr style='padding-bottom:5px;'>
             <td>
                 <i class='icon-user'></i> #{position['name']}
             </td>
             <td>
-                <a href='#' id='position-#{id}-edit'>Edit</a> &middot;
-                <a href='#' class='delete-position' id='position-#{id}-delete'>Delete</a>
+                <a href='#' class='edit-position'>Edit</a> &middot;
+                <a href='#' class='delete-position'>Delete</a>
             </td>
         </tr>
         ")
         $('#positions').append(html)
         $('#no-positions').hide()
         html.hide().slideDown(500)
+        html.children().children().filter('.edit-position').click =>
+            data =
+                'method': 'get_position'
+                'id': position['id']
+            $.ajax
+                url: postUrl
+                type: 'POST'
+                data:
+                    'data': JSON.stringify(data)
+                success: (data) =>
+                    response = JSON.parse(data)
+                    position = response['position']
+                    @editPosition(position)
+
+    editPosition: (position) =>
+        if position['type'] == 'Ranked-Choice'
+            rankedModal.reset()
+            rankedModal.setFromJson(position)
+            $("#modal-ranked").modal('show')
+        else if position['type'] == 'Cumulative-Voting'
+            cumulativeModal.reset()
+            cumulativeModal.setFromJson(position)
+            $("#modal-cumulative").modal('show')
+
 
 
 # Abstract base class different position types, replace type in subclasses
 class Position
     constructor: (@type) ->
-        # Position ID for page reference
-        @pageId = null
-
         # Datastore entity ID
-        @entityId = null
+        @id = null
 
         # Position type
         @type = type
@@ -104,29 +123,27 @@ class Position
     # Gives the contents of the form in json form if valid, otherwise null
     toJson: =>
         position =
-            'pageId': @pageId
-            'entityId': @entityId
+            'id': @id
             'name': @getName()
             'candidates': @getCandidates()
-            'write_in': @getWriteInSlots()
+            'write_in_slots': @getWriteInSlots()
             'vote_required': @hasVoteRequirement()
-        for key in ['name', 'candidates', 'write_in', 'vote_required']
+        for key in ['name', 'candidates', 'write_in_slots', 'vote_required']
             return null if position[key] == null
         return position
 
     setFromJson: (json) =>
         return if not json
         @reset()
-        @entityId = json['entityId']
-        @pageId = json['pageId']
-        @writeInSlots.val(json['write_in'])
+        @id = json['id']
+        @writeInSlots.val(json['write_in_slots'])
         @voteRequired.attr('checked', json['vote_required'])
         @name.val(json['name'])
         for candidate in json['candidates']
             @addCandidateSlot()
             index = @candidateIDGen - 1
             id = @candidateIDPrefix + index
-            $("##{id}-name").val(candidate)
+            $("##{id}-name").val(candidate['name'])
 
     # Resets the HTML form
     reset: =>
@@ -171,14 +188,14 @@ class Position
                 if response['status'] == 'OK'
                     $("#modal-#{@type}").modal('hide')
                     @reset()
-                    form.processPosition(position)
+                    form.createPositionHTML(response['position'])
             error: (data) =>
                 @setSubmitBtn('btn-danger', 'Error')
 
     # Resets the submit button ready for use
     resetSubmitBtn: =>
         text = 'Create Position'
-        if @entityId
+        if @id
             text = 'Update Position'
         @setSubmitBtn('btn-primary', text)
         @submit.removeClass('disabled')
@@ -246,7 +263,7 @@ class Position
             if nameInput.val() == ''
                 missing = true
             else
-                canList.push(nameInput.val())
+                canList.push({'name': nameInput.val()})
 
         $('.errorMsgCandidateName').remove()
         container.removeClass('error')

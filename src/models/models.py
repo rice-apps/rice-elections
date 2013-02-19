@@ -165,6 +165,7 @@ class ElectionPosition(polymodel.PolyModel, CacheableJson):
             'id': str(self.key()),
             'name': self.position.name,
             'write_in_slots': self.write_in_slots,
+            'vote_required': self.vote_required,
             'candidates': []
         }
         for epc in self.election_position_candidates:

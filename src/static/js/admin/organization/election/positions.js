@@ -15,29 +15,27 @@ form = null;
 postUrl = '/admin/organization/election/positions';
 
 jQuery(function() {
-  var json;
   rankedModal = new RankedVotingPosition();
   cumulativeModal = new CumulativeVotingPosition();
-  form = new Form();
-  return json = {
-    'entityId': 'diwEVwjioxcWEq',
-    'write_in': 4,
-    'vote_required': true,
-    'name': 'Hello!',
-    'candidates': ['CanA', 'CanB', 'CanC']
-  };
+  return form = new Form();
 });
 
 Form = (function() {
 
   function Form() {
-    this.createPositionHTML = __bind(this.createPositionHTML, this);
+    this.editPosition = __bind(this.editPosition, this);
 
-    this.processPosition = __bind(this.processPosition, this);
+    this.createPositionHTML = __bind(this.createPositionHTML, this);
 
     var data,
       _this = this;
     this.positions = [];
+    $("a[href=#modal-ranked]").click(function() {
+      return rankedModal.reset();
+    });
+    $("a[href=#modal-cumulative]").click(function() {
+      return cumulativeModal.reset();
+    });
     data = {
       'method': 'get_positions'
     };
@@ -55,7 +53,7 @@ Form = (function() {
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           position = _ref[_i];
-          _results.push(_this.processPosition(position));
+          _results.push(_this.createPositionHTML(position));
         }
         return _results;
       },
@@ -65,21 +63,45 @@ Form = (function() {
     });
   }
 
-  Form.prototype.processPosition = function(position) {
-    if (!position['pageId']) {
-      position['pageId'] = this.positions.length;
-    }
-    this.positions[position['pageId']] = position;
-    return this.createPositionHTML(position);
-  };
-
   Form.prototype.createPositionHTML = function(position) {
-    var html, id;
-    id = position['pageId'];
-    html = $("        <tr id='position-" + id + "' style='padding-bottom:5px;'>            <td>                <i class='icon-user'></i> " + position['name'] + "            </td>            <td>                <a href='#' id='position-" + id + "-edit'>Edit</a> &middot;                <a href='#' class='delete-position' id='position-" + id + "-delete'>Delete</a>            </td>        </tr>        ");
+    var html,
+      _this = this;
+    html = $("        <tr style='padding-bottom:5px;'>            <td>                <i class='icon-user'></i> " + position['name'] + "            </td>            <td>                <a href='#' class='edit-position'>Edit</a> &middot;                <a href='#' class='delete-position'>Delete</a>            </td>        </tr>        ");
     $('#positions').append(html);
     $('#no-positions').hide();
-    return html.hide().slideDown(500);
+    html.hide().slideDown(500);
+    return html.children().children().filter('.edit-position').click(function() {
+      var data;
+      data = {
+        'method': 'get_position',
+        'id': position['id']
+      };
+      return $.ajax({
+        url: postUrl,
+        type: 'POST',
+        data: {
+          'data': JSON.stringify(data)
+        },
+        success: function(data) {
+          var response;
+          response = JSON.parse(data);
+          position = response['position'];
+          return _this.editPosition(position);
+        }
+      });
+    });
+  };
+
+  Form.prototype.editPosition = function(position) {
+    if (position['type'] === 'Ranked-Choice') {
+      rankedModal.reset();
+      rankedModal.setFromJson(position);
+      return $("#modal-ranked").modal('show');
+    } else if (position['type'] === 'Cumulative-Voting') {
+      cumulativeModal.reset();
+      cumulativeModal.setFromJson(position);
+      return $("#modal-cumulative").modal('show');
+    }
   };
 
   return Form;
@@ -106,8 +128,7 @@ Position = (function() {
 
     this.toJson = __bind(this.toJson, this);
 
-    this.pageId = null;
-    this.entityId = null;
+    this.id = null;
     this.type = type;
     this.candidateIDGen = 0;
     this.candidateIDs = [];
@@ -125,14 +146,13 @@ Position = (function() {
   Position.prototype.toJson = function() {
     var key, position, _i, _len, _ref;
     position = {
-      'pageId': this.pageId,
-      'entityId': this.entityId,
+      'id': this.id,
       'name': this.getName(),
       'candidates': this.getCandidates(),
-      'write_in': this.getWriteInSlots(),
+      'write_in_slots': this.getWriteInSlots(),
       'vote_required': this.hasVoteRequirement()
     };
-    _ref = ['name', 'candidates', 'write_in', 'vote_required'];
+    _ref = ['name', 'candidates', 'write_in_slots', 'vote_required'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       key = _ref[_i];
       if (position[key] === null) {
@@ -148,9 +168,8 @@ Position = (function() {
       return;
     }
     this.reset();
-    this.entityId = json['entityId'];
-    this.pageId = json['pageId'];
-    this.writeInSlots.val(json['write_in']);
+    this.id = json['id'];
+    this.writeInSlots.val(json['write_in_slots']);
     this.voteRequired.attr('checked', json['vote_required']);
     this.name.val(json['name']);
     _ref = json['candidates'];
@@ -160,7 +179,7 @@ Position = (function() {
       this.addCandidateSlot();
       index = this.candidateIDGen - 1;
       id = this.candidateIDPrefix + index;
-      _results.push($("#" + id + "-name").val(candidate));
+      _results.push($("#" + id + "-name").val(candidate['name']));
     }
     return _results;
   };
@@ -210,7 +229,7 @@ Position = (function() {
         if (response['status'] === 'OK') {
           $("#modal-" + _this.type).modal('hide');
           _this.reset();
-          return form.processPosition(position);
+          return form.createPositionHTML(response['position']);
         }
       },
       error: function(data) {
@@ -222,7 +241,7 @@ Position = (function() {
   Position.prototype.resetSubmitBtn = function() {
     var text;
     text = 'Create Position';
-    if (this.entityId) {
+    if (this.id) {
       text = 'Update Position';
     }
     this.setSubmitBtn('btn-primary', text);
@@ -304,7 +323,9 @@ Position = (function() {
       if (nameInput.val() === '') {
         missing = true;
       } else {
-        canList.push(nameInput.val());
+        canList.push({
+          'name': nameInput.val()
+        });
       }
     }
     $('.errorMsgCandidateName').remove();
