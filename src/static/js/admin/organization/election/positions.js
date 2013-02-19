@@ -35,7 +35,9 @@ Form = (function() {
 
     this.processPosition = __bind(this.processPosition, this);
 
-    var data;
+    var data,
+      _this = this;
+    this.positions = [];
     data = {
       'method': 'get_positions'
     };
@@ -46,9 +48,16 @@ Form = (function() {
         'data': JSON.stringify(data)
       },
       success: function(data) {
-        var response;
+        var position, response, _i, _len, _ref, _results;
         response = JSON.parse(data);
-        return console.log(response);
+        console.log(response);
+        _ref = response['positions'];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          position = _ref[_i];
+          _results.push(_this.processPosition(position));
+        }
+        return _results;
       },
       error: function(data) {
         return console.log('Unknown error');
@@ -61,7 +70,7 @@ Form = (function() {
       position['pageId'] = this.positions.length;
     }
     this.positions[position['pageId']] = position;
-    return createPositionHTML(position);
+    return this.createPositionHTML(position);
   };
 
   Form.prototype.createPositionHTML = function(position) {

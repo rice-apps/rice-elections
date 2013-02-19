@@ -59,7 +59,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             methods[method](election, data)
 
     def get_positions(self, election, data):
-        out = {'elections': [p.to_json() for p in election.election_positions]}
+        out = {'positions': [p.to_json() for p in election.election_positions]}
         self.response.write(json.dumps(out))
 
     def add_position(self, election, data):

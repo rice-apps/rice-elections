@@ -16,6 +16,9 @@ jQuery ->
 # Form for managing positions
 class Form
     constructor: ->
+        @positions = []
+
+        # Load all of the existing positions into the form
         data =
             'method': 'get_positions'
         $.ajax
@@ -23,17 +26,19 @@ class Form
             type: 'POST'
             data: 
                 'data': JSON.stringify(data)
-            success: (data) ->
+            success: (data) =>
                 response = JSON.parse(data)
                 console.log(response)
-            error: (data) ->
+                for position in response['positions']
+                    @processPosition(position)
+            error: (data) =>
                 console.log('Unknown error')
 
     processPosition: (position) =>
         if not position['pageId']
             position['pageId'] = @positions.length
         @positions[position['pageId']] = position
-        createPositionHTML(position)
+        @createPositionHTML(position)
 
     createPositionHTML: (position) =>
         id = position['pageId']
