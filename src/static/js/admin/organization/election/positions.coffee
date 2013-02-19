@@ -5,6 +5,7 @@ all_positions = []
 rankedModal = null
 cumulativeModal = null
 form = null
+postUrl = '/admin/organization/election/positions'
 
 jQuery ->
     rankedModal = new RankedVotingPosition()
@@ -16,9 +17,9 @@ jQuery ->
 class Form
     constructor: ->
         data =
-            'method': 'get_elections'
+            'method': 'get_positions'
         $.ajax
-            url: '/admin/organization/election/positions'
+            url: postUrl
             type: 'POST'
             data: 
                 'data': JSON.stringify(data)
@@ -144,12 +145,30 @@ class Position
 
     # Validates and adds / updates the modal
     submitData: (e) =>
-        json = @toJson()
-        return false if json == null
+        position = @toJson()
+        return false if position == null
 
-        $("#modal-#{@type}").modal('hide')
-        @reset()
-        form.processPosition(json)
+        data =
+            'method': 'add_position'
+            'position': position
+
+        $.ajax
+            url: postUrl
+            type: 'POST'
+            data:
+                'data': JSON.stringify(data)
+            success: (data) =>
+                response = JSON.parse(data)
+                if response['status'] == 'ERROR'
+                    @setSubmitBtn('btn-danger', 'Error')
+                    console.log("Error: #{response['msg']}")
+                    return
+                if response['status'] == 'OK'
+                    $("#modal-#{@type}").modal('hide')
+                    @reset()
+                    form.processPosition(position)
+            error: (data) =>
+                @setSubmitBtn('btn-danger', 'Error')
 
     # Resets the submit button ready for use
     resetSubmitBtn: =>

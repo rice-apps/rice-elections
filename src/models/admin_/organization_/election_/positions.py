@@ -42,7 +42,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
 
     def post(self):
         methods = {
-            'get_elections': self.get_elections
+            'get_positions': self.get_positions,
+            'add_position': self.add_position
         }
 
         # Get election
@@ -57,6 +58,38 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         if method in methods:
             methods[method](election, data)
 
-    def get_elections(self, election, data):
-        data = {'elections': [p.to_json() for p in election.election_positions]}
-        self.response.write(json.dumps(data))
+    def get_positions(self, election, data):
+        out = {'elections': [p.to_json() for p in election.election_positions]}
+        self.response.write(json.dumps(out))
+
+    def add_position(self, election, data):
+        position = data['position']
+        position_entry = models.get_position(position['name'],
+                                             election.organization,
+                                             create=True)
+
+        # Store position
+        if position['type'] == 'Ranked-Choice':
+            ep = models.RankedVotingPosition(
+                election=election,
+                position=position_entry,
+                vote_required=position['vote_required'],
+                write_in_slots=position['write_in'])
+            ep.put()
+        elif position['type'] == 'Cumulative-Voting':
+            ep = models.CumulativeVotingPosition(
+                election=election,
+                position=position_entry,
+                vote_required=position['vote_required'],
+                write_in_slots=position['write_in'],
+                points=position['points'],
+                slots=position['slots'])
+            ep.put()
+
+        # Store candidates
+        for candidate in position['candidates']:
+            models.ElectionPositionCandidate(
+                election_position=ep,
+                name=candidate).put()
+
+        webapputils.respond(self, 'OK', 'Created')
