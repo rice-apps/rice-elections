@@ -163,7 +163,7 @@ Position = (function() {
   };
 
   Position.prototype.setFromJson = function(json) {
-    var candidate, id, index, _i, _len, _ref, _results;
+    var candidate, id, index, _i, _len, _ref;
     if (!json) {
       return;
     }
@@ -173,15 +173,15 @@ Position = (function() {
     this.voteRequired.attr('checked', json['vote_required']);
     this.name.val(json['name']);
     _ref = json['candidates'];
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       candidate = _ref[_i];
       this.addCandidateSlot();
       index = this.candidateIDGen - 1;
       id = this.candidateIDPrefix + index;
-      _results.push($("#" + id + "-name").val(candidate['name']));
+      $("#" + id + "-name").val(candidate['name']);
+      $("#" + id + "-name").data('id', candidate['id']);
     }
-    return _results;
+    return this.resetSubmitBtn();
   };
 
   Position.prototype.reset = function() {
@@ -190,6 +190,8 @@ Position = (function() {
     this.candidates.children().remove();
     this.name.val('').change();
     this.voteRequired.attr('checked', false);
+    this.id = null;
+    this.resetSubmitBtn();
     nameContainer = this.name.parent().parent();
     nameContainer.removeClass('error');
     $('.errorMsgPositionName').remove();
@@ -202,14 +204,18 @@ Position = (function() {
   };
 
   Position.prototype.submitData = function(e) {
-    var data, position,
+    var data, method, position,
       _this = this;
     position = this.toJson();
     if (position === null) {
       return false;
     }
+    method = 'add_position';
+    if (this.id) {
+      method = 'update_position';
+    }
     data = {
-      'method': 'add_position',
+      'method': method,
       'position': position
     };
     return $.ajax({
@@ -222,7 +228,7 @@ Position = (function() {
         var response;
         response = JSON.parse(data);
         if (response['status'] === 'ERROR') {
-          _this.setSubmitBtn('btn-danger', 'Error');
+          _this.setSubmitBtn('btn-danger', response['msg']);
           console.log("Error: " + response['msg']);
           return;
         }
@@ -312,7 +318,7 @@ Position = (function() {
   };
 
   Position.prototype.getCandidates = function() {
-    var can, canList, container, missing, nameInput, _i, _len, _ref;
+    var can, canData, canId, canList, container, missing, nameInput, _i, _len, _ref;
     missing = false;
     container = this.candidates.parent().parent();
     canList = [];
@@ -323,9 +329,14 @@ Position = (function() {
       if (nameInput.val() === '') {
         missing = true;
       } else {
-        canList.push({
+        canData = {
           'name': nameInput.val()
-        });
+        };
+        canId = nameInput.data('id');
+        if (canId) {
+          canData['id'] = canId;
+        }
+        canList.push(canData);
       }
     }
     $('.errorMsgCandidateName').remove();

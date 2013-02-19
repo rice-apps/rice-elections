@@ -144,6 +144,8 @@ class Position
             index = @candidateIDGen - 1
             id = @candidateIDPrefix + index
             $("##{id}-name").val(candidate['name'])
+            $("##{id}-name").data('id', candidate['id'])
+        @resetSubmitBtn()
 
     # Resets the HTML form
     reset: =>
@@ -151,6 +153,8 @@ class Position
         @candidates.children().remove()
         @name.val('').change()
         @voteRequired.attr('checked', false)
+        @id = null
+        @resetSubmitBtn()
 
         # Remove all errors
         nameContainer = @name.parent().parent()
@@ -170,8 +174,12 @@ class Position
         position = @toJson()
         return false if position == null
 
+        method = 'add_position'
+        if @id
+            method = 'update_position'
+
         data =
-            'method': 'add_position'
+            'method': method
             'position': position
 
         $.ajax
@@ -182,7 +190,7 @@ class Position
             success: (data) =>
                 response = JSON.parse(data)
                 if response['status'] == 'ERROR'
-                    @setSubmitBtn('btn-danger', 'Error')
+                    @setSubmitBtn('btn-danger', response['msg'])
                     console.log("Error: #{response['msg']}")
                     return
                 if response['status'] == 'OK'
@@ -263,7 +271,11 @@ class Position
             if nameInput.val() == ''
                 missing = true
             else
-                canList.push({'name': nameInput.val()})
+                canData = {'name': nameInput.val()}
+                canId = nameInput.data('id')
+                if canId
+                    canData['id'] = canId
+                canList.push(canData)
 
         $('.errorMsgCandidateName').remove()
         container.removeClass('error')

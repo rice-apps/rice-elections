@@ -44,7 +44,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         methods = {
             'get_positions': self.get_positions,
             'add_position': self.add_position,
-            'get_position': self.get_position
+            'get_position': self.get_position,
+            'update_position': self.update_position
         }
 
         # Get election
@@ -58,6 +59,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         logging.info('Method: %s\n Data: %s', method, data)
         if method in methods:
             methods[method](election, data)
+        else:
+            webapputils.respond(self, 'ERROR', 'Unknown method')
 
     def get_positions(self, election, data):
         out = {'positions': [p.to_json() for p in election.election_positions]}
@@ -106,4 +109,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             logging.info(position_entry.to_json())
         else:
             webapputils.respond(self, 'ERROR', 'Not found')
+
+    def update_position(self, election, data):
+        webapputils.respond(self, 'ERROR', 'Feature not available')
 
