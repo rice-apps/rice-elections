@@ -119,6 +119,19 @@ class Position
         @name.val('').change()
         @voteRequired.attr('checked', false)
 
+        # Remove all errors
+        nameContainer = @name.parent().parent()
+        nameContainer.removeClass('error')
+        $('.errorMsgPositionName').remove()
+
+        candidatesContainer = @candidates.parent().parent()
+        $('.errorMsgCandidateName').remove()
+        candidatesContainer.removeClass('error')
+
+        slotsContainer = @writeInSlots.parent().parent()
+        slotsContainer.removeClass('error')
+        $('.errorMsgWSlots').remove()
+
     # Validates and adds / updates the modal
     submitData: (e) =>
         json = @toJson()
@@ -297,6 +310,15 @@ class CumulativeVotingPosition extends Position
     reset: ->
         super()
         @slots.val('1').change()
+
+        # Remove errors
+        pointsContainer = @points.parent().parent()
+        pointsContainer.removeClass('error')
+        $('.errorMsgPoints').remove()
+
+        slotsContainer = @slots.parent().parent()
+        slotsContainer.removeClass('error')
+        $('.errorMsgPSlots').remove()
 
     # Gives the contents of the form in json form if valid, otherwise null
     toJson: =>

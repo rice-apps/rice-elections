@@ -126,10 +126,20 @@ Position = (function() {
   };
 
   Position.prototype.reset = function() {
+    var candidatesContainer, nameContainer, slotsContainer;
     this.candidateIDs = [];
     this.candidates.children().remove();
     this.name.val('').change();
-    return this.voteRequired.attr('checked', false);
+    this.voteRequired.attr('checked', false);
+    nameContainer = this.name.parent().parent();
+    nameContainer.removeClass('error');
+    $('.errorMsgPositionName').remove();
+    candidatesContainer = this.candidates.parent().parent();
+    $('.errorMsgCandidateName').remove();
+    candidatesContainer.removeClass('error');
+    slotsContainer = this.writeInSlots.parent().parent();
+    slotsContainer.removeClass('error');
+    return $('.errorMsgWSlots').remove();
   };
 
   Position.prototype.submitData = function(e) {
@@ -349,8 +359,15 @@ CumulativeVotingPosition = (function(_super) {
   };
 
   CumulativeVotingPosition.prototype.reset = function() {
+    var pointsContainer, slotsContainer;
     CumulativeVotingPosition.__super__.reset.call(this);
-    return this.slots.val('1').change();
+    this.slots.val('1').change();
+    pointsContainer = this.points.parent().parent();
+    pointsContainer.removeClass('error');
+    $('.errorMsgPoints').remove();
+    slotsContainer = this.slots.parent().parent();
+    slotsContainer.removeClass('error');
+    return $('.errorMsgPSlots').remove();
   };
 
   CumulativeVotingPosition.prototype.toJson = function() {
