@@ -1,9 +1,66 @@
 
 <div class='well'>
     <legend>Voters</legend>
-    <ul>
-      {% for voter in voters %}
-        <li>{{ voter.net_id }}</li>
-      {% endfor %}
-    </ul>
+    <div class="span4" style="width:425px;">
+        <ul id="voters-list">
+          {% for voter in voters %}
+            <li>{{ voter.net_id }}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    <div class="span2 pull-right" style="width:200px;">
+      <h4>Manage List</h4>
+      <ul class="unstyled">
+        <li>
+          <a href="#modal-add" data-toggle="modal" id="voters-add"><i class="icon-plus"></i> Add Voters</a>
+        </li>
+        <li>
+          <a href="#modal-delete" data-toggle="modal" id="voters-delete"><i class="icon-minus"></i> Delete Voters</a>
+        </li>
+      </ul>
+      <br class="clearfix">
+    </div>
 </div>
+
+<!-- Add Modal -->
+<div id="modal-add" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="addModalLabel">Add Voters</h3>
+  </div>
+  <div class="modal-body">
+        <div class="control-group">
+            <label class="control-label" for="net-ids-add">Enter a list of comma separated NetIDs.</label>
+            <div class="controls">
+                <textarea spellcheck="false" class="span5" rows="8" style="" id="net-ids-add"></textarea>
+            </div> 
+        </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="voters-add-submit">Add Voters</button>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="modal-delete" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="deleteModalLabel">Delete Voters</h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+        <label class="control-label" for="net-ids-delete">Enter a list of comma separated NetIDs.</label>
+        <div class="controls">
+            <textarea spellcheck="false" class="span5" rows="8" style="" id="net-ids-delete"></textarea>
+        </div> 
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-danger" id="voters-delete-submit">Delete Voters</button>
+  </div>
+</div>
+
+<!-- Load scripts -->
+<script src="/static/js/admin/organization/election/voters.js"></script>
