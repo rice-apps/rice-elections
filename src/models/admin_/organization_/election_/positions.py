@@ -12,7 +12,7 @@ from authentication import auth
 from models import models, webapputils
 from models.admin_.organization_.election import get_panel
 
-PAGE_NAME = '/admin/organization/election/positions'
+PAGE_URL = '/admin/organization/election/positions'
 
 
 class ElectionPositionsHandler(webapp2.RequestHandler):
@@ -30,15 +30,15 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         election = auth.get_election()
         if not election:
             panel = get_panel(
-                PAGE_NAME,
+                PAGE_URL,
                 {'status': 'Error','msg': 'No election found.'},
                 None)
-            webapputils.render_page_content(self, PAGE_NAME, panel)
+            webapputils.render_page_content(self, PAGE_URL, panel)
             return
 
         data = {'id': str(election.key())}
-        panel = get_panel(PAGE_NAME, data, data.get('id'))
-        webapputils.render_page_content(self, PAGE_NAME, panel)
+        panel = get_panel(PAGE_URL, data, data.get('id'))
+        webapputils.render_page_content(self, PAGE_URL, panel)
 
     def post(self):
         methods = {

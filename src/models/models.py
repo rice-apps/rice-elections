@@ -391,13 +391,43 @@ def add_eligible_voters(election, net_id_list):
         net_id_list: List of NetID strings
     """
     logging.info('Adding eligible voters for election %s', election.name)
+    num_added = 0
     for net_id in net_id_list:
         if net_id.strip():
             voter = get_voter(net_id.strip(), create=True)
-            ElectionVoter(voter=voter,
-                          election=election).put()
-    logging.info('Successfully added eligible voters for election %s',
-                 election.name)
+            if voter_status(voter, election) == 'not_eligible':
+                ElectionVoter(voter=voter,
+                              election=election).put()
+                num_added += 1
+    logging.info('Added voters; Election: %s, Added: %d, Already Existing: %d',
+                 election.name, num_added, len(net_id_list) - num_added)
+
+
+def remove_eligible_voters(election, net_id_list):
+    """
+    Removes the specified people from being eligible voters for the election
+    provided if they are currently eligible.
+    
+    Args:
+        election: Election object to remove eligible voters for.
+        net_id_list: List of NetID strings
+    """
+    logging.info('Removing eligible voters for election %s', election.name)
+    num_removed = 0
+    for net_id in net_id_list:
+        if net_id.strip():
+            voter = get_voter(net_id.strip())
+            if not voter:
+                continue
+            ev = ElectionVoter.gql('WHERE voter=:1 AND election=:2',
+                                    voter, election).get()
+            if not ev:
+                continue
+            else:
+                ev.delete()
+                num_removed += 1
+    logging.info('Removed voters; Election: %s, Removed: %d, Not found: %d',
+                 election.name, num_removed, len(net_id_list) - num_removed)
 
 
 def get_voter(net_id, create=False):

@@ -1,12 +1,13 @@
 """
-Controller for tasks related requests.
+Controller for tasks.
+Routed through here for security reasons, ensures the tasks were internally
+generated and not by a user.
 """
 
 import webapp2
 
-from models.tasks import ElectionVoterFactory, ElectionResultsFactory
+from models.admin_.organization_.election_.voters import ElectionVotersTaskHandler
 
 app = webapp2.WSGIApplication([
-    ('/tasks/election-voter-factory', ElectionVoterFactory),
-	('/tasks/election-results-factory', ElectionResultsFactory)
+    ('/tasks/admin/organization/election/voters', ElectionVotersTaskHandler)
 ], debug=True)

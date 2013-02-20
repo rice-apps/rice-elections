@@ -61,8 +61,8 @@ ListModal = (function() {
         response = JSON.parse(data);
         if (response['status'] === 'OK') {
           $("modal-" + _this.type).modal('hide');
-          _this.reset();
-          return page.updateVoterList(response['list']);
+          console.log('Success!');
+          return _this.reset();
         } else if (response['status'] === 'ERROR') {
           return console.log("ERROR: " + response['msg']);
         }

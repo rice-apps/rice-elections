@@ -10,6 +10,7 @@ from models.admin_.organization_.election_.information import ElectionInformatio
 from models.admin_.organization_.election_.information import ElectionUpdateHandler
 from models.admin_.organization_.election_.positions import ElectionPositionsHandler
 from models.admin_.organization_.election_.voters import ElectionVotersHandler
+from models.admin_.organization_.election_.voters import ElectionVotersTaskHandler
 
 app = webapp2.WSGIApplication([
     ('/admin/organization', OrganizationPanelHandler),
@@ -18,5 +19,6 @@ app = webapp2.WSGIApplication([
     ('/admin/organization/election/information/update', ElectionUpdateHandler),
     ('/admin/organization/election/positions', ElectionPositionsHandler),
     ('/admin/organization/election/voters', ElectionVotersHandler),
+    ('/admin/organization/election/voters/task', ElectionVotersTaskHandler),
     ('/admin/organization/election/.*', ElectionPanelHandler)
 ], debug=True)

@@ -36,8 +36,8 @@ class ListModal
                 response = JSON.parse(data)
                 if response['status'] == 'OK'
                     $("modal-#{@type}").modal('hide')
+                    console.log('Success!')
                     @reset()
-                    page.updateVoterList(response['list'])
                 else if response['status'] == 'ERROR'
                     console.log("ERROR: #{response['msg']}")
 
