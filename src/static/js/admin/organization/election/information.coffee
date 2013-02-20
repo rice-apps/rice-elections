@@ -1,5 +1,9 @@
 # Coffee for information.html
 
+startDate = null
+endDate = null
+startTime = null
+endTime = null
 jQuery ->
     informationForm = new InformationForm()
 
@@ -32,16 +36,42 @@ InformationForm = ->
     @name = $('#name')
 
     # Start Date Picker
-    @startDate = $('#startDate')
+    @startDate = $('#startDate').datepicker()
+        # # Can't pick a start date in the past
+        # onRender: (date) ->
+        #     if date.valueOf() >= now.valueOf() then '' else 'disabled'
+    .on 'changeDate', (ev) =>
+        if ev.date.valueOf() > @endDate.date.valueOf()
+            newDate = new Date(ev.date)
+            @endDate.setValue(newDate)
+        @startDate.hide()
+        @resetSubmitBtn
+        @endDate.show()
+    .data('datepicker')
+    startDate = @startDate
 
     # End Date Picker
-    @endDate = $('#endDate')
+    @endDate = $('#endDate').datepicker()
+        # onRender: (date) => 
+        #     if date.valueOf() < @startDate.date.valueOf() then 'disabled' else ''
+    .on 'changeDate', (ev) =>
+        @endDate.hide()
+        @resetSubmitBtn
+    .data('datepicker')
+    endDate = @endDate
+
+    $('#startTime, #endTime').timepicker
+        minuteStep: 5
+        defaultTime: 'current'
+        template: 'dropdown'
 
     # Start Time Picker
     @startTime = $('#startTime')
+    startTime = @startTime
 
     # End Time Picker
     @endTime = $('#endTime')
+    endTime = @endTime
 
     # Input Choice: The delay in results to public
     @resultDelay = $('#result-delay')
@@ -51,13 +81,6 @@ InformationForm = ->
 
     # Submit Button
     @submitBtn = $('#election-submit')
-
-    # Initialize date / time pickers
-    $('#startDate, #endDate').parent().datepicker()
-    $('#startTime, #endTime').timepicker
-        minuteStep: 5
-        defaultTime: 'current'
-        template: 'dropdown'
 
     # Called when the submit button is clicked. Validates & makes an AJAX call.
     @submitBtn.click ->
@@ -74,9 +97,11 @@ InformationForm = ->
             data: 'formData': JSON.stringify(postData)
             success: (data) ->
                 response = JSON.parse(data)
+                self.setFromJson(response['election'])
                 self.setSubmitBtn('btn-success', response['msg'])
+                self.submitBtn.addClass('disabled')
             error: (data) ->
-                self.setButton('btn-danger', 'Error')
+                self.setSubmitBtn('btn-danger', 'Error')
         return true
 
     # Gives the contents of the form in json form if valid, otherwise null
@@ -97,19 +122,20 @@ InformationForm = ->
         @name.val(json['name'])
         start = new Date(json['times']['start'] + ' UTC')
         end = new Date(json['times']['end'] + ' UTC')
-        startDate = formatDate(start)
+        now = new Date()
         startTime = start.toLocaleTimeString()
-        endDate = formatDate(end)
         endTime = end.toLocaleTimeString()
 
         # Set date / time picker components
-        @startDate.parent().data({date: startDate})
-        @startDate.parent().datepicker('update')
-        @startDate.val(startDate)
+        @startDate.setValue(start)
+        if now.valueOf() > start.valueOf()
+            @startDate.onRender = (date) -> 'disabled'
+        @startDate.update()
 
-        @endDate.parent().data({date: endDate})
-        @endDate.parent().datepicker('update')
-        @endDate.val(endDate)
+        @endDate.setValue(end)
+        if now.valueOf() > end.valueOf()
+            @endDate.onRender = (date) -> 'disabled'
+        @endDate.update()
 
         @startTime.timepicker('setTime', startTime)
         @endTime.timepicker('setTime', endTime)
@@ -159,25 +185,29 @@ InformationForm = ->
 
     # Validates and returns the election times
     InformationForm::getTimes = ->
-        timeContainer = @startDate.parent().parent().parent()
+        timeContainer = $('#startDate').parent().parent()
+        startDateInput = @startDate.element.children().filter('input')
+        endDateInput = @endDate.element.children().filter('input')
         errorMsg = ''
-        for field in [@startDate, @startTime, @endDate, @endTime]
+        for field in [startDateInput, endDateInput, @startTime, @endTime]
             errorMsg = 'Missing information.' if not field.val()
 
         if not errorMsg
-            start = new Date("#{@startDate.val()} #{@startTime.val()}").getTime()
-            end = new Date("#{@endDate.val()} #{@endTime.val()}").getTime()
+            start = new Date("#{startDateInput.val()} #{@startTime.val()}").valueOf()
+            end = new Date("#{endDateInput.val()} #{@endTime.val()}").valueOf()
             start /= 1000
             end /= 1000
             if start > end
                 errorMsg = 'Start time is later than end time.'
             if start == end
                 errorMsg = 'Start time is the same as end time.'
+            if not @id and (new Date()).valueOf() > start
+                errorMsg = 'Start time is in the past.'
 
         if errorMsg
             timeContainer.addClass('error')
             $('.errorMsgTime').remove()
-            @startDate.parent().parent().append("<span class='help-inline " +
+            @startDate.element.parent().append("<span class='help-inline " +
                 "errorMsgTime'>#{errorMsg}</span>")
             return null
         else
@@ -198,7 +228,7 @@ InformationForm = ->
     for picker in [@startTime, @endTime]
         picker.timepicker().on('changeTime.timepicker', @resetSubmitBtn)
 
-    for picker in [@startDate, @endDate]
-        picker.parent().datepicker().on('changeDate', @resetSubmitBtn)
+    # for picker in [@startDate, @endDate]
+    #     picker.on('changeDate', @resetSubmitBtn)
 
     return # Stops compiler from returning last defined function

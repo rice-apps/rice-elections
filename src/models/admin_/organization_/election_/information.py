@@ -68,6 +68,7 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
             return
 
         election = auth.get_election()
+        out = {'status': 'OK'}
         if not election:
             # User must be trying to create new election
             election = models.Election(
@@ -79,7 +80,7 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
                 result_delay=data['result_delay'])
             election.put()
             election.clear_cache()
-            webapputils.respond(self, 'OK', 'Created')
+            out['msg'] = 'Created'
             auth.set_election(election)
         else:
             election.name = data['name']
@@ -89,4 +90,6 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
             election.result_delay = data['result_delay']
             election.put()
             election.clear_cache()
-            webapputils.respond(self, 'OK', 'Updated')
+            out['msg'] = 'Updated'
+        out['election'] = election.to_json()
+        self.response.write(json.dumps(out))

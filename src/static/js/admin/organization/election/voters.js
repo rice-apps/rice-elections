@@ -64,14 +64,15 @@ jQuery(function() {
           'data': JSON.stringify(data)
         },
         success: function(data) {
-          var response;
+          var msg, response;
           response = JSON.parse(data);
           if (response['status'] === 'OK') {
             $("#modal-" + _this.type).modal('hide');
             _this.reset();
             return pageModel.updateVoterList(response['voters']);
           } else if (response['status'] === 'ERROR') {
-            return console.log("ERROR: " + response['msg']);
+            msg = response['msg'];
+            return console.log("ERROR: " + msg);
           }
         }
       });

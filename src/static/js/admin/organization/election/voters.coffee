@@ -29,6 +29,7 @@ jQuery ->
             data =
                 'method': "#{@type}_voters"
                 'voters': list
+
             $.ajax
                 url: '/admin/organization/election/voters'
                 type: 'POST'
@@ -41,7 +42,8 @@ jQuery ->
                         @reset()
                         pageModel.updateVoterList(response['voters'])
                     else if response['status'] == 'ERROR'
-                        console.log("ERROR: #{response['msg']}")
+                        msg = response['msg']
+                        console.log("ERROR: #{msg}")
 
         reset: =>
             @input.val('')

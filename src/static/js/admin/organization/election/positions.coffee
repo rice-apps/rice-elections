@@ -40,17 +40,24 @@ class Form
                 console.log('Unknown error')
 
     createPositionHTML: (position) =>
-        html = $("
-        <tr style='padding-bottom:5px;'>
-            <td>
-                <i class='icon-user'></i> #{position['name']}
-            </td>
-            <td>
-                <a href='#' class='edit-position'>Edit</a> &middot;
-                <a href='#' class='delete-position'>Delete</a>
-            </td>
-        </tr>
-        ")
+        html = $('<tr>',
+            style: 'padding-bottom:5px;')
+            .append($('<td>')
+                .append($('<i>',
+                    class: 'icon-user'))
+                .append(" #{position['name']}"))
+            .append($('<td>')
+                .append($('<a>',
+                    href: '#'
+                    class: 'edit-position')
+                    .append("Edit"))
+                .append(" &middot; ")
+                .append($('<a>',
+                    href: '#'
+                    class: 'delete-position')
+                    .append("Delete")))
+
+        console.log(html)
         $('#positions').append(html)
         $('#no-positions').hide()
         html.hide().slideDown(500)

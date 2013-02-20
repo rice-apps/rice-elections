@@ -33,13 +33,25 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         election = auth.get_election()
         if not election:
             panel = get_panel(
-                PAGE_NAME,
-                {'status': 'Error','msg': 'No election found.'},
+                PAGE_URL,
+                {'status': 'ERROR','msg': 'No election found.'},
                 None)
-            webapputils.render_page_content(self, PAGE_NAME, panel)
+            webapputils.render_page_content(self, PAGE_URL, panel)
             return
 
-        data = {'id': str(election.key()),
+        if election.universal:
+            panel = get_panel(
+                PAGE_URL,
+                {'status': 'Universal Election',
+                 'msg': 'This is a universal election, anyone with a valid '
+                        'NetID can vote for. Therefore you cannot manage '
+                        'the voters list.'},
+                None)
+            webapputils.render_page_content(self, PAGE_URL, panel)
+            return
+
+        data = {'status': 'OK',
+                'id': str(election.key()),
                 'voters': sorted(list(get_voter_set(election)))}
         logging.info(data)
         panel = get_panel(PAGE_URL, data, data.get('id'))
@@ -55,10 +67,6 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         election = auth.get_election()
         if not election:
             return
-
-        # Verify that the election is not universal
-        if election.universal:
-            webapputils.respond(self, 'ERROR', 'Universal election')
 
         # Get the method
         data = json.loads(self.request.get('data'))
