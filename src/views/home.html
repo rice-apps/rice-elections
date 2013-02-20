@@ -1,3 +1,6 @@
+<script src="/static/js/counter/flipcounter.js"></script>
+<link href="/static/css/counter/flipcounter.css" rel="stylesheet">
+<script src="/static/js/home.js"></script>
 <section id='main'>
   <div class='wow'>
     <div class="jumbotron">
@@ -6,16 +9,27 @@
       <a class="btn btn-large btn-success" href="/vote">Cast your vote</a>
     </div>
   </div>
+
+    <!-- Our users -->
     <div class="row-fluid marketing">
       <div class="span12">
         <div style='text-align:center'>
           <h4>Participating Colleges</h4>
           <div class='who' style='background-image: url(/static/img/who/brown-college.png);'></div>
           <div class='who' style='background-image: url(/static/img/who/mcmurtry-college.png);'></div>
-          <div class='who' style='background-image: url(/static/img/who/baker-college.gif);'></div>
-          <div class='who' style='background-image: url(/static/img/who/sid-rich-college.jpg);'></div>
+          <div class='who' style='background-image: url(/static/img/who/student-association.png);'></div>
         </div>
       </div>
+    </div>
+
+    <!-- Votes Counter -->
+    <div class="row-fluid marketing container-narrow">
+      <div id="wrapper" style="float: right; position: relative; left: -50%;">
+        <div id="flip-counter" class="flip-counter" style="position: relative; left: 50%;"></div>
+      </div>
+    </div>
+    <div class="row-fluid marketing container-narrow" style="margin-top: 0px;">
+        <h4 style='text-align:center'>votes cast and counting.</h4>
     </div>
   <div class='container-narrow'>
     <div class="row-fluid marketing">
