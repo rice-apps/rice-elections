@@ -129,8 +129,7 @@ class ElectionVoter(db.Model):
     A Voter that is eligible to vote for a specific election.
     """
     voter = db.ReferenceProperty(Voter,
-                                 required=True,
-                                 collection_name='election_voters')
+                                 required=True)
     election = db.ReferenceProperty(Election,
                                     required=True,
                                     collection_name='election_voters')
