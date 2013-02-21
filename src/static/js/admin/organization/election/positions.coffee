@@ -81,6 +81,7 @@ class Form
         html.children().children().filter('.delete-position').click =>
             $('.position-name').html(position['name'])
             $('#modal-confirmation').modal('show')
+            $('#delete-position-yes').unbind("click")
             $('#delete-position-yes').click =>
                 $('#modal-confirmation').modal('hide')
                 data =

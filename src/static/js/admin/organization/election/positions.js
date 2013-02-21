@@ -102,6 +102,7 @@
       return html.children().children().filter('.delete-position').click(function() {
         $('.position-name').html(position['name']);
         $('#modal-confirmation').modal('show');
+        $('#delete-position-yes').unbind("click");
         return $('#delete-position-yes').click(function() {
           var data;
           $('#modal-confirmation').modal('hide');
