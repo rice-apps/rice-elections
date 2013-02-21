@@ -21,11 +21,11 @@
           <i class='icon-envelope'></i> Elections
         </a>
       </li>
-      <li>
+<!--       <li>
         <a href="#voters" data-toggle="tab">
           <i class='icon-th-list'></i> Voter Lists
         </a>
-      </li>
+      </li> -->
       <li>
         <a href="#profile" data-toggle="tab">
           <i class='icon-pencil'></i> Profile
@@ -60,7 +60,8 @@
           </tr>
         {% endif %}
         {% for elec in elections|reverse %}
-          {% set status_flag = 'error' %}
+          {% set status_flag = 'info' %}
+          {% set status = 'Not started' %}
 
           {% if now > elec.times.start %}
             {% set status_flag = 'info' %}

@@ -29,7 +29,7 @@ class Form
         $.ajax
             url: postUrl
             type: 'POST'
-            data: 
+            data:
                 'data': JSON.stringify(data)
             success: (data) =>
                 response = JSON.parse(data)
@@ -79,18 +79,23 @@ class Form
 
         # Add event listener for delete position link
         html.children().children().filter('.delete-position').click =>
-            data =
-                'method': 'delete_position'
-                'id': position['id']
-            $.ajax
-                url: postUrl
-                type: 'POST'
-                data:
-                    'data': JSON.stringify(data)
-                success: (data) =>
-                    response = JSON.parse(data)
-                    if response['status'] == 'OK'
-                        html.slideUp(500)
+            $('.position-name').html(position['name'])
+            $('#modal-confirmation').modal('show')
+            $('#delete-position-yes').click =>
+                $('#modal-confirmation').modal('hide')
+                data =
+                    'method': 'delete_position'
+                    'id': position['id']
+                $.ajax
+                    url: postUrl
+                    type: 'POST'
+                    data:
+                        'data': JSON.stringify(data)
+                    success: (data) =>
+                        response = JSON.parse(data)
+                        if response['status'] == 'OK'
+                            html.slideUp(500)
+
 
     editPosition: (position) =>
         if position['type'] == 'Ranked-Choice'
@@ -101,8 +106,6 @@ class Form
             cumulativeModal.reset()
             cumulativeModal.setFromJson(position)
             $("#modal-cumulative").modal('show')
-
-
 
 # Abstract base class different position types, replace type in subclasses
 class Position

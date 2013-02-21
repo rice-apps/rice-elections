@@ -12,7 +12,6 @@
           <a href="#modal-delete" data-toggle="modal" id="voters-delete"><i class="icon-minus"></i> Delete Voters</a>
         </li>
       </ul>
-      <br class="clearfix">
     </div>
     <div style="width:425px;">
         <ul id="voters-list">
@@ -26,6 +25,7 @@
       <strong>{{ status }}: </strong> {{ msg }}
     </div>
   {% endif %}
+  <br style='clear:both;'>
 </div>
 
 <!-- Add Modal -->
@@ -39,7 +39,7 @@
             <label class="control-label" for="net-ids-add">Please enter the NetIDs. They can be seperated by either commas, spaces, or lines.</label>
             <div class="controls">
                 <textarea spellcheck="false" class="span5" rows="8" style="" id="net-ids-add"></textarea>
-            </div> 
+            </div>
         </div>
   </div>
   <div class="modal-footer">
@@ -59,7 +59,7 @@
         <label class="control-label" for="net-ids-delete">Please enter the NetIDs. They can be seperated by either commas, spaces, or lines.</label>
         <div class="controls">
             <textarea spellcheck="false" class="span5" rows="8" style="" id="net-ids-delete"></textarea>
-        </div> 
+        </div>
     </div>
   </div>
   <div class="modal-footer">
