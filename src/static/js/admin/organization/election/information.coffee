@@ -52,7 +52,7 @@ InformationForm = ->
 
     # End Date Picker
     @endDate = $('#endDate').datepicker()
-        # onRender: (date) => 
+        # onRender: (date) =>
         #     if date.valueOf() < @startDate.date.valueOf() then 'disabled' else ''
     .on 'changeDate', (ev) =>
         @endDate.hide()
@@ -197,11 +197,12 @@ InformationForm = ->
             end = new Date("#{endDateInput.val()} #{@endTime.val()}").valueOf()
             start /= 1000
             end /= 1000
+            console.log('Start time ' + start + '/ End time: ' + end)
             if start > end
                 errorMsg = 'Start time is later than end time.'
             if start == end
                 errorMsg = 'Start time is the same as end time.'
-            if not @id and (new Date()).valueOf() > start
+            if not @id and (new Date()).valueOf() / 1000 > start
                 errorMsg = 'Start time is in the past.'
 
         if errorMsg
