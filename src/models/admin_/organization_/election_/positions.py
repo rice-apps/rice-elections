@@ -36,7 +36,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             webapputils.render_page_content(self, PAGE_URL, panel)
             return
 
-        data = {'id': str(election.key())}
+        data = {'id': str(election.key()), 'election': election.to_json()}
         panel = get_panel(PAGE_URL, data, data.get('id'))
         webapputils.render_page_content(self, PAGE_URL, panel)
 
@@ -51,6 +51,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
 
         # Get election
         election = auth.get_election()
+        logging.info('Election: %s\n', election)
         if not election:
             return
 
