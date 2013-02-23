@@ -23,7 +23,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         status = models.get_admin_status(voter)
         if not status:
             webapputils.render_page(self, '/templates/message',
-                {'status': 'Error', 'msg': 'Not Authorized'})
+                {'status': 'ERROR', 'msg': 'Not Authorized'})
             return
 
         # Get election
@@ -31,12 +31,14 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         if not election:
             panel = get_panel(
                 PAGE_URL,
-                {'status': 'Error','msg': 'No election found.'},
+                {'status': 'ERROR','msg': 'No election found.'},
                 None)
             webapputils.render_page_content(self, PAGE_URL, panel)
             return
 
-        data = {'id': str(election.key()), 'election': election.to_json()}
+        data = {'status': 'OK',
+                'id': str(election.key()),
+                'election': election.to_json()}
         panel = get_panel(PAGE_URL, data, data.get('id'))
         webapputils.render_page_content(self, PAGE_URL, panel)
 

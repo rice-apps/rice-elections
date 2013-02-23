@@ -4,33 +4,43 @@
 <!-- Positions Canvas -->
 <div class="well">
   <legend>Positions</legend>
-  {% if now > election.times.start %}
-    <div class="alert alert-warning">
-      The election has already begun. Changing positions is no longer possible.
-    </div>
-  {% else %}
-    <div class='row'>
-      <div class='span4' style='width:425px;'>
-        <table id="positions" class='table table-striped' style='margin-top:10px'>
-          <!-- HTML for Positions Goes Here -->
-        </table>
-        <span id='no-positions'>No positions yet. Add one now!</span>
-        <br class='clearfix'>
+  {% if status == 'OK' %}
+    {% if now > election.times.start %}
+      <div class="alert alert-warning">
+        The election has already begun. Changing positions is no longer possible.
       </div>
-      <div class='span2 pull-right' style='width:200px;'>
-        <h4>Add A Position</h4>
-        <ul class='unstyled'>
-          <li>
-            <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
-          </li>
-          <li>
-            <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
-          </li>
-        </ul>
-        <br class='clearfix'>
+    {% else %}
+      <div class='row'>
+        <div class='span4' style='width:425px;'>
+          <table id="positions" class='table table-striped' style='margin-top:10px'>
+            <!-- HTML for Positions Goes Here -->
+          </table>
+          <span id='no-positions'>No positions yet. Add one now!</span>
+          <br class='clearfix'>
+        </div>
+        <div class='span2 pull-right' style='width:200px;'>
+          <h4>Add A Position</h4>
+          <ul class='unstyled'>
+            <li>
+              <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
+            </li>
+            <li>
+              <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
+            </li>
+          </ul>
+          <br class='clearfix'>
+        </div>
       </div>
-    </div>
     {% endif %}
+  {% else %}
+    <div class="alert alert-error">
+      {% if status and msg %}
+        <strong>{{ status }}: </strong> {{ msg }}
+      {% else %}
+        <strong>ERROR:</strong> Unkown error.
+      {% endif %}
+    </div>
+  {% endif %}
 </div>
 
 <!-- Ranked Choice Voting Position Modal -->

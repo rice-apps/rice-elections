@@ -165,7 +165,7 @@ class Position
         @reset()
         @id = json['id']
         @writeInSlots.val(json['write_in_slots'])
-        @voteRequired.attr('checked', json['vote_required'])
+        @voteRequired.prop('checked', json['vote_required'])
         @name.val(json['name'])
         for candidate in json['candidates']
             @addCandidateSlot()
@@ -180,7 +180,7 @@ class Position
         @candidateIDs = []
         @candidates.children().remove()
         @name.val('').change()
-        @voteRequired.attr('checked', false)
+        @voteRequired.prop('checked', false)
         @id = null
         @resetSubmitBtn()
 
@@ -337,7 +337,7 @@ class Position
         return val
 
     # Whether voting is required for this position
-    hasVoteRequirement: -> @voteRequired.attr('checked') == 'checked'
+    hasVoteRequirement: -> @voteRequired.prop('checked')
 
 class RankedVotingPosition extends Position
     constructor: ->

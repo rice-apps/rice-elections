@@ -148,7 +148,7 @@ InformationForm = ->
         @resultDelay.val(delay).change()
 
         # Set universal election
-        @universal.attr('checked', json['universal'] == true)
+        @universal.prop('checked', json['universal'] == true)
 
 
     # Resets the submit button ready for use
@@ -202,7 +202,7 @@ InformationForm = ->
                 errorMsg = 'Start time is later than end time.'
             if start == end
                 errorMsg = 'Start time is the same as end time.'
-            if not @id and (new Date()).valueOf() / 1000 > start
+            if ((new Date()).valueOf() / 1000) > start
                 errorMsg = 'Start time is in the past.'
 
         if errorMsg
@@ -220,7 +220,7 @@ InformationForm = ->
     InformationForm::getResultDelay = -> parseInt(@resultDelay.val())
 
     # Returns whether the election is universal
-    InformationForm::isUniversal = -> @universal.attr('checked') == 'checked'
+    InformationForm::isUniversal = -> @universal.prop('checked')
 
     # Trigger reset buttons on value changes
     for item in [@name, @resultDelay, @universal]

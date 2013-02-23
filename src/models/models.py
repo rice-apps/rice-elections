@@ -365,31 +365,25 @@ def get_admin_status(voter, organization=None):
     return True
 
 
-def put_election(name, start, end, organization):
+def delete_election(election):
     """
-    Creates and stores an Election in the models.
-    
+    Warning: Experimental!
+    Deletes the specified election along with all related entities.
+
     Args:
-        name: election name.
-        start: start time in time since epoch
-        end: end time in time since epoch
-        organization: the election Organization
-        
-    Returns:
-        election: the Election object stored in the database
+        election {Election}: the election to delete.
     """
-    for arg in [name, start, end, organization]:
-        if not arg:
-            raise Exception('One or more args missing')
-    logging.info('Storing new election: %s, start: %s, end: %s, organization: %s',
-                 name, start, end, organization.name)
-    election = Election(name=name,
-                        start=datetime.fromtimestamp(start),
-                        end=datetime.fromtimestamp(end),
-                        organization=organization.key())
-    election.put()
-    logging.info('Election stored.')
-    return election
+    logging.info('Deleting election: %s', election.name)
+    for ev in election.election_voters:
+        ev.delete()
+    for ep in election.election_positions:
+        for epc in ep.election_position_candidates:
+            for vote in epc.votes:
+                vote.delete()
+        for ballot in ep.ballots:
+            ballot.delete()
+    election.delete()
+    logging.info('Election deleted: %s', election.name)
 
 
 def add_eligible_voters(election, net_id_list):
