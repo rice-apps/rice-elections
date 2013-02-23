@@ -37,37 +37,36 @@ class ElectionInformationHandler(webapp2.RequestHandler):
         webapputils.render_page_content(self, PAGE_NAME, panel)
 
     def post(self):
+        methods = {
+            'get_election': self.get_election,
+            'update_election': self.update_election
+        }
+
         # Authenticate user
         org = auth.get_organization()
         if not org:
             webapputils.respond(self, 'ERROR', 'Not Authorized')
             return
 
+        # Get election
         election = auth.get_election()
-        if election:
-            data = {'status': 'OK', 'election': election.to_json()}
+
+        # Get the method
+        data = json.loads(self.request.get('data'))
+        method = data['method']
+        logging.info('Method: %s\n Data: %s', method, data)
+        if method in methods:
+            methods[method](election, data)
         else:
-            data = {'status': 'OK'}
-        logging.info(data)
-        self.response.write(json.dumps(data))
+            webapputils.respond(self, 'ERROR', 'Unkown method')
 
-class ElectionUpdateHandler(webapp2.RequestHandler):
-    def post(self):
-        # Authenticate user
-        org = auth.get_organization()
-        if not org:
-            webapputils.respond(self, 'ERROR', 'Not Authorized')
-            return
+    def get_election(self, election, data):
+        out = {'status': 'OK'}
+        if election:
+            out['election'] = election.to_json()
+        self.response.write(json.dumps(out))
 
-        # Get form data
-        formData = self.request.get('formData')
-        data = json.loads(formData)
-        logging.info(data)
-        if not formData:
-            webapputils.respond(self, 'ERROR', 'No Form Data Sent!')
-            return
-
-        election = auth.get_election()
+    def update_election(self, election, data):
         out = {'status': 'OK'}
         if not election:
             # User must be trying to create new election
@@ -75,7 +74,7 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
                 name=data['name'],
                 start=datetime.fromtimestamp(data['times']['start']),
                 end=datetime.fromtimestamp(data['times']['end']),
-                organization=org,
+                organization=auth.get_organization(),
                 universal=data['universal'],
                 result_delay=data['result_delay'])
             election.put()
@@ -93,3 +92,4 @@ class ElectionUpdateHandler(webapp2.RequestHandler):
             out['msg'] = 'Updated'
         out['election'] = election.to_json()
         self.response.write(json.dumps(out))
+        

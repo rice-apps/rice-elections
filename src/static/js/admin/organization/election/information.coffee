@@ -1,16 +1,17 @@
 # Coffee for information.html
 
-startDate = null
-endDate = null
-startTime = null
-endTime = null
+postURL = '/admin/organization/election/information'
 jQuery ->
     informationForm = new InformationForm()
 
+    data =
+        'method': 'get_election'
+
     # Get election information from the server
     $.ajax
-        url: '/admin/organization/election/information'
+        url: postURL
         type: 'POST'
+        data: 'data': JSON.stringify(data)
         success: (data) ->
             response = JSON.parse(data)
             if response['status'] == 'ERROR'
@@ -48,7 +49,6 @@ InformationForm = ->
         @resetSubmitBtn
         @endDate.show()
     .data('datepicker')
-    startDate = @startDate
 
     # End Date Picker
     @endDate = $('#endDate').datepicker()
@@ -58,7 +58,6 @@ InformationForm = ->
         @endDate.hide()
         @resetSubmitBtn
     .data('datepicker')
-    endDate = @endDate
 
     $('#startTime, #endTime').timepicker
         minuteStep: 5
@@ -67,11 +66,9 @@ InformationForm = ->
 
     # Start Time Picker
     @startTime = $('#startTime')
-    startTime = @startTime
 
     # End Time Picker
     @endTime = $('#endTime')
-    endTime = @endTime
 
     # Input Choice: The delay in results to public
     @resultDelay = $('#result-delay')
@@ -85,16 +82,16 @@ InformationForm = ->
     # Called when the submit button is clicked. Validates & makes an AJAX call.
     @submitBtn.click ->
         return false if self.submitBtn.hasClass('disabled')
-        postData = self.toJson()
+        data = self.toJson()
+        return false if not data
 
-        return false if not postData
-
+        data['method'] = 'update_election'
         self.submitBtn.addClass('disabled')
 
         $.ajax
-            url: '/admin/organization/election/information/update'
+            url: postURL
             type: 'POST'
-            data: 'formData': JSON.stringify(postData)
+            data: 'data': JSON.stringify(data)
             success: (data) ->
                 response = JSON.parse(data)
                 self.setFromJson(response['election'])
