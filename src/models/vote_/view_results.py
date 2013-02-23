@@ -28,7 +28,7 @@ class ResultsHandler(webapp2.RequestHandler):
         page_data = {}
 
         # Authenticate user
-        voter = get_voter(self)
+        voter = auth.get_voter(self)
         net_id = voter.net_id
 
         # Serve the election the user has requested

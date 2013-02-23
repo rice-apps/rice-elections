@@ -4,10 +4,9 @@ Database for the app.
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
-import algorithms_.cv
-import algorithms_.irv
 import logging
 
+from algorithms_ import cv, irv
 from datetime import datetime
 from google.appengine.ext import db
 from google.appengine.api import memcache
@@ -66,6 +65,12 @@ class Election(db.Model, CacheableJson):
                                       default=0) # Results delay to public in seconds
     universal = db.BooleanProperty(required=True,
                                    default=False)
+    task_count = db.IntegerProperty(required=True,  # Counter used to identify tasks
+                                    default=0)
+    voter_count = db.IntegerProperty(required=True,
+                                    default=0)
+    voted_count = db.IntegerProperty(required=True,
+                                     default=0)
 
     def _json_data(self):
         return {
@@ -78,9 +83,8 @@ class Election(db.Model, CacheableJson):
             'result_computed': self.result_computed,
             'result_delay': self.result_delay,
             'universal': self.universal,
-            'voter_count': ElectionVoter.gql('WHERE election=:1', self).count(),
-            'voted_count': ElectionVoter.gql(
-                'WHERE election=:1 AND vote_time!=NULL', self).count()
+            'voter_count': self.voter_count,
+            'voted_count': self.voted_count
         }
 
 
@@ -302,31 +306,6 @@ class Counter(db.Model):
         self.put()
 
 
-def get_organization(name):
-    """
-    Returns the organization the election data is referring to.
-    
-    Args:
-        name: The name of the organization.
-    
-    Returns:
-        Organization from models. None if it doesn't exist.
-    """
-    query_result = db.GqlQuery('SELECT * FROM Organization WHERE name=:1 LIMIT 1', name).run()
-    for organization in query_result:
-        return organization
-    
-    # Create Brown College organization
-    if temp_hard_code:
-        brown = Organization(name=name,
-                             description='The best residential college.',
-                             website='http://brown.rice.edu')
-        brown.put()
-        return brown
-    
-    return None
-
-
 def put_admin(voter, email, organization):
     """
     Makes a Voter an Admin of the specified organization.
@@ -406,6 +385,9 @@ def add_eligible_voters(election, net_id_list):
                 num_added += 1
     logging.info('Added voters; Election: %s, Added: %d, Already Existing: %d',
                  election.name, num_added, len(net_id_list) - num_added)
+    election.voter_count += num_added
+    election.put()
+    election.clear_cache()
 
 
 def remove_eligible_voters(election, net_id_list):
@@ -433,6 +415,9 @@ def remove_eligible_voters(election, net_id_list):
                 num_removed += 1
     logging.info('Removed voters; Election: %s, Removed: %d, Not found: %d',
                  election.name, num_removed, len(net_id_list) - num_removed)
+    election.voter_count -= num_added
+    election.put()
+    election.clear_cache()
 
 
 def get_voter(net_id, create=False):
@@ -515,12 +500,15 @@ def mark_voted(voter, election):
         else:
             return False
     election_voter.vote_time = datetime.now()
+    election.voted_count += 1
+    election.put()
+    election.clear_cache()
     election_voter.put()
-    increment_votes_count()
+    increment_vote_count()
     return True
 
 
-def get_votes_count():
+def get_vote_count():
     """
     Returns the total number of votes cast on the website.
     """
@@ -536,7 +524,7 @@ def get_votes_count():
     return votes_cast
 
 
-def increment_votes_count(delta=1):
+def increment_vote_count(delta=1):
     """
     Increments the total number of votes cast on the website.
 

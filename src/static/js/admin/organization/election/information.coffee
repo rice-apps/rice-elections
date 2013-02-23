@@ -199,7 +199,7 @@ InformationForm = ->
                 errorMsg = 'Start time is later than end time.'
             if start == end
                 errorMsg = 'Start time is the same as end time.'
-            if ((new Date()).valueOf() / 1000) > start
+            if not @id and ((new Date()).valueOf() / 1000) > start
                 errorMsg = 'Start time is in the past.'
 
         if errorMsg
