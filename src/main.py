@@ -24,17 +24,13 @@ class StaticHandler(webapp2.RequestHandler):
         webapputils.render_page(self, self.request.path, {})
 
 
-class BallotsCastCountHandler(webapp2.RequestHandler):
+class VotesCountHandler(webapp2.RequestHandler):
     def get(self):
-        ballots_cast = memcache.get('ballots-cast-count')
-        if not ballots_cast:
-            query = models.ElectionVoter.gql('WHERE vote_time!=NULL')
-            ballots_cast = query.count()
-            memcache.set('ballots-cast-count', ballots_cast, 9)
-        self.response.write(json.dumps({'ballots_cast': ballots_cast}))
+        votes_count = models.get_votes_count()
+        self.response.write(json.dumps({'votes_count': votes_count}))
 
 
 app = webapp2.WSGIApplication([
-    ('/stats/ballot-count', BallotsCastCountHandler),
+    ('/stats/votes-count', VotesCountHandler),
     ('/.*', StaticHandler)
 ], debug=True)

@@ -1,26 +1,26 @@
 # Coffee for home.html
 jQuery ->
     counter = null
-    ballotsCast = 0
+    votesCount = 0
 
     updateCount = ->
         $.ajax
-            url: '/stats/ballot-count'
+            url: '/stats/votes-count'
             type: 'GET'
             success: (data) =>
                 response = JSON.parse(data)
-                ballotsCast = response['ballots_cast']
+                votesCount = response['votes_count']
                 if counter != null
-                    counter.incrementTo(ballotsCast)
+                    counter.incrementTo(votesCount)
 
     updateCount()
     # Initialize a new counter
     counter = new flipCounter 'flip-counter', 
-        value:ballotsCast
+        value:votesCount
         inc:1
-        pace:500
+        pace:1
         auto:true
 
-    setInterval(updateCount, 5000)
-    counter.incrementTo(ballotsCast)
+    setInterval(updateCount, 10000)
+    counter.incrementTo(votesCount)
 

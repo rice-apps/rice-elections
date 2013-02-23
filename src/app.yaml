@@ -35,8 +35,5 @@ handlers:
   script: controllers.tasks.app
   login: admin
 
-- url: /stats/ballot-count
-  script: main.app
-
 - url: /.*
   script: main.app

@@ -290,6 +290,18 @@ class CumulativeVotingChoice(db.Model):
     points = db.IntegerProperty(required=True)
 
 
+class Counter(db.Model):
+    """
+    A simple counter identified by name.
+    """
+    name = db.StringProperty(required=True)
+    count = db.IntegerProperty(required=True, default=0)
+
+    def increment(self, delta=1):
+        self.count += delta
+        self.put()
+
+
 def get_organization(name):
     """
     Returns the organization the election data is referring to.
@@ -510,4 +522,36 @@ def mark_voted(voter, election):
             return False
     election_voter.vote_time = datetime.now()
     election_voter.put()
+    increment_votes_count()
     return True
+
+
+def get_votes_count():
+    """
+    Returns the total number of votes cast on the website.
+    """
+    name = 'Votes'
+    votes_cast = memcache.get('Counter: %s' % name)
+    if not votes_cast:
+        counter = Counter.gql('WHERE name=:1', name).get()
+        if not counter: 
+            votes_cast = 0
+        else:
+            votes_cast = counter.count
+        memcache.set('Counter: %s' % name, votes_cast, 9)
+    return votes_cast
+
+
+def increment_votes_count(delta=1):
+    """
+    Increments the total number of votes cast on the website.
+
+    Args:
+        delta {Integer, default=1}: the amount to increment by.
+    """
+    name = 'Votes'
+    counter = Counter.gql('WHERE name=:1', name).get()
+    if not counter:
+        counter = Counter(name=name)
+    counter.increment(delta)
+    counter.put()

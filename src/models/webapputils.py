@@ -85,12 +85,12 @@ def format_datetime(value, format):
 
 
 def respond(handler, status, message):
-        """
-        Sends a response to the front-end. Used for AJAX responses.
-        
-        Args:
-        	handler {webapp2.RequestHandler}: request handler
-            status {String}: response status
-            message {String}: response message
-        """
-        handler.response.write(json.dumps({'status': status, 'msg': message}))
+    """
+    Sends a response to the front-end. Used for AJAX responses.
+    
+    Args:
+    	handler {webapp2.RequestHandler}: request handler
+        status {String}: response status
+        message {String}: response message
+    """
+    handler.response.write(json.dumps({'status': status, 'msg': message}))
