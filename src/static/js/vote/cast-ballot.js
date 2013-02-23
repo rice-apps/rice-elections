@@ -67,7 +67,7 @@ function submitForm() {
 
     /* Send the ballot off and handle a response from the server. */
     $.ajax({
-        url: '/cast-ballot',
+        url: '/vote/cast-ballot',
         type: 'POST',
         data: {'formData': JSON.stringify(ballot)},
         success: function(data) {

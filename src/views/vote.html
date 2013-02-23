@@ -37,7 +37,7 @@
           {% if open_election.user_action == 'voted' %}
             <a class='btn btn-success disabled'>Voted</a>
           {% elif open_election.user_action == 'vote' %}
-            <a class='btn btn-primary' href='/cast-ballot?id={{ open_election.id }}'>Vote</a>
+            <a class='btn btn-primary' href='vote/cast-ballot?id={{ open_election.id }}'>Vote</a>
           {% else %}
             <a class='btn btn-primary disabled'>Vote</a>
           {% endif %}
@@ -79,9 +79,9 @@
         </td>
         <td>
           {% if election.time_remaining > 0 %}
-            <a href='#' data-href='/view-results?id={{ election.id }}' class='countdown btn btn-primary disabled' data-time-remaining='{{election.time_remaining}}' data-result-delay='{{election.result_delay}}' data-countdown-over-text='View Results'>00:00:00</a>
+            <a href='#' data-href='vote/view-results?id={{ election.id }}' class='countdown btn btn-primary disabled' data-time-remaining='{{election.time_remaining}}' data-result-delay='{{election.result_delay}}' data-countdown-over-text='View Results'>00:00:00</a>
           {% else %}
-            <a href='/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
+            <a href='vote/view-results?id={{ election.id }}' class='btn btn-primary'>View Results</a>
           {% endif %}
         </td>
       </tr>
