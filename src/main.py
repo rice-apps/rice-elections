@@ -26,7 +26,7 @@ class StaticHandler(webapp2.RequestHandler):
 
 class VotesCountHandler(webapp2.RequestHandler):
     def get(self):
-        votes_count = models.get_votes_count()
+        votes_count = models.get_vote_count()
         self.response.write(json.dumps({'votes_count': votes_count}))
 
 

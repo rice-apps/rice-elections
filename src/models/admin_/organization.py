@@ -36,6 +36,11 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
         logging.info(org_admin)
+        if not org_admin:
+            logging.info('Not authorized')
+            webapputils.render_page(self, '/templates/message',
+                {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
+            return
         org = org_admin.organization
         auth.set_organization(org)
 

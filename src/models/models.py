@@ -415,7 +415,7 @@ def remove_eligible_voters(election, net_id_list):
                 num_removed += 1
     logging.info('Removed voters; Election: %s, Removed: %d, Not found: %d',
                  election.name, num_removed, len(net_id_list) - num_removed)
-    election.voter_count -= num_added
+    election.voter_count -= num_removed
     election.put()
     election.clear_cache()
 
