@@ -16,6 +16,9 @@
         Election Name
       </th>
       <th>
+        Organization
+      </th>
+      <th>
         Status
       </th>
       <th>
@@ -29,6 +32,9 @@
       <tr>
         <td>
           {{ open_election.name }}
+        </td>
+        <td>
+          {{ open_election.organization }}
         </td>
         <td>
           {{ open_election.status.text }} <span class='date-format'>{{ open_election.status.date }}</span>
@@ -62,6 +68,9 @@
         Election Name
       </th>
       <th>
+        Organization
+      </th>
+      <th>
         Time Ended
       </th>
       <th>
@@ -73,6 +82,9 @@
       <tr>
         <td>
           {{ election.name }}
+        </td>
+        <td>
+          {{ election.organization }}
         </td>
         <td>
           <span class="date-format">{{ election.end_date }}</span>

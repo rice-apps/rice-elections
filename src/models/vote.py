@@ -42,6 +42,7 @@ class VoteHandler(webapp2.RequestHandler):
             data = {}
             data['id'] = str(election.key())
             data['name'] = election.name
+            data['organization'] = election.organization.name
             now = datetime.datetime.now()
             if now > election.end:      # Election passed
                 result_delay = election.result_delay
