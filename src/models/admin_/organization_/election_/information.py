@@ -11,7 +11,7 @@ import webapp2
 from authentication import auth
 from datetime import datetime, timedelta
 from google.appengine.api import taskqueue
-from models import models, webapputils
+from models import models, webapputils, report_results
 from models.admin_.organization_.election import get_panel
 
 PAGE_URL = '/admin/organization/election/information'
@@ -164,3 +164,8 @@ class ElectionTaskHandler(webapp2.RequestHandler):
         election.put()
         logging.info('Computed results for election: %s, organization: %s.',
                         election.name, election.organization.name)
+
+        admin_emails = []
+        for org_admin in election.organization.organization_admins:
+            admin_emails.append(org_admin.admin.email)
+        report_results.email_report(admin_emails, election)
