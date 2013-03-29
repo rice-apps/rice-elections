@@ -53,7 +53,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
 
         # Get election
         election = auth.get_election()
-        logging.info('Election: %s\n', election)
+        logging.info('Election: %s\n', election.name)
         if not election:
             return
 
@@ -109,6 +109,7 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         ep = models.ElectionPosition.get(data['id'])
         if ep:
             self.response.write(json.dumps({'position': ep.to_json()}))
+            logging.info(ep.to_json())
         else:
             webapputils.respond(self, 'ERROR', 'Not found')
 

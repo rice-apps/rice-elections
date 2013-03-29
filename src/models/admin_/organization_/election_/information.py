@@ -80,7 +80,6 @@ class ElectionInformationHandler(webapp2.RequestHandler):
                 universal=data['universal'],
                 result_delay=data['result_delay'])
             election.put()
-            election.clear_cache()
             out['msg'] = 'Created'
             auth.set_election(election)
         else:
@@ -90,7 +89,6 @@ class ElectionInformationHandler(webapp2.RequestHandler):
             election.universal = data['universal']
             election.result_delay = data['result_delay']
             election.put()
-            election.clear_cache()
             out['msg'] = 'Updated'
         self.schedule_result_computation(election)
         out['election'] = election.to_json()

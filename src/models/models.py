@@ -12,33 +12,6 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.ext.db import polymodel
 
-class CacheableJson(object):
-    """
-    A class that allows a cacheable json representation of the object.
-
-    Required implementation of _json_data method.
-    """
-    def _json_data(self):
-        raise NotImplementedError()
-
-    def to_json(self):
-        """
-        Returns a JSON representation of the object.
-        """
-        json = memcache.get(str(self.key()))
-        if not json:
-            json = self._json_data()
-            memcache.set(str(self.key()), json, 86400)  # Cache for a day
-            logging.info('Cached %s', self.key())
-        return json
-
-    def clear_cache(self):
-        """
-        Clears the cache entry of the object.
-        Should be called after the object is modified.
-        """
-        memcache.delete(str(self.key()))
-
 
 class Organization(db.Model):
     """
@@ -50,7 +23,7 @@ class Organization(db.Model):
     website = db.StringProperty()
 
 
-class Election(db.Model, CacheableJson):
+class Election(db.Model):
     """
     An election that users may vote for.
     """
@@ -72,7 +45,7 @@ class Election(db.Model, CacheableJson):
     voted_count = db.IntegerProperty(required=True,
                                      default=0)
 
-    def _json_data(self):
+    def to_json(self):
         return {
             'id': str(self.key()),
             'name': self.name,
@@ -150,7 +123,7 @@ class Position(db.Model):
                                         collection_name='positions')
 
 
-class ElectionPosition(polymodel.PolyModel, CacheableJson):
+class ElectionPosition(polymodel.PolyModel):
     """
     A position for a specific election within an organization.
     """
@@ -163,7 +136,7 @@ class ElectionPosition(polymodel.PolyModel, CacheableJson):
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
 
-    def _json_data(self):
+    def to_json(self):
         json = {
             'id': str(self.key()),
             'name': self.position.name,
@@ -197,10 +170,10 @@ class RankedVotingPosition(ElectionPosition):
     """
     position_type = 'Ranked-Choice'
 
-    def _json_data(self):
+    def to_json(self):
         json = memcache.get(str(self.key()))
         if not json:
-            json = super(RankedVotingPosition, self)._json_data()
+            json = super(RankedVotingPosition, self).to_json()
             json['type'] = self.position_type
             memcache.set(str(self.key()), json, 86400)
         return json
@@ -215,7 +188,6 @@ class RankedVotingPosition(ElectionPosition):
         for winner in winners:
             self.winners.append(winner)
         self.put()
-        self.clear_cache()
 
 class CumulativeVotingPosition(ElectionPosition):
     """
@@ -225,10 +197,10 @@ class CumulativeVotingPosition(ElectionPosition):
     points = db.IntegerProperty(required=True)
     slots = db.IntegerProperty(required=True)
 
-    def _json_data(self):
+    def to_json(self):
         json = memcache.get(str(self.key()))
         if not json:
-            json = super(CumulativeVotingPosition, self)._json_data()
+            json = super(CumulativeVotingPosition, self).to_json()
             json['type'] = self.position_type
             json['points'] = self.points
             json['slots'] = self.slots
@@ -247,7 +219,6 @@ class CumulativeVotingPosition(ElectionPosition):
         for winner in winners:
             self.winners.append(winner)
         self.put()
-        self.clear_cache()
     
 
 class ElectionPositionCandidate(db.Model):
@@ -387,7 +358,6 @@ def add_eligible_voters(election, net_id_list):
                  election.name, num_added, len(net_id_list) - num_added)
     election.voter_count += num_added
     election.put()
-    election.clear_cache()
 
 
 def remove_eligible_voters(election, net_id_list):
@@ -417,7 +387,6 @@ def remove_eligible_voters(election, net_id_list):
                  election.name, num_removed, len(net_id_list) - num_removed)
     election.voter_count -= num_removed
     election.put()
-    election.clear_cache()
 
 
 def get_voter(net_id, create=False):
@@ -502,7 +471,6 @@ def mark_voted(voter, election):
     election_voter.vote_time = datetime.now()
     election.voted_count += 1
     election.put()
-    election.clear_cache()
     election_voter.put()
     increment_vote_count()
     return True
