@@ -22,7 +22,7 @@ jQuery ->
     counter = new flipCounter 'flip-counter',
         value:0
         inc:1
-        pace:1
+        pace:100
         auto:true
 
     setInterval(updateCount, 10000)
