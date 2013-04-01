@@ -71,11 +71,20 @@
 
     <!-- Vote Required -->
     <div class="control-group">
-      <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone will be able to vote.">Universal Election</label>
+      <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone with a NetID will be able to vote.">Universal Election</label>
       <div class="controls">
         <label class="checkbox">
-          <input type="checkbox" id="universal-election" {% if universal %} checked {% endif %}>
-          Enabled
+          <input type="checkbox" id="universal-election" {% if universal %} checked {% endif %}>Enabled
+        </label>
+      </div>
+    </div>
+
+    <!-- Hidden Election -->
+    <div class="control-group">
+      <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, the election will be hidden from the vote page and will be shared from a provided link.">Hidden Election</label>
+      <div class="controls">
+        <label class="checkbox">
+          <input type="checkbox" id="hidden-election">Enabled
         </label>
       </div>
     </div>

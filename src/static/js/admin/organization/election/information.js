@@ -64,6 +64,7 @@ InformationForm = function() {
   this.endTime = $('#endTime');
   this.resultDelay = $('#result-delay');
   this.universal = $('#universal-election');
+  this.hidden = $('#hidden-election');
   this.submitBtn = $('#election-submit');
   this.submitBtn.click(function() {
     var data;
@@ -101,7 +102,8 @@ InformationForm = function() {
       'name': this.getName(),
       'times': this.getTimes(),
       'result_delay': this.getResultDelay(),
-      'universal': this.isUniversal()
+      'universal': this.isUniversal(),
+      'hidden': this.hidden.prop('checked')
     };
     for (key in json) {
       value = json[key];
@@ -144,7 +146,8 @@ InformationForm = function() {
       this.resultDelay.append("<option id='custom' value='" + delay + "'>" + delay + "</option>");
     }
     this.resultDelay.val(delay).change();
-    return this.universal.prop('checked', json['universal'] === true);
+    this.universal.prop('checked', json['universal'] === true);
+    return this.hidden.prop('checked', json['hidden'] === true);
   };
   InformationForm.prototype.resetSubmitBtn = function() {
     var text;

@@ -77,6 +77,9 @@ InformationForm = ->
     # Checkbox: Whether the election is universal
     @universal = $('#universal-election')
 
+    # Checkbox: Whether the election is hidden
+    @hidden = $('#hidden-election')
+
     # Submit Button
     @submitBtn = $('#election-submit')
 
@@ -109,6 +112,7 @@ InformationForm = ->
             'times': @getTimes()
             'result_delay': @getResultDelay()
             'universal': @isUniversal()
+            'hidden': @hidden.prop('checked')
         for key, value of json
             return null if value == null
         return json
@@ -147,6 +151,9 @@ InformationForm = ->
 
         # Set universal election
         @universal.prop('checked', json['universal'] == true)
+
+        # Set hidden election
+        @hidden.prop('checked', json['hidden'] == true)
 
 
     # Resets the submit button ready for use
@@ -226,8 +233,5 @@ InformationForm = ->
 
     for picker in [@startTime, @endTime]
         picker.timepicker().on('changeTime.timepicker', @resetSubmitBtn)
-
-    # for picker in [@startDate, @endDate]
-    #     picker.on('changeDate', @resetSubmitBtn)
 
     return # Stops compiler from returning last defined function
