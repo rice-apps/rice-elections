@@ -228,7 +228,7 @@ InformationForm = ->
     InformationForm::isUniversal = -> @universal.prop('checked')
 
     # Trigger reset buttons on value changes
-    for item in [@name, @resultDelay, @universal]
+    for item in [@name, @resultDelay, @universal, @hidden]
         item.change(@resetSubmitBtn)
 
     for picker in [@startTime, @endTime]

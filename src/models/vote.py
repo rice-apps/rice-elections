@@ -30,7 +30,7 @@ class VoteHandler(webapp2.RequestHandler):
         election_keys = [election.key() for election in elections]
 
         # Add universal elections
-        universal_elections = models.Election.gql("WHERE universal=TRUE").run()
+        universal_elections = models.Election.gql("WHERE universal=TRUE AND hidden=FALSE")
         for election in universal_elections:
             if datetime.datetime.now() < election.end and election.key() not in election_keys:
                 elections.append(election)

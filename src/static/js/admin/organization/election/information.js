@@ -229,7 +229,7 @@ InformationForm = function() {
   InformationForm.prototype.isUniversal = function() {
     return this.universal.prop('checked');
   };
-  _ref = [this.name, this.resultDelay, this.universal];
+  _ref = [this.name, this.resultDelay, this.universal, this.hidden];
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     item = _ref[_i];
     item.change(this.resetSubmitBtn);
