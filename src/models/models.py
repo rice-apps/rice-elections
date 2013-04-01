@@ -145,6 +145,7 @@ class ElectionPosition(polymodel.PolyModel):
             'candidates': []
         }
         for epc in self.election_position_candidates:
+            logging.info(epc.name)
             if epc.written_in and epc.key() not in self.winners:
                 continue
             candidate = {'name': epc.name,
@@ -171,11 +172,8 @@ class RankedVotingPosition(ElectionPosition):
     position_type = 'Ranked-Choice'
 
     def to_json(self):
-        json = memcache.get(str(self.key()))
-        if not json:
-            json = super(RankedVotingPosition, self).to_json()
-            json['type'] = self.position_type
-            memcache.set(str(self.key()), json, 86400)
+        json = super(RankedVotingPosition, self).to_json()
+        json['type'] = self.position_type
         return json
 
     def compute_winners(self):
@@ -198,12 +196,10 @@ class CumulativeVotingPosition(ElectionPosition):
     slots = db.IntegerProperty(required=True)
 
     def to_json(self):
-        json = memcache.get(str(self.key()))
-        if not json:
-            json = super(CumulativeVotingPosition, self).to_json()
-            json['type'] = self.position_type
-            json['points'] = self.points
-            json['slots'] = self.slots
+        json = super(CumulativeVotingPosition, self).to_json()
+        json['type'] = self.position_type
+        json['points'] = self.points
+        json['slots'] = self.slots
         return json
 
     def compute_winners(self):

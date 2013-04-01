@@ -114,6 +114,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             webapputils.respond(self, 'ERROR', 'Not found')
 
     def update_position(self, election, data):
+        logging.info("Election: ", election)
+        logging.info("Data: ", data)
         webapputils.respond(self, 'ERROR', 'Feature not available')
 
     def delete_position(self, election, data):
