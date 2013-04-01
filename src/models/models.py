@@ -38,6 +38,8 @@ class Election(db.Model):
                                       default=0) # Results delay to public in seconds
     universal = db.BooleanProperty(required=True,
                                    default=False)
+    hidden = db.BooleanProperty(required=True,
+                                default=False)
     task_count = db.IntegerProperty(required=True,  # Counter used to identify tasks
                                     default=0)
     voter_count = db.IntegerProperty(required=True,
@@ -56,6 +58,7 @@ class Election(db.Model):
             'result_computed': self.result_computed,
             'result_delay': self.result_delay,
             'universal': self.universal,
+            'hidden': self.hidden,
             'voter_count': self.voter_count,
             'voted_count': self.voted_count
         }
