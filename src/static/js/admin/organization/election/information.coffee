@@ -1,5 +1,5 @@
 # Coffee for information.html
-
+informationForm = null
 postURL = '/admin/organization/election/information'
 jQuery ->
     $('label[rel="tooltip"]').tooltip()
@@ -80,11 +80,14 @@ InformationForm = ->
     # Checkbox: Whether the election is hidden
     @hidden = $('#hidden-election')
 
+    # Election link modal
+    @linkModal = new LinkModal()
+
     # Submit Button
     @submitBtn = $('#election-submit')
 
     # Called when the submit button is clicked. Validates & makes an AJAX call.
-    @submitBtn.click ->
+    @submitBtn.click =>
         return false if self.submitBtn.hasClass('disabled')
         data = self.toJson()
         return false if not data
@@ -96,11 +99,15 @@ InformationForm = ->
             url: postURL
             type: 'POST'
             data: 'data': JSON.stringify(data)
-            success: (data) ->
+            success: (data) =>
                 response = JSON.parse(data)
                 self.setFromJson(response['election'])
                 self.setSubmitBtn('btn-success', response['msg'])
                 self.submitBtn.addClass('disabled')
+                console.log(response)
+                if response.election.hidden
+                    @linkModal.load(response.election.id)
+                    @linkModal.show()
             error: (data) ->
                 self.setSubmitBtn('btn-danger', 'Error')
         return true
@@ -235,3 +242,25 @@ InformationForm = ->
         picker.timepicker().on('changeTime.timepicker', @resetSubmitBtn)
 
     return # Stops compiler from returning last defined function
+
+class LinkModal
+    constructor: ->
+        @el = $('#modal-election-link')
+        @link = $('#modal-election-link-text')
+        @linkHref = ''
+        @copyLink = $('#modal-election-link-copy')
+        @clip = new ZeroClipboard(@copyLink, {moviePath: "/static/js/shared/ZeroClipboard.swf", text: 'Hello!'})
+
+        @clip.on 'complete', (client, args) ->
+            alert("Copied text to clipboard: #{args.text}")
+        # @copyLink.click(@copy)
+
+    load: (id) ->
+        host = window.location.host
+        @linkHref = "http://#{host}/vote/cast-ballot?id=#{id}"
+        linkText = $('<a>', 'href': @linkHref).text(@linkHref)
+        @link.text(@linkHref)
+        @copyLink.attr('data-clipboard-text', @linkHref)
+        @clip = new ZeroClipboard(@copyLink, {moviePath: "/static/js/shared/ZeroClipboard.swf", text: 'Hello!'})
+
+    show: -> @el.modal('show')

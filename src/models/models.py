@@ -60,7 +60,7 @@ class Election(db.Model):
             'universal': self.universal,
             'hidden': self.hidden,
             'voter_count': self.voter_count,
-            'voted_count': self.voted_count
+            'voted_count': self.voted_count,
         }
 
 

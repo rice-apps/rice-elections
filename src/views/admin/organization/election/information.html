@@ -7,6 +7,7 @@
 <script src="/static/js/shared/bootstrap-datepicker.js"></script>
 <script src="/static/js/shared/bootstrap-timepicker.min.js"></script>
 <script src="/static/js/shared/bootstrap-tooltip.js"></script>
+<script src="/static/js/shared/ZeroClipboard.min.js"></script>
 <script src="/static/js/admin/organization/election/information.js"></script>
 
 {% if not election %}
@@ -95,4 +96,19 @@
       <a type="submit" class="btn btn-primary span2" id="election-submit" style='margin-left:0;'>Save Details</a>
     </div>
   </div>
+</div>
+
+<div id="modal-election-link" class="modal hide fade">
+    <div class="modal-header">
+      <a data-dismiss="modal" href="#" class="close">&times;</a>
+      <h3>Election Link</h3>
+    </div>
+    <div class="modal-body">
+      <p>Please use this link to share the election to your voters. Anyone with a valid NetID who uses this link can vote for the election.</p>
+      <p><strong>Election Link</strong><br><small id="modal-election-link-text"></small></p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" id='modal-election-link-copy' style="display: none" class="btn btn-primary">Copy Link</a>
+      <a data-dismiss="modal" class="btn secondary">Close</a>
+    </div>
 </div>
