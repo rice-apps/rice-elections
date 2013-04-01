@@ -5,6 +5,7 @@ postURL = '/admin/organization/election/information';
 
 jQuery(function() {
   var data, informationForm;
+  $('label[rel="tooltip"]').tooltip();
   informationForm = new InformationForm();
   data = {
     'method': 'get_election'

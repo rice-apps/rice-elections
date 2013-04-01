@@ -2,6 +2,7 @@
 
 postURL = '/admin/organization/election/information'
 jQuery ->
+    $('label[rel="tooltip"]').tooltip()
     informationForm = new InformationForm()
 
     data =
