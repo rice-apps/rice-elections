@@ -79,7 +79,10 @@ class Voter(db.Model):
         """
         election_list = []
         for election_voter in ElectionVoter.gql('WHERE voter=:1', self.key()):
-            election_list.append(election_voter.election)
+            try:        # YOLO
+                election_list.append(election_voter.election)
+            except db.ReferencePropertyResolveError:
+                election_voter.delete()     # Election no longer exists
         return election_list
 
 
