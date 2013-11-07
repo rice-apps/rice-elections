@@ -5,7 +5,7 @@ A secure, user friendly, and transparent way of voting for elections within diff
 
 Website
 -------
-Visit the website at http://elections.rice.edu
+Visit the website at http://owlection.appspot.com
 
 
 Bug tracker
