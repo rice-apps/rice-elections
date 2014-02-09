@@ -144,6 +144,9 @@ class Position
         # Submit button for the modal
         @submit = $("#modal-#{@type}-submit")
 
+        # Description (optional description for position)
+        @description = $('#description') 
+        
         # Bind events
         @submit.click(@submitData)
         @addCandidate.click(@addCandidateSlot)
@@ -156,6 +159,7 @@ class Position
             'candidates': @getCandidates()
             'write_in_slots': @getWriteInSlots()
             'vote_required': @hasVoteRequirement()
+            'description': @getDescription()
         for key in ['name', 'candidates', 'write_in_slots', 'vote_required']
             return null if position[key] == null
         return position
@@ -167,6 +171,7 @@ class Position
         @writeInSlots.val(json['write_in_slots'])
         @voteRequired.prop('checked', json['vote_required'])
         @name.val(json['name'])
+        @description.val(json['description'])
         for candidate in json['candidates']
             @addCandidateSlot()
             index = @candidateIDGen - 1
@@ -183,6 +188,7 @@ class Position
         @voteRequired.prop('checked', false)
         @id = null
         @resetSubmitBtn()
+        @description.val("")
 
         # Remove all errors
         nameContainer = @name.parent().parent()
@@ -287,6 +293,22 @@ class Position
             return null
         return @name.val()
 
+        # Validates and returns the position name typed.
+    getName: ->
+        nameContainer = @name.parent().parent()
+        nameContainer.removeClass('error')
+        $('.errorMsgPositionName').remove()
+        if not @name.val()
+            nameContainer.addClass('error')
+            $('<span class="help-inline errorMsgPositionName">Missing ' +
+                'information.</span>').insertAfter(@name)
+            return null
+        return @name.val()
+        
+    # Gets the description for a position
+    getDescription: ->
+        return @description.val()
+        
     # Validates and returns a list of candidates
     getCandidates: ->
         missing = false

@@ -142,14 +142,16 @@ class ElectionPosition(polymodel.PolyModel):
     vote_required = db.BooleanProperty(required=True)
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
-
+    description = db.TextProperty(required=False, default="")
+    
     def to_json(self):
         json = {
             'id': str(self.key()),
             'name': self.position.name,
             'write_in_slots': self.write_in_slots,
             'vote_required': self.vote_required,
-            'candidates': []
+            'candidates': [],
+            'description': self.description
         }
         for epc in self.election_position_candidates:
             logging.info(epc.name)

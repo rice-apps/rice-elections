@@ -82,7 +82,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
                 election=election,
                 position=position_entry,
                 vote_required=position['vote_required'],
-                write_in_slots=position['write_in_slots'])
+                write_in_slots=position['write_in_slots'],
+                description=position['description'])
             ep.put()
         elif position['type'] == 'Cumulative-Voting':
             ep = models.CumulativeVotingPosition(
@@ -91,7 +92,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
                 vote_required=position['vote_required'],
                 write_in_slots=position['write_in_slots'],
                 points=position['points'],
-                slots=position['slots'])
+                slots=position['slots'],
+                description=position['description'])
             ep.put()
 
         # Store candidates

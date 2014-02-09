@@ -200,7 +200,7 @@ InformationForm = ->
             return null
         return @name.val()
 
-    # Validates and returns the election name
+    # Gets the description for a position
     InformationForm::getDescription = ->
         return @description.val()
         
