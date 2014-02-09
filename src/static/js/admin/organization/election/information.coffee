@@ -80,6 +80,9 @@ InformationForm = ->
     # Checkbox: Whether the election is hidden
     @hidden = $('#hidden-election')
 
+    # Description
+    @description = $('#description') 
+    
     # Election link modal
     @linkModal = new LinkModal()
 
@@ -120,6 +123,7 @@ InformationForm = ->
             'result_delay': @getResultDelay()
             'universal': @isUniversal()
             'hidden': @hidden.prop('checked')
+            'description': @getDescription()
         for key, value of json
             return null if value == null
         return json
@@ -134,7 +138,8 @@ InformationForm = ->
         now = new Date()
         startTime = start.toLocaleTimeString()
         endTime = end.toLocaleTimeString()
-
+        @description.val(json['description'])
+        
         # Set date / time picker components
         @startDate.setValue(start)
         if now.valueOf() > start.valueOf()
@@ -195,6 +200,10 @@ InformationForm = ->
             return null
         return @name.val()
 
+    # Validates and returns the election name
+    InformationForm::getDescription = ->
+        return @description.val()
+        
     # Validates and returns the election times
     InformationForm::getTimes = ->
         timeContainer = $('#startDate').parent().parent()

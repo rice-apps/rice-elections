@@ -19,12 +19,18 @@
     <p>
       You are voting as <strong>{{ voter_net_id }}</strong>. Your ballot will be recorded anonymously.
     </p>
-
+    
     <h4>Instructions</h4>
     <p>
       Below is the ballot for this election. Please read the instructions for each position carefully, as they may differ from position to position. Unless otherwise specified, voting for a particular position is optional and you may leave it blank.
     </p>
-
+    
+    {% if description != "" %}
+    <h4>Description</h4>
+    <p>
+        {{ description }}
+    </p>
+    {% endif %}
     <!-- Print each election by position. -->
     {% for position in positions %}
 

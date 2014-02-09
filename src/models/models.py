@@ -46,7 +46,7 @@ class Election(db.Model):
                                     default=0)
     voted_count = db.IntegerProperty(required=True,
                                      default=0)
-
+    description = db.TextProperty(required=False, default="")
     def to_json(self):
         return {
             'id': str(self.key()),
@@ -61,6 +61,7 @@ class Election(db.Model):
             'hidden': self.hidden,
             'voter_count': self.voter_count,
             'voted_count': self.voted_count,
+            'description': self.description,
         }
 
 

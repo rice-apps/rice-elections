@@ -79,7 +79,8 @@ class ElectionInformationHandler(webapp2.RequestHandler):
                 organization=auth.get_organization(),
                 universal=data['universal'],
                 hidden=data['hidden'],
-                result_delay=data['result_delay'])
+                result_delay=data['result_delay'],
+                description=data['description'])
             election.put()
             out['msg'] = 'Created'
             auth.set_election(election)
@@ -90,6 +91,7 @@ class ElectionInformationHandler(webapp2.RequestHandler):
             election.universal = data['universal']
             election.hidden = data['hidden']
             election.result_delay = data['result_delay']
+            election.description = data['description']
             election.put()
             out['msg'] = 'Updated'
         self.schedule_result_computation(election)
