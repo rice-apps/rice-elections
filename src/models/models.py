@@ -64,6 +64,11 @@ class Election(db.Model):
             'description': self.description,
         }
 
+    @property
+    def election_positions(self):
+        return [ep for ep in ElectionPosition.gql(
+            "WHERE election=:1 ORDER BY datetime_created", self)]
+
 
 class Voter(db.Model):
     """
@@ -135,7 +140,6 @@ class ElectionPosition(polymodel.PolyModel):
     A position for a specific election within an organization.
     """
     election = db.ReferenceProperty(Election,
-                                    collection_name='election_positions',
                                     required=True)
     position = db.ReferenceProperty(Position,
                                     required=True)
@@ -143,6 +147,7 @@ class ElectionPosition(polymodel.PolyModel):
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
     description = db.TextProperty(required=False, default="")
+    datetime_created = db.DateTimeProperty(required=False, auto_now=True)
     
     def to_json(self):
         json = {

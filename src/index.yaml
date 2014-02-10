@@ -15,6 +15,16 @@ indexes:
   - name: result_computed
   - name: end
 
+- kind: ElectionPosition
+  properties:
+  - name: election
+  - name: datetime_created
+
+- kind: ElectionPosition
+  properties:
+  - name: election
+  - name: position
+
 - kind: ElectionVoter
   properties:
   - name: election
