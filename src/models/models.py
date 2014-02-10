@@ -147,7 +147,7 @@ class ElectionPosition(polymodel.PolyModel):
     write_in_slots = db.IntegerProperty(required=True)
     winners = db.ListProperty(db.Key)
     description = db.TextProperty(required=False, default="")
-    datetime_created = db.DateTimeProperty(required=False, auto_now=True)
+    datetime_created = db.DateTimeProperty(required=True, auto_now=True)
     
     def to_json(self):
         json = {
