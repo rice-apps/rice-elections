@@ -230,7 +230,8 @@ class Position
                 if response['status'] == 'OK'
                     $("#modal-#{@type}").modal('hide')
                     @reset()
-                    form.createPositionHTML(response['position'])
+                    if method == 'add_position'
+                        form.createPositionHTML(response['position'])
             error: (data) =>
                 @setSubmitBtn('btn-danger', 'Error')
 

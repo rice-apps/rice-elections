@@ -116,9 +116,38 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             webapputils.respond(self, 'ERROR', 'Not found')
 
     def update_position(self, election, data):
-        logging.info("Election: ", election)
-        logging.info("Data: ", data)
-        webapputils.respond(self, 'ERROR', 'Feature not available')
+        position_data = data['position']
+        ep = models.ElectionPosition.get(position_data['id'])
+        position_entry = models.get_position(position_data['name'],
+                                             election.organization,
+                                             create=True)
+        # Can't change position type
+        assert(position_data['type'] == ep.position_type) 
+        ep.position = position_entry
+        ep.vote_required = position_data['vote_required']
+        ep.write_in_slots = position_data['write_in_slots']
+        ep.description = position_data['description']
+        if ep.position_type == 'Cumulative-Voting':
+            ep.points = position_data['points']
+            ep.slots = position_data['slots']
+        ep.put()
+
+        # Delete existing candidates
+        for candidate in ep.election_position_candidates:
+            candidate.delete()
+
+        # Store candidates
+        for candidate in position_data['candidates']:
+            models.ElectionPositionCandidate(
+                election_position=ep,
+                name=candidate['name']).put()
+
+        out = {'status': 'OK',
+               'msg': 'Updated',
+               'position': ep.to_json()}
+
+        self.response.write(json.dumps(out))
+
 
     def delete_position(self, election, data):
         ep = models.ElectionPosition.get(data['id'])

@@ -278,7 +278,9 @@
           if (response['status'] === 'OK') {
             $("#modal-" + _this.type).modal('hide');
             _this.reset();
-            return form.createPositionHTML(response['position']);
+            if (method === 'add_position') {
+              return form.createPositionHTML(response['position']);
+            }
           }
         },
         error: function(data) {
