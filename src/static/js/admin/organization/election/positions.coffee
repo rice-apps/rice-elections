@@ -145,7 +145,7 @@ class Position
         @submit = $("#modal-#{@type}-submit")
 
         # Description (optional description for position)
-        @description = $('#description') 
+        @description = $("#position-#{@type}-description") 
         
         # Bind events
         @submit.click(@submitData)
