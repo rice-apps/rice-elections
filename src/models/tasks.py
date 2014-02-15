@@ -69,14 +69,12 @@ class ElectionResultsScheduler(webapp2.RequestHandler):
         task_name = str(election.key()) + "-" + method_name
 
         # Enqueue new task for computing results after election ends
-        compute_time = election.end + timedelta(seconds=5)
         data = {'election_key': str(election.key()),
                 'method': method_name}
         retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
         taskqueue.add(name=task_name,
                       url=TASK_URL,
                       params={'data': json.dumps(data)},
-                      eta=compute_time,
                       retry_options=retry_options)
         logging.info('Election result computation enqueued.')
 
