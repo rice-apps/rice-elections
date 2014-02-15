@@ -7,44 +7,15 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import logging
 import json
-import reportresults
 import webapp2
+import models
+import report_results
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.appengine.api import mail
-from models import models
+from google.appengine.api import taskqueue
 
-class ElectionVoterFactory(webapp2.RequestHandler):
-    """
-    Adds a list of ElectionVoters for a given election.
-    """
-    def post(self):
-        data = json.loads(self.request.get('data'))
-        election_key = data['election_key']
-        election = models.Election.get(election_key)
-        voters = data['voter_list']
-        if election and voters:
-            models.add_eligible_voters(election, voters)
-        else:
-            logging.error('Task Error, database or voters could not be found.')
-            return
-
-        # Email Success
-        admins = [org_admin.admin for org_admin in 
-                    election.organization.organization_admins]
-        message = mail.EmailMessage(
-            sender="no-reply@owlection.appspotmail.com",
-            subject="Eligible Voters added for %s" % election.name)
-        message.to = ', '.join([admin.email for admin in admins])
-        message.body = ('Dear {0} Admin,\n\n'
-            'The eligible voters specified for {1} have been successfully'
-            ' added. The total number of voters added is {2}.\n\n'
-            'At your service,\n\n'
-            'Owlection Team').format(election.organization.name,
-                                    election.name,
-                                    len(voters))
-        logging.info(message.body)
-        message.send()
+TASK_URL = '/tasks/election-results-factory'
 
 class ElectionResultsFactory(webapp2.RequestHandler):
     """
@@ -78,9 +49,38 @@ class ElectionResultsFactory(webapp2.RequestHandler):
         election.put()
         logging.info('Computed results for election: %s, organization: %s.',
                         election.name, election.organization.name)
-        reportresults.email_report(election)
+
+        admin_emails = []
+        for org_admin in election.organization.organization_admins:
+            admin_emails.append(org_admin.admin.email)
+        report_results.email_report(admin_emails, election)
+
+class ElectionResultsScheduler(webapp2.RequestHandler):
+
+    def get(self):
+        finished_elections = models.Election.gql(
+            "WHERE end < :1 AND result_computed = :2", datetime.now(), False)
+
+        for election in finished_elections:
+            self.schedule_result_computation(election)
+
+    def schedule_result_computation(self, election):
+        method_name = "compute_results"
+        task_name = str(election.key()) + "-" + method_name
+
+        # Enqueue new task for computing results after election ends
+        compute_time = election.end + timedelta(seconds=5)
+        data = {'election_key': str(election.key()),
+                'method': method_name}
+        retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
+        taskqueue.add(name=task_name,
+                      url=TASK_URL,
+                      params={'data': json.dumps(data)},
+                      eta=compute_time,
+                      retry_options=retry_options)
+        logging.info('Election result computation enqueued.')
 
 app = webapp2.WSGIApplication([
-    ('/tasks/election-voter-factory', ElectionVoterFactory),
-    ('/tasks/election-results-factory', ElectionResultsFactory)],
+    (TASK_URL, ElectionResultsFactory),
+    ('/tasks/election-results-scheduler', ElectionResultsScheduler)],
     debug=True)

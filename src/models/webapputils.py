@@ -8,7 +8,6 @@ import datetime
 import os
 import jinja2
 import json
-import main
 
 from authentication.gaesessions import get_current_session
 
@@ -18,14 +17,19 @@ PAGES_DIR = os.path.join(MAIN_DIR, '../views')
 JINJA_ENV = jinja2.Environment(
     loader=jinja2.FileSystemLoader(PAGES_DIR))
 
+NAV_BAR = [
+    {'text': 'Home', 'link': '/home'},
+    {'text': 'Vote', 'link': '/vote'},
+    {'text': 'Admin', 'link': '/admin/organization'},
+    {'text': 'Contact', 'link': '/contact'}]
 
 def render_page_content(handler, page_name, page_content):
     # Mark all links in the nav bar as inactive except the page open
-    for item in main.NAV_BAR:
+    for item in NAV_BAR:
         item['active'] = page_name.startswith(item['link'])
 
     template = JINJA_ENV.get_template('templates/page.html')
-    template_vals = {'nav_bar': main.NAV_BAR,
+    template_vals = {'nav_bar': NAV_BAR,
                      'page_content': page_content}
 
     # If logged in, display NetID with logout option
@@ -40,11 +44,11 @@ def render_page(handler, page_name, page_data):
     page = get_page(page_name, page_data)
 
     # Mark all links in the nav bar as inactive except the page open
-    for item in main.NAV_BAR:
+    for item in NAV_BAR:
         item['active'] = (item['link'] == page_name)
 
     template = JINJA_ENV.get_template('templates/page.html')
-    template_vals = {'nav_bar': main.NAV_BAR,
+    template_vals = {'nav_bar': NAV_BAR,
                      'page_content': page}
     
     # If logged in, display NetID with logout option
@@ -66,7 +70,7 @@ def get_page(page_name, page_data):
 
     # Get the page name being requested assume home.html if none specified
     if page_name == '/':
-        page_name += main.NAV_BAR[0]['link']
+        page_name += NAV_BAR[0]['link']
     
     # Get page info
     try:
