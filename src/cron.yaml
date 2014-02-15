@@ -5,4 +5,4 @@ cron:
 
 - description: schedule election results
   url: /tasks/election-results-scheduler
-  schedule: every 1 minutes
+  schedule: every 5 minutes
