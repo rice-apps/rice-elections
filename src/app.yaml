@@ -32,7 +32,7 @@ handlers:
   script: controllers.authenticate.app
 
 - url: /tasks/.*
-  script: models.tasks.app
+  script: controllers.tasks.app
   login: admin
 
 - url: /intern/jobs-taskqueue
