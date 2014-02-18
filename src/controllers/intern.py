@@ -8,14 +8,14 @@ import webapp2
 from authentication import auth
 from models import models, webapputils
 
-COMMANDERS = ['wa1', 'sa27', 'jcc7']
+COMMANDERS = ['wa1', 'dan1']
 
 class CommandCenterHandler(webapp2.RequestHandler):
 
     def get(self):
         voter = auth.get_voter(self)
         if voter.net_id not in COMMANDERS:
-            return self.render_template('/templates/message', {
+            return webapputils.render_template('/templates/message', {
                 'status': 'Not Authorized',
                 'msg': "You're not authorized to enter the command center"
             })
@@ -65,7 +65,39 @@ class CommandCenterHandler(webapp2.RequestHandler):
         else:
             webapputils.respond(self, 'ERROR', "Couldn't create admin")
 
+class JobsHandler(webapp2.RequestHandler):
+    """Large processing tasks that should be executed on the server side, instead
+    of the remote api shell for performance and cost reasons. If you are running
+    a task on the remote api shell that will load thousands of Datastore objects
+    it will be extremely slow and very expensive so write the code here instead
+    and run it on the server by accessing the endpoint ONCE."""
+
+    def get(self):
+        voter = auth.get_voter(self)
+        if voter.net_id not in COMMANDERS:
+            return webapputils.render_template('/templates/message', {
+                'status': 'Not Authorized',
+                'msg': "You're not authorized to enter the command center"
+            })
+
+        jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
+        ready = {
+            "name": "Voter list for SA General Elections",
+            "description": "Sends the list of voters to SA election admins"
+        }
+
+        page_data = {
+            "jobs": jobs,
+            "ready": ready
+        }
+
+        return webapputils.render_page(self, '/intern/jobs', page_data)
+
+
+
+
 
 app = webapp2.WSGIApplication([
-    ('/intern/command-center', CommandCenterHandler)
+    ('/intern/command-center', CommandCenterHandler),
+    ('/intern/jobs', JobsHandler)
 ], debug=True)

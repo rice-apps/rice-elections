@@ -148,6 +148,7 @@ class ElectionPosition(polymodel.PolyModel):
     winners = db.ListProperty(db.Key)
     description = db.TextProperty(required=False, default="")
     datetime_created = db.DateTimeProperty(required=True, auto_now_add=True)
+    result_computed = db.BooleanProperty(default=False)
     
     def to_json(self):
         json = {
@@ -197,8 +198,10 @@ class RankedVotingPosition(ElectionPosition):
             ballots.append(ballot.preferences)
         
         winners = irv.run_irv(ballots)
+        self.winners = []
         for winner in winners:
             self.winners.append(winner)
+        self.result_computed = True
         self.put()
 
 class CumulativeVotingPosition(ElectionPosition):
@@ -226,8 +229,10 @@ class CumulativeVotingPosition(ElectionPosition):
                 ballot_dict[candidate_key] = choice.points
             ballots.append(ballot_dict)
         winners = cv.run_cv(ballots, self.slots)
+        self.winners = []
         for winner in winners:
             self.winners.append(winner)
+        self.result_computed = True
         self.put()
     
 
@@ -285,6 +290,14 @@ class Counter(db.Model):
     def increment(self, delta=1):
         self.count += delta
         self.put()
+
+class ProcessingJob(db.Model):
+    """
+    A processing task that runs on the backend using the intern jobs handler"""
+    name = db.StringProperty(required=True)
+    description = db.StringProperty()
+    started = db.DateTimeProperty(required=True, auto_now_add=True)
+    ended = db.DateTimeProperty()
 
 
 def put_admin(voter, email, organization):

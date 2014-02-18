@@ -1,0 +1,45 @@
+<script type='text/javascript' src='/static/js/intern/jobs.js'></script>
+
+<section id="main" class="container-narrow">
+  <h3>Jobs Handler</h3>
+  <div class="container">
+    <h4>Job Ready for Running</h4>
+    <strong>Name: </strong><span id="ready-name">{{ ready.name }}</span><br />
+    <strong>Description: </strong><span id="ready-description">{{ ready.description }}</span><br />
+    <a id="run-job" type="button" class="btn btn-primary">Run Job</a>
+  </div>
+  <table class="table table-striped">
+
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Started</th>
+        <th>Ended</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody id="jobs-list">
+      {% for job in jobs %}
+        <tr>
+          <td>{{ job.name }}</td>
+          <td>{{ job.description }}</td>
+          <td>{{ job.started }}</td>
+          <td>{{ job.ended }}</td>
+          <td>
+            {% if job.status == "complete" %}
+              {% set job_class = "label-success" %}
+            {% elif job.status == "failed" %}
+              {% set job_class = "label-danger" %}
+            {% else %}
+              {% set job_class = "label-default" %}
+            {% endif %}
+            <span class="label {{ job_class }}">{{ job.status }}</span>
+          </td>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>

@@ -12,20 +12,19 @@ import models
 import report_results
 
 from datetime import datetime, timedelta
-from google.appengine.api import mail
-from google.appengine.api import taskqueue
+from google.appengine.api import mail, taskqueue
 
-TASK_URL = '/tasks/election-results-factory'
 
-class ElectionResultsFactory(webapp2.RequestHandler):
-    """
-    Computes the results for a given election.
-    """
-    def post(self):
-        data = json.loads(self.request.get('data'))
-        election_key = data['election_key']
-        election = models.Election.get(election_key)
+class ElectionResults(webapp2.RequestHandler):
 
+    def get(self):
+        finished_elections = models.Election.gql(
+            "WHERE end < :1 AND result_computed = :2", datetime.now(), False)
+
+        for election in finished_elections:
+            self.compute_results(election)
+
+    def compute_results(self, election):
         # Assert validity
         if not election:
             logging.error('Election not found.')
@@ -40,45 +39,64 @@ class ElectionResultsFactory(webapp2.RequestHandler):
         logging.info('Computing results for election: %s, organization: %s.', 
                         election.name, election.organization.name)
 
+        total_ballot_count = 0
         for election_position in election.election_positions:
-            logging.info('Computing election position: %s',
-                            election_position.position.name)
-            election_position.compute_winners()
+            total_ballot_count += election_position.ballots.count()
+        if total_ballot_count > 2500:
+            large_election = True
+        else:
+            large_election = False
 
-        election.result_computed = True
-        election.put()
-        logging.info('Computed results for election: %s, organization: %s.',
-                        election.name, election.organization.name)
+        all_computed = True
+        for election_position in election.election_positions:
+            if not election_position.result_computed:
+                all_computed = False
+
+                if large_election:
+                    # Enqueue a task for computing results
+                    task_name = 'compute-result-' + str(election_position.key())
+                    retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
+                    taskqueue.add(
+                        name=task_name,
+                        url='/tasks/position-results',
+                        params={
+                            'election_position_key': str(election_position.key())},
+                        retry_options=retry_options
+                    )
+                else:
+                    election_position.compute_winners()
+
+
+        if all_computed:
+            election.result_computed = True
+            election.put()
+            logging.info('Computed results for election: %s, organization: %s.',
+                            election.name, election.organization.name)
+
+            if not large_election:
+                admin_emails = []
+                for org_admin in election.organization.organization_admins:
+                    admin_emails.append(org_admin.admin.email)
+                report_results.email_report(admin_emails, election)
+
+class PositionResults(webapp2.RequestHandler):
+
+    def post(self):
+        # Get data 
+        elec_pos = models.ElectionPosition.get(
+            self.request.get('election_position_key'))
+        elec_pos.compute_winners()
 
         admin_emails = []
-        for org_admin in election.organization.organization_admins:
+        for org_admin in elec_pos.election.organization.organization_admins:
             admin_emails.append(org_admin.admin.email)
-        report_results.email_report(admin_emails, election)
 
-class ElectionResultsScheduler(webapp2.RequestHandler):
+        report_results.email_pos_report(admin_emails, elec_pos)
 
-    def get(self):
-        finished_elections = models.Election.gql(
-            "WHERE end < :1 AND result_computed = :2", datetime.now(), False)
 
-        for election in finished_elections:
-            self.schedule_result_computation(election)
 
-    def schedule_result_computation(self, election):
-        method_name = "compute_results"
-        task_name = str(election.key()) + "-" + method_name
-
-        # Enqueue new task for computing results after election ends
-        data = {'election_key': str(election.key()),
-                'method': method_name}
-        retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
-        taskqueue.add(name=task_name,
-                      url=TASK_URL,
-                      params={'data': json.dumps(data)},
-                      retry_options=retry_options)
-        logging.info('Election result computation enqueued.')
 
 app = webapp2.WSGIApplication([
-    (TASK_URL, ElectionResultsFactory),
-    ('/tasks/election-results-scheduler', ElectionResultsScheduler)],
+    ('/tasks/election-results', ElectionResults),
+    ('/tasks/position-results', PositionResults)],
     debug=True)
