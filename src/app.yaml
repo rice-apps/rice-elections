@@ -35,6 +35,10 @@ handlers:
   script: models.tasks.app
   login: admin
 
+- url: /intern/jobs-taskqueue
+  script: controllers.intern.app
+  login: admin
+
 - url: /intern/.*
   script: controllers.intern.app
 

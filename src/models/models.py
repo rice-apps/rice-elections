@@ -296,8 +296,19 @@ class ProcessingJob(db.Model):
     A processing task that runs on the backend using the intern jobs handler"""
     name = db.StringProperty(required=True)
     description = db.StringProperty()
+    status = db.StringProperty()
     started = db.DateTimeProperty(required=True, auto_now_add=True)
     ended = db.DateTimeProperty()
+
+    def to_json(self):
+        return {
+            "key": str(self.key()),
+            "name": self.name,
+            "description": self.description,
+            "status": self.status,
+            "started": str(self.started),
+            "ended": str(self.ended)
+        }
 
 
 def put_admin(voter, email, organization):

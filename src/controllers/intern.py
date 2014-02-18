@@ -2,11 +2,14 @@
 Controller for website administration stuff.
 """
 
+import datetime
 import json
+import logging
 import webapp2
 
 from authentication import auth
 from models import models, webapputils
+from google.appengine.api import mail, taskqueue
 
 COMMANDERS = ['wa1', 'dan1']
 
@@ -82,7 +85,7 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "Voter list for SA General Elections",
+            "name": "VoterList",
             "description": "Sends the list of voters to SA election admins"
         }
 
@@ -93,11 +96,56 @@ class JobsHandler(webapp2.RequestHandler):
 
         return webapputils.render_page(self, '/intern/jobs', page_data)
 
+    def post(self):
+
+        job = models.ProcessingJob(
+            name=self.request.get('ready_name'),
+            description=self.request.get('description'),
+            status='running'
+        )
+
+        job.put()
+
+        taskqueue.add(
+            name=job.name,
+            url='/intern/jobs-taskqueue',
+            params={
+                'job_key': str(job.key())
+            }
+        )
+
+        self.response.write(json.dumps(job.to_json()))
 
 
+class JobsTaskQueueHandler(webapp2.RequestHandler):
+
+    def post(self):
+        job = models.ProcessingJob.get(self.request.get('job_key'))
+
+        try:
+            # Processing Code goes here
+            description = "Sends the list of voters to SA election admins"
+
+            # Assertion here to ensure that the developer is running the right
+            # task
+            assert(job.description == description)
+            election = models.Election.gql("WHERE name=:1", "General Elections").get()
+            admin_emails = [o.admin.email for o in election.organization.organization_admins]
+            message = mail.EmailMessage(sender="no-reply@owlection.appspotmail.com", subject="Voter Report for %s" % election.name)
+            message.to = ', '.join(admin_emails)
+            message.body = '\n'.join(["NetID: %s    Vote Time (UTC): %s" % (ev.voter.net_id, ev.vote_time) for ev in election.election_voters])
+            message.send()
+
+            job.status = "complete"
+        except:
+            job.status = "failed"
+        finally:
+            job.ended = datetime.datetime.now()
+            job.put()
 
 
 app = webapp2.WSGIApplication([
     ('/intern/command-center', CommandCenterHandler),
-    ('/intern/jobs', JobsHandler)
+    ('/intern/jobs', JobsHandler),
+    ('/intern/jobs-taskqueue', JobsTaskQueueHandler)
 ], debug=True)

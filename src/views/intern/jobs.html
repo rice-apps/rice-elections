@@ -4,7 +4,7 @@
   <h3>Jobs Handler</h3>
   <div class="container">
     <h4>Job Ready for Running</h4>
-    <strong>Name: </strong><span id="ready-name">{{ ready.name }}</span><br />
+    <strong>Name: </strong><input id="ready-name" value="{{ ready.name }}" /> <em>No spaces allowed</em><br />
     <strong>Description: </strong><span id="ready-description">{{ ready.description }}</span><br />
     <a id="run-job" type="button" class="btn btn-primary">Run Job</a>
   </div>
@@ -31,7 +31,7 @@
             {% if job.status == "complete" %}
               {% set job_class = "label-success" %}
             {% elif job.status == "failed" %}
-              {% set job_class = "label-danger" %}
+              {% set job_class = "label-important" %}
             {% else %}
               {% set job_class = "label-default" %}
             {% endif %}
