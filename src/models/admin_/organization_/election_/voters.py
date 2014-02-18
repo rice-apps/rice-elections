@@ -15,7 +15,7 @@ from models import models, webapputils
 from models.admin_.organization_.election import get_panel
 
 PAGE_URL = '/admin/organization/election/voters'
-TASK_URL = '/tasks/admin/organization/election/voters'
+TASK_URL = '/tasks/election-voters'
 
 
 class ElectionVotersHandler(webapp2.RequestHandler):
@@ -52,7 +52,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
 
         data = {'status': 'OK',
                 'id': str(election.key()),
-                'voters': sorted(list(get_voter_set(election)))}
+                'voters': sorted(list(models.get_voter_set(election)))}
         logging.info(data)
         panel = get_panel(PAGE_URL, data, data.get('id'))
         webapputils.render_page_content(self, PAGE_URL, panel)
@@ -79,7 +79,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
 
     def add_voters(self, election, data):
         self.voters_task(election, data, 'add_voters')
-        voter_set = get_voter_set(election)
+        voter_set = models.get_voter_set(election)
         for voter in data['voters']:
             voter_set.add(voter)
         out = {'status': 'OK',
@@ -89,7 +89,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
 
     def delete_voters(self, election, data):
         self.voters_task(election, data, 'delete_voters')
-        voter_set = get_voter_set(election)
+        voter_set = models.get_voter_set(election)
         for voter in data['voters']:
             voter_set.discard(voter)
         out = {'status': 'OK',
@@ -106,53 +106,5 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       params={'data':json.dumps(queue_data)},
                       retry_options=retry_options)
 
-class ElectionVotersTaskHandler(webapp2.RequestHandler):
-
-    def post(self):
-        methods = {
-            'add_voters': self.add_voters,
-            'delete_voters': self.delete_voters
-        }
-
-        # Get data
-        data = json.loads(self.request.get('data'))
-        election = models.Election.get(data['election_key'])
-        voters = data['voters']
-        method = data['method']
-
-        # Get the method
-        if method in methods:
-            methods[method](election, voters)
-        else:
-            logging.error('Unknown method: %s. Task failed!', method)
-
-    def add_voters(self, election, voters):
-        models.add_eligible_voters(election, voters)
-        update_voter_set(election)
         
 
-    def delete_voters(self, election, voters):
-        models.remove_eligible_voters(election, voters)
-        update_voter_set(election)
-        
-
-def update_voter_set(election):
-    """
-    Updates the cached voter set for an election.
-    """
-    voter_set = set()
-    for ev in election.election_voters:
-        voter_set.add(ev.voter.net_id)
-    memcache.set(str(election.key())+'-voter-set', voter_set)
-    logging.info('Updated voter list in cache for election: %s', election.name)
-
-
-def get_voter_set(election):
-    """
-    Returns the cached voter set for an election.
-    """
-    voter_set = memcache.get(str(election.key())+'-voter-set')
-    if not voter_set:
-        update_voter_set(election)
-    voter_set = memcache.get(str(election.key())+'-voter-set')
-    return voter_set

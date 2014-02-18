@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from google.appengine.api import mail, taskqueue
 
 
-class ElectionResults(webapp2.RequestHandler):
+class ElectionResultsHandler(webapp2.RequestHandler):
 
     def get(self):
         finished_elections = models.Election.gql(
@@ -79,7 +79,7 @@ class ElectionResults(webapp2.RequestHandler):
                     admin_emails.append(org_admin.admin.email)
                 report_results.email_report(admin_emails, election)
 
-class PositionResults(webapp2.RequestHandler):
+class PositionResultsHandler(webapp2.RequestHandler):
 
     def post(self):
         # Get data 
@@ -94,9 +94,36 @@ class PositionResults(webapp2.RequestHandler):
         report_results.email_pos_report(admin_emails, elec_pos)
 
 
+class ElectionVotersHandler(webapp2.RequestHandler):
 
+    def post(self):
+        methods = {
+            'add_voters': self.add_voters,
+            'delete_voters': self.delete_voters
+        }
+
+        # Get data
+        data = json.loads(self.request.get('data'))
+        election = models.Election.get(data['election_key'])
+        voters = data['voters']
+        method = data['method']
+
+        # Get the method
+        if method in methods:
+            methods[method](election, voters)
+        else:
+            logging.error('Unknown method: %s. Task failed!', method)
+
+    def add_voters(self, election, voters):
+        models.add_eligible_voters(election, voters)
+        models.update_voter_set(election)
+
+    def delete_voters(self, election, voters):
+        models.remove_eligible_voters(election, voters)
+        models.update_voter_set(election)
 
 app = webapp2.WSGIApplication([
-    ('/tasks/election-results', ElectionResults),
-    ('/tasks/position-results', PositionResults)],
-    debug=True)
+    ('/tasks/election-results', ElectionResultsHandler),
+    ('/tasks/position-results', PositionResultsHandler),
+    ('/tasks/election-voters', ElectionVotersHandler)
+], debug=True)

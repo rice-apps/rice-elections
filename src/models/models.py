@@ -310,6 +310,8 @@ class ProcessingJob(db.Model):
             "ended": str(self.ended)
         }
 
+def get_organization(name):
+    return Organization.gql("WHERE name=:1", name).get()
 
 def put_admin(voter, email, organization):
     """
@@ -421,6 +423,27 @@ def remove_eligible_voters(election, net_id_list):
                  election.name, num_removed, len(net_id_list) - num_removed)
     election.voter_count -= num_removed
     election.put()
+
+
+def update_voter_set(election):
+    """
+    Updates the cached voter set for an election.
+    """
+    voter_set = set()
+    for ev in election.election_voters:
+        voter_set.add(ev.voter.net_id)
+    memcache.set(str(election.key())+'-voter-set', voter_set)
+
+
+def get_voter_set(election):
+    """
+    Returns the cached voter set for an election.
+    """
+    voter_set = memcache.get(str(election.key())+'-voter-set')
+    if not voter_set:
+        update_voter_set(election)
+    voter_set = memcache.get(str(election.key())+'-voter-set')
+    return voter_set
 
 
 def get_voter(net_id, create=False):
@@ -539,3 +562,5 @@ def increment_vote_count(delta=1):
         counter = Counter(name=name)
     counter.increment(delta)
     counter.put()
+
+
