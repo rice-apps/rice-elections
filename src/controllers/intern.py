@@ -9,7 +9,7 @@ import sys
 import webapp2
 
 from authentication import auth
-from models import models, webapputils
+from models import models, webapputils, report_results
 from google.appengine.api import mail, taskqueue
 
 COMMANDERS = ['wa1', 'dan1']
@@ -86,8 +86,8 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "VoterList",
-            "description": "Sends the list of voters to SA election admins"
+            "name": "BakerRound3Results",
+            "description": "Sends the Baker Round 3 results to election admins"
         }
 
         page_data = {
@@ -126,19 +126,16 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the list of voters to SA election admins"
+            description = "Sends the Baker Round 3 results to election admins"
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "General Elections").get()
+            election = models.Election.gql("WHERE name=:1", "Baker Round 3 ").get()
             admin_emails = [o.admin.email for o in election.organization.organization_admins]
-            message = mail.EmailMessage(sender="no-reply@owlection.appspotmail.com", subject="Voter Report for %s" % election.name)
-            message.to = ', '.join(admin_emails)
-            message.body = '\n'.join(["NetID: %s    Vote Time (UTC): %s" % (ev.voter.net_id, ev.vote_time) for ev in election.election_voters])
-            message.send()
+            report_results.email_report(admin_emails, election)
 
             ### Processing end ###
 
