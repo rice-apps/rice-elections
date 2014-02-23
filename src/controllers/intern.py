@@ -86,8 +86,8 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "BakerRound3Results",
-            "description": "Sends the Baker Round 3 results to election admins"
+            "name": "MartelDeleteCampusWideElection",
+            "description": "Deletes Campus Wide Positions Election for Martel Its Incomplete"
         }
 
         page_data = {
@@ -126,16 +126,17 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the Baker Round 3 results to election admins"
+            description = "Deletes Campus Wide Positions Election for Martel Its Incomplete"
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Baker Round 3 ").get()
-            admin_emails = [o.admin.email for o in election.organization.organization_admins]
-            report_results.email_report(admin_emails, election)
+            martel = models.get_organization("Martel College")
+            campus_wide = models.Election.gql("WHERE name=:1 AND organization=:2",
+                "Campus Wide Positions", martel).get()
+            models.delete_election(campus_wide)
 
             ### Processing end ###
 
