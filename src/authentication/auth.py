@@ -68,8 +68,6 @@ class LoginResponseHandler(webapp2.RequestHandler):
 
         # Get the first line - should be yes or no
         response = f_validate.read()
-        logging.info("CAS Authentication.\nTicket: %s\nService-Url: %s\nServer-Url: %s\nResponse: %s",
-                     ticket, service_url, cas_validate, response)
         net_id = self.parse_tag(response, 'cas:user')
         if not net_id:
             logging.warning('Invalid ticket.\nResponse: %s\nService-Url: %s\nServer-Url: %s', 
