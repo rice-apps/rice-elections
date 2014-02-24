@@ -77,6 +77,9 @@ InformationForm = ->
     # Checkbox: Whether the election is universal
     @universal = $('#universal-election')
 
+    # Warning: Displayed when the election is universal
+    @universalWarning = $('#universal-election-warning')
+
     # Checkbox: Whether the election is hidden
     @hidden = $('#hidden-election')
 
@@ -163,6 +166,10 @@ InformationForm = ->
 
         # Set universal election
         @universal.prop('checked', json['universal'] == true)
+        if json['universal']
+            @universalWarning.show();
+        else
+            @universalWarning.hide();
 
         # Set hidden election
         @hidden.prop('checked', json['hidden'] == true)
@@ -249,6 +256,12 @@ InformationForm = ->
 
     for picker in [@startTime, @endTime]
         picker.timepicker().on('changeTime.timepicker', @resetSubmitBtn)
+
+    @universal.change (e) ->
+        if self.universal.prop('checked')
+            self.universalWarning.show()
+        else
+            self.universalWarning.hide()
 
     return # Stops compiler from returning last defined function
 
