@@ -47,14 +47,20 @@ class Election(db.Model):
     voted_count = db.IntegerProperty(required=True,
                                      default=0)
     description = db.TextProperty(required=False, default="")
-    def to_json(self):
+    def to_json(self, parseable_date=False):
+        # parseable_date means it can be parsed in JS with Date.parse()
+        times = {
+                'start': self.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
+                'end': self.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
+                } if parseable_date else {
+                'start': str(self.start),
+                'end': str(self.end)
+                }
         return {
             'id': str(self.key()),
             'name': self.name,
             'organization': self.organization.name,
-            'times': {
-                'start': str(self.start),
-                'end': str(self.end)},
+            'times': times,
             'result_computed': self.result_computed,
             'result_delay': self.result_delay,
             'universal': self.universal,
