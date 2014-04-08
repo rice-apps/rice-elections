@@ -88,7 +88,63 @@
       </form>
     </div>
     <div class="tab-pane fade" id="elections">
-      <h1> Hello!</h1>
+      <h2>Upcoming elections</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th width='150px'>Name</th>
+            <th>Election Open</th>
+            <th>Participation</th>
+            <th>Status</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if not elections %}
+            <tr>
+              <td colspan='5'>No elections yet. Create one now!</td>
+            </tr>
+          {% endif %}
+          {% for elec in elections %}
+            {% set status_flag = 'info' %}
+            {% set status = 'Not started' %}
+
+            {% if now > elec.times.start %}
+              {% set status_flag = 'info' %}
+              {% set status = 'Voting in progress.' %}
+            {% endif %}
+
+            {% if now > elec.times.end %}
+              {% set status_flag = 'warning' %}
+              {% set status = 'Voting has ended.' %}
+            {% endif %}
+
+            {% if elec.result_computed %}
+              {% set status_flag = 'success' %}
+              {% set status = 'Result computed' %}
+            {% endif %}
+
+            <tr>
+              <td>
+                {% if elec.times.end > now %}
+                  <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
+                {% else %}
+                  <a href="/vote/view-results?id={{ elec.id }}">{{ elec.name }}</a>
+                {% endif %}
+              </td>
+              <td>
+                <span class="date-format">{{ elec.times.start }}</span><br>
+                <span class="date-format">{{ elec.times.end }}</span>
+              </td>
+              <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
+              <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
+              <td>
+                <a href="/admin/organization/election?id={{ elec.id }}">Edit</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 </section>

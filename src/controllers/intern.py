@@ -34,8 +34,14 @@ class CommandCenterHandler(webapp2.RequestHandler):
                 'voteCount': sum([elec.voted_count for elec in org.elections])
             })
 
+
+        # get 20 elections that have not ended, sorted by starting time
+        elections = [e.to_json(True) for e in models.Election.all().filter(
+            'end >', datetime.datetime.now()).order('end').order(
+                'start').run(limit=20)]
         page_data = {
-            "organizations": organizations
+            "organizations": organizations,
+            "elections": elections
         }
 
         return webapputils.render_page(self, '/intern/command-center', page_data)
