@@ -36,9 +36,8 @@ class CommandCenterHandler(webapp2.RequestHandler):
 
 
         # get 20 elections that have not ended, sorted by starting time
-        elections = [e.to_json(True) for e in models.Election.all().filter(
-            'end >', datetime.datetime.now()).order('end').order(
-                'start').run(limit=20)]
+        elections = [e.to_json(True) for e in 
+            models.Election.all().order('-end').order('start').run(limit=20)]
         page_data = {
             "organizations": organizations,
             "elections": elections
