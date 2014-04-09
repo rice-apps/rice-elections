@@ -53,14 +53,24 @@ class Election(db.Model):
         pub = self.end + timedelta(seconds=self.result_delay)
         # parseable_date means it can be parsed in JS with Date.parse()
         times = {
-                'start': self.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
-                'end': self.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
-                'pub': pub.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
-                } if parseable_date else {
-                'start': str(self.start),
-                'end': str(self.end),
-                'pub': str(pub)
-                }
+            'start': self.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
+            'end': self.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
+            'pub': pub.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
+        } if parseable_date else {
+            'start': str(self.start),
+            'end': str(self.end),
+            'pub': str(pub)
+        }
+
+        now = datetime.now()
+        status = 'Not started'
+        if now > self.start:
+            status = 'Voting in progress'
+        if now > self.end:
+            status = 'Voting has ended'
+        if self.result_computed:
+            status = 'Result computed'
+
         return {
             'id': str(self.key()),
             'name': self.name,
@@ -73,6 +83,7 @@ class Election(db.Model):
             'voter_count': self.voter_count,
             'voted_count': self.voted_count,
             'description': self.description,
+            'status': status,
         }
 
     @property
