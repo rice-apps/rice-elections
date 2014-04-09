@@ -92,11 +92,11 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th>Organization</th>
             <th width='150px'>Name</th>
             <th>Election Open</th>
             <th>Participation</th>
             <th>Status</th>
-            <th>Organization</th>
           </tr>
         </thead>
         <tbody>
@@ -126,6 +126,9 @@
 
             <tr>
               <td>
+                  <span>{{ elec.organization }}</span>
+              </td>
+              <td>
                 {% if elec.times.end > now %}
                   <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
                 {% else %}
@@ -138,9 +141,6 @@
               </td>
               <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
               <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
-              <td>
-                  <span>{{ elec.organization }}</span>
-              </td>
             </tr>
           {% endfor %}
         </tbody>
