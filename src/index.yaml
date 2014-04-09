@@ -12,8 +12,19 @@ indexes:
 
 - kind: Election
   properties:
+  - name: end
+  - name: start
+
+- kind: Election
+  properties:
   - name: result_computed
   - name: end
+
+- kind: Election
+  properties:
+  - name: result_computed=
+  - name: end
+    direction: desc
 
 - kind: ElectionPosition
   properties:
