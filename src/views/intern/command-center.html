@@ -96,7 +96,7 @@
             <th>Election Open</th>
             <th>Participation</th>
             <th>Status</th>
-            <th>Edit</th>
+            <th>Organization</th>
           </tr>
         </thead>
         <tbody>
@@ -139,7 +139,7 @@
               <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
               <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
               <td>
-                <a href="/admin/organization/election?id={{ elec.id }}">Edit</a>
+                  <span>{{ elec.organization }}</span>
               </td>
             </tr>
           {% endfor %}
