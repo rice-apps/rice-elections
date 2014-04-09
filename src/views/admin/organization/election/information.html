@@ -56,21 +56,23 @@
     </div>
 
     <!-- Election results available to voters. -->
-    <!-- Results Available to Public: [1 hour, 3 hours, 6 hours, 1 day, 2 days] -->
     <div class="control-group">
-      <label class="control-label" for="position-select-type">Time Until Results are Publically Available</label>
-      <div class="controls">
-        <select id="result-delay" name="result-delay" class='span3'>
-          <option id="time-1-hour" value="3600">1 hour</option>
-          <option id="time-3-hours" value="10800">3 hours</option>
-          <option id="time-6-hours" value="21600">6 hours</option>
-          <option id="time-1-day" value="86400">1 day</option>
-          <option id="time-2-days" value="172800">2 days</option>
-        </select>
+      <label class="control-label" for="position-select-type">Result Publication Date</label>
+      <div class="controls controls-row">
+        <!-- Pub Date --!>
+        <div class="input-append date" id="pubDate" data-date-format="mm/dd/yy" data-date="">
+          <input class="input-mini" size="16" type="text" readonly="" name="pubDate" value="">
+          <span class="add-on"><i class="icon-calendar"></i></span>
+        </div>
+        <!-- Pub Time --!>
+        <div class="input-append bootstrap-timepicker">
+          <input class="input-mini" type="text" id="pubTime" name="pubTime">
+          <span class="add-on"><i class="icon-time"></i></span>
+        </div>
       </div>
     </div>
 
-    <!-- Vote Required -->
+    <!-- Eligible Voters -->
     <div class="control-group">
       <label class="control-label" rel="tooltip" data-placement="right" data-original-title="If enabled, anyone with a NetID will be able to vote.">Universal Election</label>
       <div class="controls">

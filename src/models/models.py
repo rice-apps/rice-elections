@@ -6,6 +6,7 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import logging
 
+from datetime import timedelta
 from algorithms_ import cv, irv
 from datetime import datetime
 from google.appengine.ext import db
@@ -48,13 +49,17 @@ class Election(db.Model):
                                      default=0)
     description = db.TextProperty(required=False, default="")
     def to_json(self, parseable_date=False):
+        # calculate the publication date by adding result delay to end
+        pub = self.end + timedelta(seconds=self.result_delay)
         # parseable_date means it can be parsed in JS with Date.parse()
         times = {
                 'start': self.start.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
-                'end': self.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
+                'end': self.end.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC',
+                'pub': pub.strftime('%a, %B %d, %Y, %I:%M %p') + ' UTC'
                 } if parseable_date else {
                 'start': str(self.start),
-                'end': str(self.end)
+                'end': str(self.end),
+                'pub': str(pub)
                 }
         return {
             'id': str(self.key()),

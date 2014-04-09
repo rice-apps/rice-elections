@@ -70,16 +70,20 @@ class ElectionInformationHandler(webapp2.RequestHandler):
 
     def update_election(self, election, data):
         out = {'status': 'OK'}
+        end_dt = datetime.fromtimestamp(data['times']['end'])
+        pub_dt = datetime.fromtimestamp(data['times']['pub'])
+        # delay = difference between pub and end in seconds
+        res_delay = int((pub_dt - end_dt).total_seconds())
         if not election:
             # User must be trying to create new election
             election = models.Election(
                 name=data['name'],
                 start=datetime.fromtimestamp(data['times']['start']),
-                end=datetime.fromtimestamp(data['times']['end']),
+                end=end_dt,
                 organization=auth.get_organization(),
                 universal=data['universal'],
                 hidden=data['hidden'],
-                result_delay=data['result_delay'],
+                result_delay=res_delay,
                 description=data['description'])
             election.put()
             out['msg'] = 'Created'
@@ -87,10 +91,10 @@ class ElectionInformationHandler(webapp2.RequestHandler):
         else:
             election.name = data['name']
             election.start = datetime.fromtimestamp(data['times']['start'])
-            election.end = datetime.fromtimestamp(data['times']['end'])
+            election.end = end_dt
             election.universal = data['universal']
             election.hidden = data['hidden']
-            election.result_delay = data['result_delay']
+            election.result_delay = res_delay
             election.description = data['description']
             election.put()
             out['msg'] = 'Updated'

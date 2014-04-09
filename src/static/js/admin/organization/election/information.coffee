@@ -56,11 +56,21 @@ InformationForm = ->
         # onRender: (date) =>
         #     if date.valueOf() < @startDate.date.valueOf() then 'disabled' else ''
     .on 'changeDate', (ev) =>
+        if ev.date.valueOf() > @pubDate.date.valueOf()
+            newDate = new Date(ev.date)
+            @pubDate.setValue(newDate)
         @endDate.hide()
+        @resetSubmitBtn
+        @pubDate.show()
+    .data('datepicker')
+
+    @pubDate = $('#pubDate').datepicker()
+    .on 'changeDate', (ev) =>
+        @pubDate.hide()
         @resetSubmitBtn
     .data('datepicker')
 
-    $('#startTime, #endTime').timepicker
+    $('#startTime, #endTime, #pubTime').timepicker
         minuteStep: 5
         defaultTime: 'current'
         template: 'dropdown'
@@ -71,8 +81,8 @@ InformationForm = ->
     # End Time Picker
     @endTime = $('#endTime')
 
-    # Input Choice: The delay in results to public
-    @resultDelay = $('#result-delay')
+    # Pub Time Picker
+    @pubTime = $('#pubTime')
 
     # Checkbox: Whether the election is universal
     @universal = $('#universal-election')
@@ -123,7 +133,6 @@ InformationForm = ->
         json =
             'name': @getName()
             'times': @getTimes()
-            'result_delay': @getResultDelay()
             'universal': @isUniversal()
             'hidden': @hidden.prop('checked')
             'description': @getDescription()
@@ -138,9 +147,11 @@ InformationForm = ->
         @name.val(json['name'])
         start = new Date(json['times']['start'] + ' UTC')
         end = new Date(json['times']['end'] + ' UTC')
+        pub = new Date(json['times']['pub'] + ' UTC')
         now = new Date()
         startTime = start.toLocaleTimeString()
         endTime = end.toLocaleTimeString()
+        pubTime = pub.toLocaleTimeString()
         @description.val(json['description'])
         
         # Set date / time picker components
@@ -154,15 +165,14 @@ InformationForm = ->
             @endDate.onRender = (date) -> 'disabled'
         @endDate.update()
 
+        @pubDate.setValue(pub)
+        if now.valueOf() > end.valueOf()
+            @pubDate.onRender = (date) -> 'disabled'
+        @pubDate.update()
+
         @startTime.timepicker('setTime', startTime)
         @endTime.timepicker('setTime', endTime)
-
-        # Set result delay
-        delay = json['result_delay']
-        if not $("#result-delay option[value=#{delay}]")
-            @resultDelay.append(
-                "<option id='custom' value='#{delay}'>#{delay}</option>")
-        @resultDelay.val(delay).change()
+        @pubTime.timepicker('setTime', pubTime)
 
         # Set universal election
         @universal.prop('checked', json['universal'] == true)
@@ -214,18 +224,24 @@ InformationForm = ->
     # Validates and returns the election times
     InformationForm::getTimes = ->
         timeContainer = $('#startDate').parent().parent()
+        pubTimeContainer = $('#pubDate').parent().parent()
         startDateInput = @startDate.element.children().filter('input')
         endDateInput = @endDate.element.children().filter('input')
+        pubDateInput = @pubDate.element.children().filter('input')
         errorMsg = ''
-        for field in [startDateInput, endDateInput, @startTime, @endTime]
+        for field in [startDateInput, endDateInput, pubDateInput, @startTime, @endTime, @pubTime]
             errorMsg = 'Missing information.' if not field.val()
 
         if not errorMsg
             start = new Date("#{startDateInput.val()} #{@startTime.val()}").valueOf()
             end = new Date("#{endDateInput.val()} #{@endTime.val()}").valueOf()
+            pub = new Date("#{pubDateInput.val()} #{@pubTime.val()}").valueOf()
             start /= 1000
             end /= 1000
-            console.log('Start time ' + start + '/ End time: ' + end)
+            pub /= 1000
+            console.log('Start time ' + start + '/ End time: ' + end, '/ Pub time: ' + pub)
+            if end > pub
+                pubErrorMsg = 'Publish time is before end time.'
             if start > end
                 errorMsg = 'Start time is later than end time.'
             if start == end
@@ -238,23 +254,30 @@ InformationForm = ->
             $('.errorMsgTime').remove()
             @startDate.element.parent().append("<span class='help-inline " +
                 "errorMsgTime'>#{errorMsg}</span>")
+
+        if pubErrorMsg
+            pubTimeContainer.addClass('error')
+            $('.pubErrorMsgTime').remove()
+            @pubDate.element.parent().append("<span class='help-inline " +
+                "pubErrorMsgTime'>#{pubErrorMsg}</span>")
+
+        if errorMsg or pubErrorMsg
             return null
         else
             timeContainer.removeClass('error')
             $('.errorMsgTime').remove()
-            return 'start': start, 'end': end
-
-    # Returns the election result delay
-    InformationForm::getResultDelay = -> parseInt(@resultDelay.val())
+            pubTimeContainer.removeClass('error')
+            $('.pubErrorMsgTime').remove()
+            return 'start': start, 'end': end, 'pub': pub
 
     # Returns whether the election is universal
     InformationForm::isUniversal = -> @universal.prop('checked')
 
     # Trigger reset buttons on value changes
-    for item in [@name, @resultDelay, @universal, @hidden]
+    for item in [@name, @universal, @hidden]
         item.change(@resetSubmitBtn)
 
-    for picker in [@startTime, @endTime]
+    for picker in [@startTime, @endTime, @pubTime]
         picker.timepicker().on('changeTime.timepicker', @resetSubmitBtn)
 
     @universal.change (e) ->
