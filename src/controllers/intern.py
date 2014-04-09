@@ -19,7 +19,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
     def get(self):
         voter = auth.get_voter(self)
         if voter.net_id not in COMMANDERS:
-            return webapputils.render_template('/templates/message', {
+            return webapputils.render_page(self, '/templates/message', {
                 'status': 'Not Authorized',
                 'msg': "You're not authorized to enter the command center"
             })
@@ -85,7 +85,7 @@ class JobsHandler(webapp2.RequestHandler):
     def get(self):
         voter = auth.get_voter(self)
         if voter.net_id not in COMMANDERS:
-            return webapputils.render_template('/templates/message', {
+            return webapputils.render_page(self, '/templates/message', {
                 'status': 'Not Authorized',
                 'msg': "You're not authorized to enter the command center"
             })
