@@ -107,21 +107,13 @@
           {% endif %}
           {% for elec in elections %}
             {% set status_flag = 'info' %}
-            {% set status = 'Not started' %}
 
-            {% if now > elec.times.start %}
-              {% set status_flag = 'info' %}
-              {% set status = 'Voting in progress.' %}
-            {% endif %}
-
-            {% if now > elec.times.end %}
+            {% if elec.status == 'Voting has ended' %}
               {% set status_flag = 'warning' %}
-              {% set status = 'Voting has ended.' %}
             {% endif %}
 
-            {% if elec.result_computed %}
+            {% if elec.status == 'Result computed' %}
               {% set status_flag = 'success' %}
-              {% set status = 'Result computed' %}
             {% endif %}
 
             <tr>
@@ -140,7 +132,7 @@
                 <span class="date-format">{{ elec.times.end }}</span>
               </td>
               <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
-              <td><span class="alert-{{status_flag}}" style='background:none;'>{{ status }} </span></td>
+              <td><span class="alert-{{status_flag}}" style='background:none;'>{{ elec.status }} </span></td>
             </tr>
           {% endfor %}
         </tbody>
