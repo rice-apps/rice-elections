@@ -58,7 +58,7 @@
                   <div class="item">
                 {% endif %}
                   {% if org.image %}
-                    <div class='who' style='background-image: url({{ org.image }});'></div>
+                    <img class='who' src="{{ org.image }}" />
                   {% endif %}
                   {% if org.carousel_show_name %}
                     <h4>{{ org.name }}</h4>
@@ -66,6 +66,8 @@
                 </div>
               {% endfor %}
             </div>
+            <a class="carousel-control left" href="#orgs-carousel" data-slide="prev">&lsaquo;</a>
+            <a class="carousel-control right" href="#orgs-carousel" data-slide="next">&rsaquo;</a>
           </div>
         </div>
       </div>

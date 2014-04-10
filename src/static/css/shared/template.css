@@ -89,12 +89,9 @@ a {
 }
 
 .who {
-    width: 90px;
-    height: 90px;
+    max-height: 90px;
     text-align: center;
-    background-size: contain;
-    background-position: center center;
-    background-repeat: no-repeat;
     display: inline-block;
-    margin-right: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }

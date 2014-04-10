@@ -7,6 +7,7 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
 import logging
 import json
+import random
 import webapp2
 
 from google.appengine.api import memcache
@@ -21,7 +22,8 @@ NAV_BAR = [
 class StaticHandler(webapp2.RequestHandler):
     """Handles GET requests for static pages."""
     def get(self):
-        orgs = models.Organization.all()
+        orgs = [org for org in models.Organization.all()]
+        random.shuffle(orgs)
         webapputils.render_page(self, self.request.path, {'orgs': orgs})
 
 
