@@ -21,7 +21,8 @@ NAV_BAR = [
 class StaticHandler(webapp2.RequestHandler):
     """Handles GET requests for static pages."""
     def get(self):
-        webapputils.render_page(self, self.request.path, {})
+        orgs = models.Organization.all()
+        webapputils.render_page(self, self.request.path, {'orgs': orgs})
 
 
 class VotesCountHandler(webapp2.RequestHandler):

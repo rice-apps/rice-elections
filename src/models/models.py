@@ -22,6 +22,8 @@ class Organization(db.Model):
     name = db.StringProperty(required=True)
     description = db.TextProperty()
     website = db.StringProperty()
+    image = db.StringProperty()
+    carousel_show_name = db.BooleanProperty(default=True)
 
 
 class Election(db.Model):

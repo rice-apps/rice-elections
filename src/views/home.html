@@ -1,5 +1,6 @@
 <script src="/static/js/counter/flipcounter.js"></script>
 <link href="/static/css/counter/flipcounter.css" rel="stylesheet">
+<link href="/static/css/home.css" rel="stylesheet">
 <script src="/static/js/home.js"></script>
 <section id='main'>
   <div class='wow'>
@@ -47,10 +48,25 @@
     <div class="row-fluid marketing">
       <div class="span12">
         <div style='text-align:center'>
-          <h4>Participating Organizations</h4>
-          <div class='who' style='background-image: url(/static/img/who/brown-college.png);'></div>
-          <div class='who' style='background-image: url(/static/img/who/mcmurtry-college.png);'></div>
-          <div class='who' style='background-image: url(/static/img/who/student-association.png);'></div>
+          <h3>Participating Organizations</h3>
+          <div id="orgs-carousel" class="carousel slide">
+            <div class="carousel-inner">
+              {% for org in orgs %}
+                {% if loop.index == 1 %}
+                  <div class="item active">
+                {% else %}
+                  <div class="item">
+                {% endif %}
+                  {% if org.image %}
+                    <div class='who' style='background-image: url({{ org.image }});'></div>
+                  {% endif %}
+                  {% if org.carousel_show_name %}
+                    <h4>{{ org.name }}</h4>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
     </div>

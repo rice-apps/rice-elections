@@ -27,3 +27,6 @@ jQuery ->
 
     setInterval(updateCount, 10000)
     counter.incrementTo(votesCount)
+
+    $('#orgs-carousel').carousel
+        interval: 3000
