@@ -91,8 +91,8 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "MartelDeleteCampusWideElection",
-            "description": "Deletes Campus Wide Positions Election for Martel Its Incomplete"
+            "name": "CSClubVoterList2",
+            "description": "Sends the list of voters for CS Club elections"
         }
 
         page_data = {
@@ -131,17 +131,21 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Deletes Campus Wide Positions Election for Martel Its Incomplete"
+            description = "Sends the list of voters for CS Club elections"
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
             ### Processing begin ###
 
-            martel = models.get_organization("Martel College")
-            campus_wide = models.Election.gql("WHERE name=:1 AND organization=:2",
-                "Campus Wide Positions", martel).get()
-            models.delete_election(campus_wide)
+            csclub = models.get_organization("Rice CS Club")
+            election = models.Election.gql("WHERE name=:1 AND organization=:2", 
+                "General Elections 2014-2015", csclub).get()
+            admin_emails = [o.admin.email for o in election.organization.organization_admins]
+            message = mail.EmailMessage(sender="no-reply@owlection.appspotmail.com", subject="Voter Report for %s" % election.name)
+            message.to = ', '.join(admin_emails)
+            message.body = '\n'.join(["NetID: %s    Vote Time (UTC): %s" % (ev.voter.net_id, ev.vote_time) for ev in election.election_voters])
+            message.send()
 
             ### Processing end ###
 
