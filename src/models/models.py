@@ -337,6 +337,23 @@ class ProcessingJob(db.Model):
 def get_organization(name):
     return Organization.gql("WHERE name=:1", name).get()
 
+def get_all_admins(organization):
+    """
+    Returns the list of voters who are admins of the specified organization
+    """
+    return (org_admin.admin.voter for org_admin in 
+        OrganizationAdmin.gql("WHERE organization=:1", organization))
+
+def remove_admin(voter, organization):
+    admin = Admin.gql("WHERE voter=:1", voter).get()
+    if not admin:
+        return False
+    if organization:
+        organization_admin = OrganizationAdmin.gql(
+            "WHERE admin=:1 AND organization=:2", admin, organization).get()
+        organization_admin.delete()
+    admin.delete()
+
 def put_admin(voter, email, organization):
     """
     Makes a Voter an Admin of the specified organization.
