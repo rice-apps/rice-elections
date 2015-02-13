@@ -12,7 +12,7 @@ from authentication import auth
 from models import models, webapputils, report_results
 from google.appengine.api import mail, taskqueue
 
-COMMANDERS = ['wa1', 'dan1']
+COMMANDERS = ['wa1', 'wcl2']
 
 class CommandCenterHandler(webapp2.RequestHandler):
 
