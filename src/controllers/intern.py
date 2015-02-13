@@ -91,8 +91,8 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "CSClubVoterList2",
-            "description": "Sends the list of voters for CS Club elections"
+            "name": "BrownSpringRound2",
+            "description": "Sends the results of the Brown Spring 2015 Round 2 election."
         }
 
         page_data = {
@@ -131,22 +131,21 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the list of voters for CS Club elections"
+            description = "Sends the results of the Brown Spring 2015 Round 2 election."
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
             ### Processing begin ###
 
-            csclub = models.get_organization("Rice CS Club")
-            election = models.Election.gql("WHERE name=:1 AND organization=:2", 
-                "General Elections 2014-2015", csclub).get()
-            admin_emails = [o.admin.email for o in election.organization.organization_admins]
-            message = mail.EmailMessage(sender="no-reply@owlection.appspotmail.com", subject="Voter Report for %s" % election.name)
-            message.to = ', '.join(admin_emails)
-            message.body = '\n'.join(["NetID: %s    Vote Time (UTC): %s" % (ev.voter.net_id, ev.vote_time) for ev in election.election_voters])
-            message.send()
+            election = models.Election.gql("WHERE name=:1", "Spring 2015 Round 2").get()
 
+            admin_emails = []
+            for org_admin in election.organization.organization_admins:
+                admin_emails.append(org_admin.admin.email)
+
+            report_results.email_report(admin_emails, election)
+            
             ### Processing end ###
 
             job.status = "complete"
