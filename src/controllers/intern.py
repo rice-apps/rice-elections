@@ -144,8 +144,8 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
             admin_emails = []
             for org_admin in election.organization.organization_admins:
                 admin_emails.append(org_admin.admin.email)
-
-            report_results.email_pos_report(admin_emails, election)
+            for position in pos_list:
+                report_results.email_pos_report(admin_emails, position)
             
             ### Processing end ###
 
