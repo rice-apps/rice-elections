@@ -91,7 +91,7 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "SAGeneralElectionResultsUnsent",
+            "name": "SAGeneralElectionResultsUnsent2",
             "description": "Sends the unsent results of the Student Association General Elections Spring 2015 election."
         }
 
