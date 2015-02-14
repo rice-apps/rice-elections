@@ -91,8 +91,8 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "BrownSpringRound2",
-            "description": "Sends the results of the Brown Spring 2015 Round 2 election."
+            "name": "SAGeneralElectionResults",
+            "description": "Sends the results of the Student Association General Elections Spring 2015 election."
         }
 
         page_data = {
@@ -131,14 +131,14 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the results of the Brown Spring 2015 Round 2 election."
+            description = "Sends the results of the Student Association General Elections Spring 2015 election."
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Spring 2015 Round 2").get()
+            election = models.Election.gql("WHERE name=:1", "General Elections Spring 2015").get()
 
             admin_emails = []
             for org_admin in election.organization.organization_admins:

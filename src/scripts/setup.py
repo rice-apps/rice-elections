@@ -29,6 +29,11 @@ def main():
                                 website='http://martel.rice.edu')
     martel.put()
 
+    testing = models.Organization(name='Testing',
+                                  description='Test 1 2 3',
+                                  website='foo.bar')
+    testing.put()
+
     print "Done."
     print "Creating admins..."
 
@@ -38,7 +43,8 @@ def main():
         ('jcc7', 'jcc7@rice.edu'),
         ('jbb4', 'jbb4@rice.edu'),
         ('cmp1', 'cmp1@rice.edu'),
-        ('pe4', 'pe4@rice.edu')
+        ('pe4', 'pe4@rice.edu'),
+        ('wcl2', 'wcl2@rice.edu')
     ]
 
     admins = []
@@ -55,6 +61,7 @@ def main():
     models.OrganizationAdmin(admin=admins[3], organization=mcmurtry).put()
     models.OrganizationAdmin(admin=admins[4], organization=baker).put()
     models.OrganizationAdmin(admin=admins[5], organization=martel).put()
+    models.OrganizationAdmin(admin=admins[6], organization=testing).put()
 
     print "Done."
 
