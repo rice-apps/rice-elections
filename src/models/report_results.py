@@ -13,6 +13,7 @@ from google.appengine.ext import db
 from google.appengine.api import mail
 from datetime import datetime
 
+
 def encode(string):
     return string.encode('ascii', 'replace')
 
@@ -38,8 +39,8 @@ Candidates: {3},
 Winners: {4}""".format(pos.position.name,
                        pos.vote_required,
                        pos.write_in_slots,
-                       ', '.join([encode(can.name) for can in pos.election_position_candidates]),
-                       ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+                       ', '.join([encode(can.name.decode('utf-8', 'replace')) for can in pos.election_position_candidates]),
+                       ', '.join([encode(db.get(winner).name.decode('utf-8', 'replace')) for winner in pos.winners]))
     
         counts = {}
         ballots = []
@@ -62,13 +63,13 @@ Write-in Slots: {2},
 Position Slots: {3},
 Points per voter: {4},
 Candidates: {5},
-Winners: {6}""".format(encode(pos.position.name),
+Winners: {6}""".format(encode(pos.position.name.decode('utf-8', 'replace')),
                        pos.vote_required,
                        pos.write_in_slots,
                        pos.slots,
                        pos.points,
-                       ', '.join([encode(can.name) for can in pos.election_position_candidates]),
-                       ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+                       ', '.join([encode(can.name.decode('utf-8', 'replace')) for can in pos.election_position_candidates]),
+                       ', '.join([encode(db.get(winner).name.decode('utf-8', 'replace')) for winner in pos.winners]))
         counts = {}
         ballots = []
         for ballot in pos.ballots:
@@ -123,8 +124,8 @@ Candidates: {3},
 Winners: {4}""".format(pos.position.name,
                        pos.vote_required,
                        pos.write_in_slots,
-                       ', '.join([encode(can.name) for can in pos.election_position_candidates]),
-                       ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+                       ', '.join([encode(can.name.decode('utf-8', 'replace')) for can in pos.election_position_candidates]),
+                       ', '.join([encode(db.get(winner).name.decode('utf-8', 'replace')) for winner in pos.winners]))
         counts = {}
         ballots = []
         ballots_db = pos.ballots.fetch(100)
@@ -160,8 +161,8 @@ Winners: {6}""".format(pos.position.name,
                        pos.write_in_slots,
                        pos.slots,
                        pos.points,
-                       ', '.join([encode(can.name) for can in pos.election_position_candidates]),
-                       ', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+                       ', '.join([encode(can.name.decode('utf-8', 'replace')) for can in pos.election_position_candidates]),
+                       ', '.join([encode(db.get(winner).name.decode('utf-8', 'replace')) for winner in pos.winners]))
         counts = {}
         ballots = []
         for ballot in pos.ballots:
