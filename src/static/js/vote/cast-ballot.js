@@ -158,7 +158,7 @@ function getBallot() {
             ballot['positions'].push(position)
 
         } else {
-            // TODO: non-ranked / non-cumulative elections
+            // TODO: non-ranked / non-cumulative elections, Basically Radio Button
             console.log("This has yet to be implemented yet.")
         }
     });
@@ -186,6 +186,8 @@ function ballotValidates(ballot) {
             verifyCummulativePosition(position);
         }
     });
+
+    // TODO Verify radio ballot
 
     return valid;
 }

@@ -259,6 +259,7 @@ class CumulativeVotingPosition(ElectionPosition):
         self.result_computed = True
         self.put()
     
+# TODO Create New Position Type
 
 class ElectionPositionCandidate(db.Model):
     """
@@ -303,7 +304,7 @@ class CumulativeVotingChoice(db.Model):
 
     points = db.IntegerProperty(required=True)
 
-
+# TODO Create new ballot type, may be similar to cummulative voting.
 class Counter(db.Model):
     """
     A simple counter identified by name.
@@ -366,6 +367,10 @@ def put_admin(voter, email, organization):
     Returns:
         {OrganizationAdmin}: the OrganizationAdmin entity.
     """
+    prev_admin = Admin.gql("WHERE voter=:1 AND email=:2", voter, email).get()
+    if prev_admin:  # Check if admin entity already exist
+        return OrganizationAdmin(admin=prev_admin, organization=organization).put()
+
     admin = Admin(voter=voter, email=email).put()
     return OrganizationAdmin(admin=admin, organization=organization).put()
 
