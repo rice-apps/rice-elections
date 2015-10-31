@@ -163,6 +163,8 @@ def get_voter(handler=None):
     else:
         return None
 
+# TODO(adam): Might need change. Waseem suggests to delete this. Not sure how the parts
+# are pulled together.
 def set_organization(organization):
     """
     Sets the specified organization for reference for the logged in admin.
@@ -173,6 +175,8 @@ def set_organization(organization):
     session = get_current_session()
     session['_organization'] = str(organization.key())
 
+# TODO(adam): Might need change. Waseem suggests to delete this. Not sure how the parts
+# are pulled together.
 def get_organization():
     """
     Gets the organization from the admin session.
@@ -187,6 +191,8 @@ def get_organization():
     else:
         return None
 
+# TODO(adam): Might need change. Waseem suggests to delete this. Not sure how the parts
+# are pulled together.
 def set_election(election):
     """
     Sets the specified election for reference for the logged in admin.
@@ -204,7 +210,9 @@ def clear_election():
     session = get_current_session()
     if session.has_key('_election'):
         del session['_election']
-
+        
+# TODO(adam): Might need change. Waseem suggests to delete this. Not sure how the parts
+# are pulled together.
 def get_election():
     """
     Gets the election from the admin session.

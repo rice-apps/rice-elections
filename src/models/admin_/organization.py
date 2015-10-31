@@ -33,6 +33,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         # Get organization information
         admin = models.Admin.gql('WHERE voter=:1', voter).get()
         logging.info("<Admin: %s>", admin.email)
+        # TODO: This should be fetch to get the list of organizations.
         org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
         logging.info("<Admin of Organizations: %s>", org_admin.organization.name)
@@ -42,15 +43,23 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
                 {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
         org = org_admin.organization
+        # TODO(adam): This should be removed. Instead, the admin section of the entire website 
+        # should pull up all the organizations the logged-in user is an admin of and provide 
+        # a selection for which organization the admin wants to manage (need some html change).
+        # I am thinking about a drop down menu that includes all the organizations in page rendering. 
+        # Then that organization should be referred by its unique id in the url of the admin panel.
         auth.set_organization(org)
 
         # Construct page information
+        # TODO(adam): The way the page is rendered should be changed to accomodate the
+        # organization list.
         page_data = {}
         page_data['organization'] = org
         page_data['admins'] = self.admin_list(org)
         page_data['elections'] = [elec.to_json(True) for elec in org.elections]
         logging.info(page_data['elections'])
         logging.info(page_data)
+        # TODO(adam): webapputils need change to render the page in a new way.
         webapputils.render_page(self, PAGE_NAME, page_data)
 
     def post(self):
