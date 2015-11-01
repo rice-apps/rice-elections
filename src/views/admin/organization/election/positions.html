@@ -27,6 +27,9 @@
             <li>
               <a data-toggle="modal" href="#modal-cumulative"><i class='icon-plus'></i> Cummulative Position</a>
             </li>
+            <li>
+              <a data-toggle="modal" href="#modal-boolean"><i class='icon-plus'></i> Boolean Position</a>
+            </li>
           </ul>
           <br class='clearfix'>
         </div>
@@ -37,7 +40,7 @@
       {% if status and msg %}
         <strong>{{ status }}: </strong> {{ msg }}
       {% else %}
-        <strong>ERROR:</strong> Unkown error.
+        <strong>ERROR:</strong> Unknown error.
       {% endif %}
     </div>
   {% endif %}
@@ -188,6 +191,80 @@
       <span id="modal-cumulative-submit" class="btn btn-primary">Save</span>
     </div>
 </div>
+
+<!-- Boolean Voting Position Modal -->
+<div id="modal-boolean" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="boolean-label" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="boolean-label">Boolean Voting Position</h3>
+  </div>
+  <div class="modal-body">
+      <p>In boolean voting, voters have the option to choose one candidate from a list. The candidate with the most votes is the winner.</p>
+      <hr>
+      <form class="form-horizontal">
+        <fieldset>
+          <!-- Position Name -->
+          <div class="control-group">
+            <label class="control-label" for="position-boolean-name">Position Name</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="position-boolean-name" name="position-boolean-name-txt">
+            </div>
+          </div>
+
+          <!-- Description -->
+        <div class="control-group">
+          <label class="control-label" rel="tooltip" data-placement="right" data-original-title="A more detailed description on the election being voted on">Description (Optional)</label>
+          <div class="controls">
+            <textarea class="form-control" rows="3" id="position-boolean-description" name="description"></textarea>
+        </div>
+      </div>
+
+          <!-- Position Slots -->
+          <div class="control-group">
+            <label class="control-label" for="position-boolean-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
+            <div class="controls">
+              <input type="number" class="input-mini" name="position-boolean-slots" min="1" max="10" id="position-boolean-slots" value="1">
+            </div>
+          </div>
+
+          <!-- Candidates -->
+          <div class="control-group">
+            <label class="control-label" for="position-boolean-candidates">Candidates<br /></label>
+            <div class="controls">
+              <div class="add-on btn btn-success" id="position-boolean-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+              <div style="margin-bottom: 5px;" id="position-boolean-candidates"></div>
+            </div>
+          </div>
+
+          <!-- Write-in Slots -->
+          <div class="control-group">
+            <label class="control-label" for="position-boolean-write-in" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Write-in Slots</label>
+            <div class="controls">
+              <input type="number" class="input-mini" name="position-boolean-write-in" min="0" max="10" id="position-boolean-write-in" value="0">
+            </div>
+          </div>
+
+          <!-- Vote Required -->
+          <div class="control-group">
+            <label class="control-label">Vote Required</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="position-boolean-required">
+                Enabled
+              </label>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal">Close</button>
+      <span id="modal-boolean-submit" class="btn btn-primary">Save</span>
+    </div>
+</div>
+
+
 <div id="modal-confirmation" class="modal hide fade">
     <div class="modal-header">
       <a data-dismiss="modal" href="#" class="close">&times;</a>

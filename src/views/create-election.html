@@ -117,8 +117,8 @@
             <div class="controls">
               <select id="position-select-type" name="position-select-type">
                 <option id="ranked-choice" value="0">Ranked-Choice Voting Position</option>
-                <!-- option id="single-choice" value="1">Single-Choice Voting Position</option -->
                 <option id="cumulative-voting" value="1">Cumulative Voting Position</option>
+                <option id="boolean-voting" value="2">Boolean Voting Position</option>
               </select>
             </div>
           </div>
@@ -232,6 +232,63 @@
               </fieldset>
             </form>
           </div>
+
+            <!-- Boolean Voting Position -->
+          <div class="selection-content" id="2" style="display:none">
+            <h4>Boolean Voting Position</h4>
+            <p>In boolean voting, voters have the option to choose one candidate from a list. The candidate with the most votes is the winner.</p>
+            <hr>
+            <form>
+              <fieldset>
+                <!-- Position Name -->
+                <div class="control-group">
+                  <label class="control-label" for="position-boolean-name">Position Name</label>
+                  <div class="controls">
+                    <input type="text" class="input-xlarge" id="position-boolean-name" name="position-boolean-name-txt">
+                  </div>
+                </div>
+
+                <!-- Position Slots -->
+                <div class="control-group">
+                  <label class="control-label" for="position-boolean-slots" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Position Slots</label>
+                  <div class="controls">
+                    <input type="number" class="input-mini" name="position-boolean-slots" min="1" max="10" id="position-boolean-slots" value="1">
+                  </div>
+                </div>
+
+                <!-- Candidates -->
+                <div class="control-group">
+                  <label class="control-label" for="position-boolean-candidates">Candidates<br /></label>
+                  <div class="controls">
+                    <div class="add-on btn btn-success" id="position-boolean-add-candidate" style="margin-bottom:5px;"><i class="icon-plus icon-white"></i></div>
+                    <div style="margin-bottom: 5px;" id="position-boolean-candidates"></div>
+                  </div>
+                </div>
+
+                <!-- Write-in Slots -->
+                <div class="control-group">
+                  <label class="control-label" for="position-boolean-write-in" rel="tooltip" data-placement="right" data-original-title="Number of people that will be elected for the position.">Write-in Slots</label>
+                  <div class="controls">
+                    <input type="number" class="input-mini" name="position-boolean-write-in" min="0" max="10" id="position-boolean-write-in" value="0">
+                  </div>
+                </div>
+
+                <!-- Vote Required -->
+                <div class="control-group">
+                  <label class="control-label">Vote Required</label>
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" id="position-boolean-required">
+                      Enabled
+                    </label>
+                  </div>
+                </div>
+
+              </fieldset>
+            </form>
+          </div>
+
+
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal">Close</button>
