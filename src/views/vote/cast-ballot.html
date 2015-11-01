@@ -24,12 +24,12 @@
     <p>
       You are voting as <strong>{{ voter_net_id }}</strong>. Your ballot will be recorded anonymously.
     </p>
-
+    
     <h4>Instructions</h4>
     <p>
       Below is the ballot for this election. Please read the instructions for each position carefully, as they may differ from position to position. Unless otherwise specified, voting for a particular position is optional and you may leave it blank.
     </p>
-
+    
     {% endif %}
     <!-- Print each election by position. -->
     {% for position in positions %}
@@ -45,8 +45,8 @@
         {% endif %}
 
       <h5 style='color:#666;'>{{ position.type }} Election</h5>
-{#      TODO Handle Radio Button  #}
-      {% if position.type in ["Ranked-Choice", "Cumulative-Voting"] %}
+
+      {% if position.type in ["Ranked-Choice", "Cumulative-Voting", "Boolean-Voting"] %}
 
         <!-- Instructions for ranked-choice ballots. -->
         {% set count = position.candidates|count %}
@@ -68,9 +68,25 @@
             {% endif %}
           {% endif %}
 
-          <!-- Cumulative Voting insturctions -->
+          <!-- Cumulative Voting instructions -->
           {% if position.type == "Cumulative-Voting" %}
             You have {{ position.points }} votes to distribute to the following candidates. Multiple votes can be given to one or more candidates, so long as the total number of votes you cast sum to {{ position.points }} (you are not limited to giving only one vote to a candidate). Write the number of points you want to distribute to the candiate in the box left of their name.
+            <em>
+            {% if position.slots == 1 %}
+              One person will be elected for this position.
+            {% else %}
+              A total of {{ position.slots }} people will be elected for this position.
+            {% endif %}
+            </em>
+          {% endif %}
+          {% if position.vote_required == True %}
+            <em>You are required to vote for this position.</em>
+          {% endif %}
+        </p>
+        
+           <!-- Boolean Voting instructions -->
+          {% if position.type == "Boolean-Voting" %}
+            Please pick one of the following candidates.
             <em>
             {% if position.slots == 1 %}
               One person will be elected for this position.
@@ -148,7 +164,32 @@
         </ul>
         {% endif %}
 
-{#      TODO here goes the Radio Button Rendering#}
+      <!-- Candidate listing for this position. -->
+        {% if position.type == "Boolean-Voting" %}
+        <ul class='position unstyled'
+            data-name='{{ position.name }}'
+            data-type='{{ position.type }}'
+            data-vote-required='{{ position.vote_required }}'
+            data-id='{{position.id}}'>
+          {% for candidate in position.candidates %}
+            <li>
+              <input type='radio'
+                     title='Number of votes for this candidate'
+                     data-candidate-name='{{ candidate.name }}'
+                     data-candidate-id='{{ candidate.id }}'
+                     class='rank-input input-mini {{position.id}}'>
+                <span class="help-inline">{{ candidate.name }}</span>
+            </li>
+          {% endfor %}
+          {% for number in range(0, position.write_in_slots) %}
+            <li><input type='radio'
+                       data-candidate-name='write-in'
+                       data-candidate-id='write-in-{{position.id}}-{{number}}'
+                       class='rank-input input-mini {{position.id}}'>
+                <input type='text' id='write-in-{{position.id}}-{{number}}-name' class='input-large' placeholder='Write-In Candidate Name'></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
 
       {% else %}
 
@@ -162,6 +203,6 @@
     <a id='cast-ballot-button' href='#' class='btn btn-primary'><i class='icon icon-lock icon-white'></i> Cast Ballot</a>
 
     </div>
-
+    </div>
     {% endif %}
 </section>
