@@ -260,6 +260,34 @@ class CumulativeVotingPosition(ElectionPosition):
         self.put()
     
 # TODO Create New Position Type
+class BooleanVotingPosition(ElectionPosition):
+    """
+    A position that requires each vote to be either yes or no.
+    """
+    position_type = 'Boolean-Voting'
+    slots = db.IntegerProperty(required=True)
+
+    def to_json(self):
+        json = super(BooleanVotingPosition, self).to_json()
+        json['type'] = self.position_type
+        json['slots'] = self.slots
+        return json
+
+    def compute_winners(self):
+        super(BooleanVotingPosition, self).compute_winners()
+        ballots = []
+        for ballot in self.ballots:
+            ballot_dict = {}
+            for choice in ballot.choices:
+                candidate_key = choice.candidate.key()
+                ballot_dict[candidate_key] = choice.points
+            ballots.append(ballot_dict)
+        winners = cv.run_cv(ballots, self.slots)
+        self.winners = []
+        for winner in winners:
+            self.winners.append(winner)
+        self.result_computed = True
+        self.put()
 
 class ElectionPositionCandidate(db.Model):
     """
@@ -304,6 +332,28 @@ class CumulativeVotingChoice(db.Model):
 
     points = db.IntegerProperty(required=True)
 
+class BooleanVotingBallot(db.Model):
+    """
+    A single boolean ballot for a single boolean position.
+    """
+    position = db.ReferenceProperty(BooleanVotingPosition,
+                                    required=True,
+                                    collection_name='ballots')
+                                    
+class BooleanVotingChoice(db.Model):
+    """
+    A single choice within a boolean voting ballot.
+    """
+    ballot = db.ReferenceProperty(BooleanVotingBallot,
+                                  required=True,
+                                  collection_name='choices')
+
+    candidate = db.ReferenceProperty(ElectionPositionCandidate,
+                                     required=True,
+                                     collection_name='bool_votes')
+
+    points = db.IntegerProperty(required=True)
+    
 # TODO Create new ballot type, may be similar to cummulative voting.
 class Counter(db.Model):
     """
@@ -608,5 +658,4 @@ def increment_vote_count(delta=1):
         counter = Counter(name=name)
     counter.increment(delta)
     counter.put()
-
 
