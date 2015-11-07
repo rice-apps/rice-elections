@@ -1,0 +1,3 @@
+queue:
+-  name: voters
+   rate: 100/s
