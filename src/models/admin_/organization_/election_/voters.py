@@ -52,7 +52,8 @@ class ElectionVotersHandler(webapp2.RequestHandler):
 
         data = {'status': 'OK',
                 'id': str(election.key()),
-                'voters': sorted(list(models.get_voter_set(election)))}
+                'voters': list(models.get_voter_set(election))}
+                #'voters': sorted(list(models.get_voter_set(election)))}
         logging.info(data)
         panel = get_panel(PAGE_URL, data, data.get('id'))
         webapputils.render_page_content(self, PAGE_URL, panel)
@@ -93,7 +94,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         for voter in data['voters']:
             voter_set.discard(voter)
         out = {'status': 'OK',
-               'msg': 'Adding',
+               'msg': 'Deleting',
                'voters': sorted(list(voter_set))}
         self.response.write(json.dumps(out))
 
@@ -103,7 +104,8 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       'voters': data['voters']}
         retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
         taskqueue.add(url=TASK_URL,
-                      params={'data':json.dumps(queue_data)},
+                      queue_name='voters',
+                      params={'data': json.dumps(queue_data)},
                       retry_options=retry_options)
 
         
