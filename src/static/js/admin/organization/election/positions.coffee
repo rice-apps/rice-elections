@@ -4,12 +4,14 @@
 all_positions = []
 rankedModal = null
 cumulativeModal = null
+booleanModal = null
 form = null
 postUrl = '/admin/organization/election/positions'
 
 jQuery ->
     rankedModal = new RankedVotingPosition()
     cumulativeModal = new CumulativeVotingPosition()
+    booleanModal = new BooleanVotingPosition()
     form = new Form()
 
 # Form for managing positions
@@ -22,6 +24,8 @@ class Form
             rankedModal.reset()
         $("a[href=#modal-cumulative]").click =>
             cumulativeModal.reset()
+        $("a[href=#modal-boolean]").click =>
+            booleanModal.reset()
 
         # Load all of the existing positions into the form
         data =
@@ -107,6 +111,10 @@ class Form
             cumulativeModal.reset()
             cumulativeModal.setFromJson(position)
             $("#modal-cumulative").modal('show')
+        else if position['type'] == 'Boolean-Voting'
+            booleanModal.reset()
+            booleanModal.setFromJson(position)
+            $("#modal-boolean").modal('show')
 
 # Abstract base class different position types, replace type in subclasses
 class Position
@@ -375,6 +383,21 @@ class RankedVotingPosition extends Position
 
     setFromJson: (json) =>
         super(json)
+
+class BooleanVotingPosition extends Position
+    constructor: ->
+        super('boolean')
+
+    # Gives the contents of the form in json form if valid, otherwise null
+    toJson: =>
+        position = super()
+        return null if position == null
+        position['type'] = 'Boolean-Voting'
+        return position
+
+    setFromJson: (json) =>
+        super(json)
+
 
 class CumulativeVotingPosition extends Position
     constructor: ->

@@ -98,11 +98,11 @@ function getBallot() {
         var name     = $(this).attr('data-name');
         var type     = $(this).attr('data-type');
         var id       = $(this).attr('data-id');
-        var required = ($(this).attr('data-vote-required') == 'True') ? true : false;
+        var required = ($(this).attr('data-vote-required') == 'True');
         var available_points = $(this).attr('data-available-votes');
 
         /* Ranked Choice and cumulative info gathering. */
-        if (type == 'Ranked-Choice' || type == 'Cumulative-Voting') {
+        if (type == 'Ranked-Choice' || type == 'Cumulative-Voting' || type == 'Boolean-Voter') {
             var position = {};
             position['id'] = id;
             position['name'] = name;
@@ -116,13 +116,15 @@ function getBallot() {
             }else if (type == 'Cumulative-Voting') {
                 position['candidate_points'] = [];
                 position['available_points'] = available_points;
+            }else if (type == 'Boolean-Voting') {
+                position['candidate_points'] = [];
             }
 
             /* Get the data from each of the children running for office. */
             $('.'+id).each(function(i, obj) {
 
-                var candidate_id   = $(this).attr('data-candidate-id')
-                var candidate_name = $(this).attr('data-candidate-name')
+                var candidate_id   = $(this).attr('data-candidate-id');
+                var candidate_name = $(this).attr('data-candidate-name');
 
                 /* Get the real name if this is a write-in candidate. */
                 if (candidate_name == 'write-in') {
@@ -133,7 +135,7 @@ function getBallot() {
                 /* If the candidate name is empty or their is a input. */
                 if (candidate_name != '' || $(this).val()) {
                     if (type == 'Ranked-Choice') {
-                        var candidate_rank = ($(this).val() && isInt($(this).val())) ? parseInt($(this).val()) : $(this).val()
+                        var candidate_rank = ($(this).val() && isInt($(this).val())) ? parseInt($(this).val()) : $(this).val();
                         var candidate = {
                             'name' : candidate_name,
                             'id'   : candidate_id,
@@ -143,7 +145,7 @@ function getBallot() {
                         position['candidate_rankings'].push(candidate)
                     }
                     if (type == 'Cumulative-Voting') {
-                        var candidate_points = ($(this).val() && isInt($(this).val())) ? parseInt($(this).val()) : 0
+                        var candidate_points = ($(this).val() && isInt($(this).val())) ? parseInt($(this).val()) : 0;
                         var candidate = {
                             'name' : candidate_name,
                             'id'   : candidate_id,
@@ -151,6 +153,16 @@ function getBallot() {
                             'write_in' : write_in
                         }
                         position['candidate_points'].push(candidate);
+                    }
+                    if (type == 'Boolean-Voting') {
+                        var candidate_points = ($(this).prop('checked')) ? 1 : 0;
+                        var candidate = {
+                            'name' : candidate_name,
+                            'id' : candidate_id,
+                            'points' : candidate_points,
+                            'write_in' : write_in
+                        }
+                        position['candidate_points'].push(candidate)
                     }
                 }
             });
@@ -165,6 +177,7 @@ function getBallot() {
 
     return ballot
 }
+
 
 /**
  *
@@ -184,6 +197,8 @@ function ballotValidates(ballot) {
             verifyRankedPosition(position);
         } else if (type == 'Cumulative-Voting') {
             verifyCummulativePosition(position);
+        } else if (type == 'Boolean-Voting'){
+            verifyBooleanPosition(position);
         }
     });
 
@@ -290,6 +305,42 @@ function verifyRankedPosition(position) {
             }
         }
     }
+}
+
+function verifyBooleanPosition(position) {
+    var id    = position['id']
+    var name  = position['name']
+    var type  = position['type']
+    var candidates = position['candidate_points']
+    var write_in = false;
+    var sum = 0;
+
+    $.each(candidates, function(i, candidate) {
+        var votes = candidate['points'];
+        var write_in = candidate['write_in'];
+        var candidate_name = candidate['name'];
+
+        /* Verify all write-ins have a name. */
+        if (write_in && candidate_name == '' && votes != 0)
+            invalidate(id, name, 'A write-in with votes must have a name.');
+
+        /* Verify all write-ins have a vote. */
+        if (write_in && candidate_name != '' && votes == 0)
+            invalidate(id, name, 'A non-empty write-in must have votes.');
+
+        /* Verify that votes are non negative integers. */
+        if (!(votes in [0,1])) {
+            invalidate(id, name, 'Votes value is not valid.');
+        }
+        else {
+            sum += votes;
+        }
+
+    });
+
+    /* If the position requires a vote and it was skipped, error. */
+    if(sum == 0 && position['required'])
+        invalidate(id, name, 'Your vote for this position is required.');
 }
 
 /**

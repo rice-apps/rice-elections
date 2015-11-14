@@ -259,7 +259,6 @@ class CumulativeVotingPosition(ElectionPosition):
         self.result_computed = True
         self.put()
     
-# TODO Create New Position Type
 class BooleanVotingPosition(ElectionPosition):
     """
     A position that requires each vote to be either yes or no.
