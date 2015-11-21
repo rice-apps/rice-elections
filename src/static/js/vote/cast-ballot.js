@@ -102,7 +102,7 @@ function getBallot() {
         var available_points = $(this).attr('data-available-votes');
 
         /* Ranked Choice and cumulative info gathering. */
-        if (type == 'Ranked-Choice' || type == 'Cumulative-Voting' || type == 'Boolean-Voter') {
+        if (type == 'Ranked-Choice' || type == 'Cumulative-Voting' || type == 'Boolean-Voting') {
             var position = {};
             position['id'] = id;
             position['name'] = name;

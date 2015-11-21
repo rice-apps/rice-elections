@@ -175,6 +175,7 @@
             <li>
               <input type='radio'
                      title='Number of votes for this candidate'
+                     name='{{ position.name }}'
                      data-candidate-name='{{ candidate.name }}'
                      data-candidate-id='{{ candidate.id }}'
                      class='rank-input input-mini {{position.id}}'>
@@ -184,6 +185,7 @@
           {% for number in range(0, position.write_in_slots) %}
             <li><input type='radio'
                        data-candidate-name='write-in'
+                       name='{{ position.name }}'
                        data-candidate-id='write-in-{{position.id}}-{{number}}'
                        class='rank-input input-mini {{position.id}}'>
                 <input type='text' id='write-in-{{position.id}}-{{number}}-name' class='input-large' placeholder='Write-In Candidate Name'></li>
