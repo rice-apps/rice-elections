@@ -169,4 +169,3 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
             webapputils.respond(self, 'OK', 'Deleted')
         else:
             webapputils.respond(self, 'ERROR', 'Not found')
-
