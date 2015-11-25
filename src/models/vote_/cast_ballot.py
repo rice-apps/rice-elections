@@ -129,6 +129,8 @@ class BallotHandler(webapp2.RequestHandler):
                 verified_positions[position['id']] = self.verify_ranked_choice_ballot(position)
             elif position['type'] == 'Cumulative-Voting':
                 verified_positions[position['id']] = self.verify_cumulative_voting_ballot(position)
+            elif position['type'] == 'Boolean-Voting':
+                verified_positions[position['id']] = self.verify_boolean_voting_ballot(position)
             else:
                 logging.error('Encountered unknown position type: %s', position['type'])
                 verified_positions[position['id']] = False
@@ -147,6 +149,8 @@ class BallotHandler(webapp2.RequestHandler):
                     self.cast_ranked_choice_ballot(position)
                 elif position['type'] == 'Cumulative-Voting':
                     self.cast_cumulative_voting_ballot(position)
+                elif position['type'] == 'Boolean-Voting':
+                    self.cast_boolean_voting_ballot(position)
             
         models.mark_voted(voter, election)
         
@@ -437,11 +441,11 @@ class BallotHandler(webapp2.RequestHandler):
                         epc.put()
                     cp['id'] = str(epc.key())
                 epc = models.ElectionPositionCandidate.get(cp['id'])
-                choice = models.CumulativeVotingChoice(ballot=ballot,
+                choice = models.BooleanVotingChoice(ballot=ballot,
                                                          candidate=epc,
                                                          points=cp['points'])
                 choice.put()
-        logging.info('Stored cumulative choice ballot in models.')
+        logging.info('Stored boolean choice ballot in models.')
 
                 
 app = webapp2.WSGIApplication([
