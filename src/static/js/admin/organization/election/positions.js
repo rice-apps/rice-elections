@@ -178,7 +178,6 @@
       this.setFromJson = bind(this.setFromJson, this);
       this.toJson = bind(this.toJson, this);
       this.id = null;
-      //this.type = type1;
       this.candidateIDGen = 0;
       this.candidateIDs = [];
       this.candidateIDPrefix = "position-" + this.type + "-candidate-";
@@ -512,7 +511,7 @@
     };
 
     BooleanVotingPosition.prototype.reset = function() {
-      var pointsContainer, slotsContainer;
+      var slotsContainer;
       BooleanVotingPosition.__super__.reset.call(this);
       this.slots.val('1').change();
       slotsContainer = this.slots.parent().parent();
@@ -528,7 +527,7 @@
       }
       json = {
         'type': 'Boolean-Voting',
-        'slots': this.getSlots(),
+        'slots': this.getSlots()
       };
       for (key in json) {
         value = json[key];
@@ -541,7 +540,8 @@
     };
 
     BooleanVotingPosition.prototype.setFromJson = function(json) {
-      return BooleanVotingPosition.__super__.setFromJson.call(this, json);
+      BooleanVotingPosition.__super__.setFromJson.call(this, json);
+      return this.slots.val(json['slots']);
     };
 
     return BooleanVotingPosition;
