@@ -42,8 +42,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
             "organizations": organizations,
             "elections": elections
         }
-
-        return webapputils.render_page(self, '/intern/command-center', page_data)
+        return webapputils.render_page(self, '/intern/command-center', {})
 
     def post(self):
         methods = {

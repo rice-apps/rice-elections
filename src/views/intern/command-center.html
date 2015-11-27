@@ -1,5 +1,6 @@
-<script type='text/javascript' src='/static/js/intern/command-center.js'></script>
-<section id="main" class='container-narrow'>
+{#<script type='text/javascript' src='/static/js/intern/command-center.js'></script>#}
+<script type="text/javascript" src="/static/js/intern/ang-command-center.js"></script>
+<section id="main" class='container-narrow'  ng-controller="tabController as panel">
   <div class='navbar'>
     <div class='navbar-inner'>
       <ul class='nav'>
@@ -8,23 +9,139 @@
             Command Center
           </a>
         </li>
-        <li  class='active' >
-          <a href="#organizations" data-toggle="tab">
+        <li ng-class="{ active:panel.isCurrent(1) }" >
+          <a href="#organizations" ng-click="panel.setTab(1)">
             <i class='icon-user'></i> Organizations
           </a>
         </li>
-        <li>
-          <a href="#elections" data-toggle="tab">
+        <li ng-class="{ active:panel.isCurrent(2) }">
+          <a href="#elections" ng-click="panel.setTab(2)">
             <i class='icon-envelope'></i> Elections
           </a>
         </li>
       </ul>
     </div>
   </div>
+<div id="organizations" ng-show="panel.isCurrent(1)" ng-controller="orgController as orgCtrl"> {# ng-show  #}
+      <table class="table table-striped"> {# directive #}
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Admin Count</th>
+            <th>Election Count</th>
+            <th>Vote Count</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% raw %}
+            <tr>
+              <td>{{ org.name }}</td>
+              <td>{{ org.adminCount }}</td>
+              <td>{{ org.electionCount }}</td>
+              <td>{{ org.voteCount }}</td>
+            </tr>
+        {% endraw %}
+        </tbody>
+      </table>
+      <form class="form-horizontal well">
+        <fieldset>
+          <legend>Create Organization</legend>
+          <div class="control-group">
+            <label class="control-label" for="name">Name</label>
+            <div class="controls">
+              <input type="text"
+                     class="input-xlarge span4 profile-input"
+                     id="organization-name">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="description">Description</label>
+            <div class="controls">
+              <textarea class="input-xlarge span4 profile-input"
+                        rows='4'
+                        id="organization-description"
+                        placeholder="We like to hold elections"></textarea>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="website">Website</label>
+            <div class="controls">
+              <input type="text"
+                     class="input-xlarge span4 profile-input"
+                     id="organization-website"
+                     placeholder='http://awesome.com'>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="updateProfile"></label>
+            <div class="controls">
+              <a id='organization-create'
+                     class="input-large btn btn-primary"
+                     data-default-text='Create Organization'
+                     value=''>Create Organization</a>
+            </div>
+          </div>
+          <input type="hidden"
+                 id="organization-id">
+        </fieldset>
+      </form>
+</div>
+<div id="elections" ng-show="panel.isCurrent(2)">
+  <h2>Upcoming / Recent Elections</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Organization</th>
+        <th width='150px'>Name</th>
+        <th>Election Open</th>
+        <th>Participation</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if not elections %}
+        <tr>
+          <td colspan='5'>No elections yet. Create one now!</td>
+        </tr>
+      {% endif %}
+      {% for elec in elections %}
+        {% set status_flag = 'info' %}
 
-  <div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade active in" id="organizations">
-      <table class="table table-striped">
+        {% if elec.status == 'Voting has ended' %}
+          {% set status_flag = 'warning' %}
+        {% endif %}
+
+        {% if elec.status == 'Result computed' %}
+          {% set status_flag = 'success' %}
+        {% endif %}
+
+        <tr>
+          <td>
+              <span>{{ elec.organization }}</span>
+          </td>
+          <td>
+            {% if elec.times.end > now %}
+              <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
+            {% else %}
+              <a href="/vote/view-results?id={{ elec.id }}">{{ elec.name }}</a>
+            {% endif %}
+          </td>
+          <td>
+            <span class="date-format">{{ elec.times.start }}</span><br>
+            <span class="date-format">{{ elec.times.end }}</span>
+          </td>
+          <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
+          <td><span class="alert-{{status_flag}}" style='background:none;'>{{ elec.status }} </span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</section>
+
+  <!--<div id="myTabContent">   {# TabController #}
+    <div id="organizations"> {# ng-show  #}
+      <table class="table table-striped"> {# directive #}
         <thead>
           <tr>
             <th>Name</th>
@@ -87,7 +204,7 @@
         </fieldset>
       </form>
     </div>
-    <div class="tab-pane fade" id="elections">
+    <div class="tab-pane fade" id="elections" ng-show="panel.isCurrent(2)">
       <h2>Upcoming / Recent Elections</h2>
       <table class="table table-striped">
         <thead>
@@ -140,3 +257,4 @@
     </div>
   </div>
 </section>
+---!>
