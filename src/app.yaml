@@ -1,5 +1,5 @@
 application: owlection
-version: 1-4-5
+version: 1-4-7
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -41,6 +41,10 @@ handlers:
 
 - url: /intern/.*
   script: controllers.intern.app
+
+- url: /api/.*
+  script: controllers.api.app
+
 
 - url: /.*
   script: main.app
