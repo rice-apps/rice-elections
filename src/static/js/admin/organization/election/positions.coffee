@@ -4,12 +4,14 @@
 all_positions = []
 rankedModal = null
 cumulativeModal = null
+booleanModal = null
 form = null
 postUrl = '/admin/organization/election/positions'
 
 jQuery ->
     rankedModal = new RankedVotingPosition()
     cumulativeModal = new CumulativeVotingPosition()
+    booleanModal = new BooleanVotingPosition()
     form = new Form()
 
 # Form for managing positions
@@ -22,6 +24,8 @@ class Form
             rankedModal.reset()
         $("a[href=#modal-cumulative]").click =>
             cumulativeModal.reset()
+        $("a[href=#modal-boolean]").click =>
+            booleanModal.reset()
 
         # Load all of the existing positions into the form
         data =
@@ -107,6 +111,10 @@ class Form
             cumulativeModal.reset()
             cumulativeModal.setFromJson(position)
             $("#modal-cumulative").modal('show')
+        else if position['type'] == 'Boolean-Voting'
+            booleanModal.reset()
+            booleanModal.setFromJson(position)
+            $("#modal-boolean").modal('show')
 
 # Abstract base class different position types, replace type in subclasses
 class Position
@@ -115,7 +123,7 @@ class Position
         @id = null
 
         # Position type
-        @type = type
+#        @type = type
 
         # Generator for candidate IDs
         @candidateIDGen = 0
@@ -375,6 +383,58 @@ class RankedVotingPosition extends Position
 
     setFromJson: (json) =>
         super(json)
+
+class BooleanVotingPosition extends Position
+    constructor: ->
+        super('boolean')
+
+        # Number Input: Position slots
+        @slots = $('#position-cumulative-slots')
+
+    # Validates and returns the slot input number
+    getSlots: ->
+        slotsContainer = @slots.parent().parent()
+        val = parseInt(@slots.val())
+        min = parseInt(@slots.attr('min'))
+        max = parseInt(@slots.attr('max'))
+        slotsContainer.removeClass('error')
+        $('.errorMsgPSlots').remove()
+        if not (min <= val and val <= max)
+            slotsContainer.addClass('error')
+            $('<span class="help-inline errorMsgPSlots">Out of valid range.' +
+                '</span>').insertAfter(@slots)
+            return null
+        else if (val > @candidateIDs.length and @getWriteInSlots() < 1)
+            slotsContainer.addClass('error')
+            $('<span class="help-inline errorMsgPSlots">Number of ' +
+                'slots exceed number of candidates.</span>').insertAfter(@slots)
+            return null
+        return val
+
+    # Resets the HTML form
+    reset: ->
+        super()
+        @slots.val('1').change()
+
+        slotsContainer = @slots.parent().parent()
+        slotsContainer.removeClass('error')
+        $('.errorMsgPSlots').remove()
+
+    # Gives the contents of the form in json form if valid, otherwise null
+    toJson: =>
+        position = super()
+        return null if position == null
+        json =
+            'type': 'Boolean-Voting'
+            'slots': @getSlots()
+        for key, value of json
+            return null if value == null
+            position[key] = value
+        return position
+
+    setFromJson: (json) =>
+        super(json)
+        @slots.val(json['slots'])
 
 class CumulativeVotingPosition extends Position
     constructor: ->

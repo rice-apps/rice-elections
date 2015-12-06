@@ -32,10 +32,10 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
 
         # Get organization information
         admin = models.Admin.gql('WHERE voter=:1', voter).get()
-        logging.info(admin)
+        logging.info("<Admin: %s>", admin.email)
         org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
                                                     admin).get()
-        logging.info(org_admin)
+        logging.info("<Admin of Organizations: %s>", org_admin.organization.name)
         if not org_admin:
             logging.info('Not authorized')
             webapputils.render_page(self, '/templates/message',

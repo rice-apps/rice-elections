@@ -95,6 +95,15 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
                 slots=position['slots'],
                 description=position['description'])
             ep.put()
+        elif position['type'] == 'Boolean-Voting':
+            ep = models.BooleanVotingPosition(
+                election=election,
+                position=position_entry,
+                vote_required=position['vote_required'],
+                write_in_slots=position['write_in_slots'],
+                slots=position['slots'],
+                description=position['description'])
+            ep.put()
 
         # Store candidates
         for candidate in position['candidates']:
@@ -129,6 +138,8 @@ class ElectionPositionsHandler(webapp2.RequestHandler):
         ep.description = position_data['description']
         if ep.position_type == 'Cumulative-Voting':
             ep.points = position_data['points']
+            ep.slots = position_data['slots']
+        if ep.position_type == 'Boolean-Voting':
             ep.slots = position_data['slots']
         ep.put()
 

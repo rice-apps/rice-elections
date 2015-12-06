@@ -66,6 +66,7 @@ class BallotHandler(webapp2.RequestHandler):
         page_data['positions'] = []
         page_data['voter_net_id'] = voter.net_id
 
+        # TODO Catch Shuffle Option
         # Write position information
         election_positions = election.election_positions
         for election_position in election_positions:
@@ -121,12 +122,15 @@ class BallotHandler(webapp2.RequestHandler):
         verified_positions = {}           # Whether an election_position has been verified
         for election_position in election.election_positions:
             verified_positions[str(election_position.key())] = False
-        
+        # TODO verify appropriate election
+
         for position in formData['positions']:
             if position['type'] == 'Ranked-Choice':
                 verified_positions[position['id']] = self.verify_ranked_choice_ballot(position)
             elif position['type'] == 'Cumulative-Voting':
                 verified_positions[position['id']] = self.verify_cumulative_voting_ballot(position)
+            elif position['type'] == 'Boolean-Voting':
+                verified_positions[position['id']] = self.verify_boolean_voting_ballot(position)
             else:
                 logging.error('Encountered unknown position type: %s', position['type'])
                 verified_positions[position['id']] = False
@@ -138,12 +142,15 @@ class BallotHandler(webapp2.RequestHandler):
                 return
         
         # Record all of the votes
+        # TODO Cast appropriate Ballot
         for position in formData['positions']:
             if verified_positions[position['id']]:
                 if position['type'] == 'Ranked-Choice':
                     self.cast_ranked_choice_ballot(position)
                 elif position['type'] == 'Cumulative-Voting':
                     self.cast_cumulative_voting_ballot(position)
+                elif position['type'] == 'Boolean-Voting':
+                    self.cast_boolean_voting_ballot(position)
             
         models.mark_voted(voter, election)
         
@@ -152,7 +159,7 @@ class BallotHandler(webapp2.RequestHandler):
     def respond(self, status, message):
         """
         Sends a response to the front-end.
-        
+
         Args:
             status: response status
             message: response message
@@ -348,8 +355,97 @@ class BallotHandler(webapp2.RequestHandler):
                 choice.put()
         logging.info('Stored cumulative choice ballot in models.')
 
+        # TODO Create verification
+        # TODO Create ballot casting.
 
+    @staticmethod
+    def verify_boolean_voting_ballot(position):
+        """
+        Verifies the validity a boolean voting ballot.
 
+        Args:
+            position{dictionary}: the position dictionary from the client
+
+        Returns:
+            True if valid, False if invalid. None if empty ballot.
+        """
+        logging.info('Verifying boolean voting ballot.')
+        election_position = models.BooleanVotingPosition.get(
+            position['id'])
+        if not election_position:
+            logging.warning('No election position found in models.')
+            return False
+        assert election_position.position_type == 'Boolean-Voting'
+
+        required = election_position.vote_required
+        election_position_candidates = models.ElectionPositionCandidate.gql(
+            'WHERE election_position=:1 AND written_in=False',
+            election_position)
+        write_in_slots_allowed = election_position.write_in_slots
+        write_in_slots_used = 0
+        verified_candidates = {}
+        points_used = 0
+        for epc in election_position_candidates:
+            verified_candidates[str(epc.key())] = True
+        for cp in position['candidate_points']:
+            if cp['points'] != 1 and cp['points'] != 0:
+                logging.warning("Non zero or one points not allowed")
+                return False   # Non zero or one points not allowed
+            points_used += cp['points']
+            verified_candidates[cp['id']] = True
+            if cp['id'].startswith('write-in-'):
+                if not write_in_slots_allowed:
+                    logging.warning('Write-in not allowed.')
+                    return False
+                elif cp['name'] and not cp['points']:
+                    logging.warning('Write-in was specified but not given points.')
+                    return False
+                elif cp['name'] and cp['points']:
+                    write_in_slots_used += 1
+            else:
+                if cp['id'] not in verified_candidates:
+                    logging.warning('Unknown')
+
+        if write_in_slots_used > write_in_slots_allowed:
+            return False
+        if points_used != 1:
+            return None
+        logging.info('Ballot for position %s verified.',
+                     election_position.position.name)
+        return True
+
+    @staticmethod
+    def cast_boolean_voting_ballot(position):
+        """
+        Records a boolean voting ballot in the models. Modifies write-in
+        ids of the dictionary to reflect the written-in candidate's id.
+
+        Args:
+            position{dictionary}: the verified position dictionary from client
+        """
+        election_position = models.BooleanVotingPosition.get(position['id'])
+        ballot = models.BooleanVotingBallot(position=election_position)
+        ballot.put()
+        for cp in position['candidate_points']:
+            if cp['points'] > 0:
+                # Check for a write-in
+                if cp['id'].startswith('write-in'):
+                    epc = models.ElectionPositionCandidate.gql('WHERE election_position=:1 AND name=:2',
+                                                                 election_position,
+                                                                 cp['name']).get()
+                    if not epc:
+                        epc = models.ElectionPositionCandidate(election_position=election_position,
+                                                                 net_id=None,
+                                                                 name=cp['name'],
+                                                                 written_in=True)
+                        epc.put()
+                    cp['id'] = str(epc.key())
+                epc = models.ElectionPositionCandidate.get(cp['id'])
+                choice = models.BooleanVotingChoice(ballot=ballot,
+                                                         candidate=epc,
+                                                         points=cp['points'])
+                choice.put()
+        logging.info('Stored boolean choice ballot in models.')
 
                 
 app = webapp2.WSGIApplication([

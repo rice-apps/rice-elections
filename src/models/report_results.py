@@ -13,8 +13,6 @@ from google.appengine.ext import db
 from google.appengine.api import mail
 from datetime import datetime
 
-import unicodedata
-
 
 def encode(string):
     try:
@@ -91,6 +89,36 @@ Winners: {6}""".format(encode(pos.position.name),
         for name, points in counts.items():
             counts_list.append(u'%s: %s' % (name, points))
         string += u'\nTotal Counts:\n' + u'\n'.join(counts_list) + u'\n'
+    elif pos.position_type == "Boolean-Voting":
+        json = pos.to_json()
+        string = u"""
+Position Name: {0},
+Vote Required: {1},
+Write-in Slots: {2},
+Position Slots: {3},
+Candidates: {4},
+Winners: {5}""".format(encode(pos.position.name),
+                       pos.vote_required,
+                       pos.write_in_slots,
+                       pos.slots,
+                       u', '.join([encode(can.name) for can in pos.election_position_candidates]),
+                       u', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+        counts = {}
+        ballots = []
+        for ballot in pos.ballots:
+            choices = []
+            for choice in ballot.choices:
+                choices.append(u'%s: %d' % (choice.candidate.name, choice.points))
+                if choice.candidate.name in counts:
+                    counts[choice.candidate.name] += choice.points
+                else:
+                    counts[choice.candidate.name] = choice.points
+            ballots.append(u'{' + u', '.join(choices) + u'}')
+        string += u'\nBallots Cast:\n' + u'\n'.join(ballots) + u'\n'
+        counts_list = []
+        for name, points in counts.items():
+            counts_list.append(u'%s: %s' % (name, points))
+        string += u'\nTotal Counts:\n' + u'\n'.join(counts_list) + u'\n'
 
     message.body = u"""
 Dear {0} Admin,
@@ -115,10 +143,10 @@ def email_report(to, election):
     results = []
     ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1",
                                                          election)
-    print "Number of positions: %d" % ranked_positions.count()
+    logging.info("Number of positions: %d" % ranked_positions.count())
     i = 1
     for pos in ranked_positions:
-        print "Processing position", i
+        logging.info("Processing position", i)
         i += 1
         json = pos.to_json()
         string = (u"\n"
@@ -166,6 +194,41 @@ Winners: {6}""").format(pos.position.name,
                        pos.write_in_slots,
                        pos.slots,
                        pos.points,
+                       u', '.join([encode(can.name) for can in pos.election_position_candidates]),
+                       u', '.join([encode(db.get(winner).name) for winner in pos.winners]))
+        counts = {}
+        ballots = []
+        for ballot in pos.ballots:
+            choices = []
+            for choice in ballot.choices:
+                choices.append(u'%s: %d' % (choice.candidate.name, choice.points))
+                if choice.candidate.name in counts:
+                    counts[choice.candidate.name] += choice.points
+                else:
+                    counts[choice.candidate.name] = choice.points
+            ballots.append(u'{' + u', '.join(choices) + u'}')
+        string += u'\nBallots Cast:\n' + u'\n'.join(ballots) + u'\n'
+        counts_list = []
+        for name, points in counts.items():
+            counts_list.append(u'%s: %s' % (name, points))
+        string += u'\nTotal Counts:\n' + u'\n'.join(counts_list) + u'\n'
+        results.append(string)
+
+    # Similar code to above
+    boolean_positions = models.BooleanVotingPosition.gql("WHERE election=:1",
+                                                             election)
+    for pos in boolean_positions:
+        json = pos.to_json()
+        string = (u"""
+Position Name: {0}
+Vote Required: {1}
+Write-in Slots: {2}
+Position Slots: {3}
+Candidates: {4}
+Winners: {5}""").format(pos.position.name,
+                       pos.vote_required,
+                       pos.write_in_slots,
+                       pos.slots,
                        u', '.join([encode(can.name) for can in pos.election_position_candidates]),
                        u', '.join([encode(db.get(winner).name) for winner in pos.winners]))
         counts = {}
