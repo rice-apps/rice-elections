@@ -247,9 +247,9 @@
         if (start === end) {
           errorMsg = 'Start time is the same as end time.';
         }
-        //if (!this.id && ((new Date()).valueOf() / 1000) > start) {
-        //  errorMsg = 'Start time is in the past.';
-        //}
+        if (!this.id && ((new Date()).valueOf() / 1000) > start) {
+          errorMsg = 'Start time is in the past.';
+        }
       }
       if (errorMsg) {
         timeContainer.addClass('error');
