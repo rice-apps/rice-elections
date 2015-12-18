@@ -138,26 +138,85 @@ def run_irv(ballots):
     logging.info('Found %d winners requested', len(winners))
     return winners
 
+def run_the_rounds(ballots):
+    """
+    Runs the IRV algorithm and returns the results by the generating rounds.
+
+    :param ballots {List<List<Object>>}: the ballots cast, will be modified by the algorithm
+    :return {Dictionary<Round Information>}: each round of computation to determin winner.
+    """
+
+    logging.info('Computing the Rounds from %s ballots cast.', len(ballots))
+    rounds = []
+    round_number = 1
+    majority = False
+    while True:
+        new_round = {}
+
+        counts = get_counts(ballots)
+        candidates = counts.keys()
+        logging.info('Counts: %s', counts)
+
+        new_round['number'] = round_number
+        new_round['prefs'] = counts
+
+        winners = get_winners(ballots)
+
+        losers = get_losers(ballots)
+        new_round['cut'] = losers
+
+
+        for loser in losers:
+            candidates.remove(loser)
+            remove_candidate(ballots, loser)
+
+        new_round['remaining'] = candidates
+
+        if winners:
+            majority = True
+
+        new_round['majority'] = majority
+
+        rounds.append(new_round)
+
+        round_number += 1
+
+        if majority:
+            break
+
+    return rounds
+
+def gen_ballots(file_name):
+    ballots = []
+    with open(file_name) as f:
+        for line in f.read().splitlines():
+            ballots.append(line.split(', '))
+
+
+    return ballots
 
 if __name__ == '__main__':
 
-    ballots = simul_ballots(20)
+    balls = gen_ballots('../../../wrc_ballots.txt')
+    print run_the_rounds(balls)
 
-    while True:
-
-        print "* Votes:"
-        for ballot in ballots:
-            print '-', ballot
-        print "=> Counts:", get_counts(ballots)
-
-        winners = get_winners(ballots)
-        if winners:
-            break
-
-        # The losers are removed:
-        losers = get_losers(ballots)
-        print '=> Losers:', losers
-        for loser in losers:
-            remove_candidate(ballots, loser)
-
-    print "Winners: ", winners
+    # ballots = simul_ballots(20)
+    #
+    # while True:
+    #
+    #     print "* Votes:"
+    #     for ballot in ballots:
+    #         print '-', ballot
+    #     print "=> Counts:", get_counts(ballots)
+    #
+    #     winners = get_winners(ballots)
+    #     if winners:
+    #         break
+    #
+    #     # The losers are removed:
+    #     losers = get_losers(ballots)
+    #     print '=> Losers:', losers
+    #     for loser in losers:
+    #         remove_candidate(ballots, loser)
+    #
+    # print "Winners: ", winners
