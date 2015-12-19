@@ -49,7 +49,7 @@ def email_election_results(to, election):
     )
     message.to = ', '.join(to)
 
-    positions = {}
+    positions = []
     # a position is a mapping of {'name': name, 'type': type, 'vote_required': vote_required,
     #                             'candidates': candidates, 'write-ins':write_ins, 'winner':winner,
     #                             'rounds': {{'number': 1, 'majority': majority?, 'remaining': remaining_candidates,
@@ -58,36 +58,36 @@ def email_election_results(to, election):
     positions_to_determine = []
 
     # Gather Ranked Positions
-    ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election)
-    positions_to_determine.append(ranked_positions)
+    ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election).fetch(None)
+    positions_to_determine.extend(ranked_positions)
 
     # Gather Cumulative Positions
-    cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1", election)
-    positions_to_determine.append(cumulative_positions)
+    cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1", election).fetch(None)
+    positions_to_determine.extend(cumulative_positions)
 
     # Gather Boolean Positions
-    boolean_positions = models.BooleanVotingPosition.gql("WHERE election=:1", election)
-    positions_to_determine.append(boolean_positions)
+    boolean_positions = models.BooleanVotingPosition.gql("WHERE election=:1", election).fetch(None)
+    positions_to_determine.extend(boolean_positions)
 
     for pos in positions_to_determine:
         new_position = {}
         json = pos.to_json()
         new_position.update(json)
 
-        if pos.type == 'Ranked-Choice':
+        if pos.position_type == 'Ranked-Choice':
             # Gather Ranked ballots
             ballots = gather_ballots(pos)
             computed_rounds = irv.run_the_rounds(ballots)
             new_position.update({'rounds': computed_rounds})
 
-        if pos.type == ('Boolean-Voting' or 'Cumulative-Voting'):
+        if pos.position_type == ('Boolean-Voting' or 'Cumulative-Voting'):
             ballots = gather_ballots(pos)
 
             counts = cv.get_counts(ballots)
 
             new_position.update({'points': counts})
 
-        positions.update(new_position)
+        positions.append(new_position)
 
     email_message = Template(source='../views/email_report.html')
     message.body = email_message.render(positions=positions)

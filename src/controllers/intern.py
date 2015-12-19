@@ -9,7 +9,7 @@ import sys
 import webapp2
 
 from authentication import auth
-from models import models, webapputils, report_results
+from models import models, webapputils, report_results, new_results
 from google.appengine.api import mail, taskqueue
 
 COMMANDERS = ['wa1', 'wcl2', 'stl2']
@@ -137,13 +137,13 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Round 3 Spring Elections").get()
+            election = models.Election.gql("WHERE name=:1", "Will Rice Beer Bike Theme 2016: Round 2!").get()
 
             admin_emails = []
-            for org_admin in election.organization.organization_admins:
-                admin_emails.append(org_admin.admin.email)
+            # for org_admin in election.organization.organization_admins:
+            #     admin_emails.append(org_admin.admin.email)
 
-            report_results.email_report(admin_emails, election)
+            new_results.email_election_results('stl2@rice.edu', election)
             
             ### Processing end ###
 
