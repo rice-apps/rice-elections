@@ -1,3 +1,9 @@
 queue:
 -  name: voters
    rate: 100/s
+
+-  name: election-results
+   rate: 100/s
+
+-  name: election-report
+   rate: 100/s

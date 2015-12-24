@@ -19,23 +19,12 @@ def gather_ballots(pos):
     :param pos: position Object
     :return: list of ballots
     """
-
-    # GAE Recommends to use a cursor, lets use that.
     ballots_db = pos.ballots.fetch(100)
     ballots = []
     while ballots_db:
         for ballot in ballots_db:
-            if pos.position_type == 'Ranked-Choice':
-                can_names = [db.get(can).name for can in ballot.preferences]
-                ballots.append(can_names)
-
-            elif pos.position_type in ['Boolean-Voting', 'Cumulative-Voting']:
-                for ballot in pos.ballots:
-                    ballot_dict = {}
-                    for choice in ballot.choices:
-                        candidate_name = choice.candidate.name
-                        ballot_dict[candidate_name] = choice.points
-                    ballots.append(ballot_dict)
+            can_names = [db.get(can).name for can in ballot.preferences]
+            ballots.append(can_names)
 
         ballots_db = pos.ballots.filter('__key__ >', ballots_db[-1].key()).fetch(100)
 
@@ -48,7 +37,6 @@ def email_election_results(to, election, pos=None):
 
     :param to: <List (admin_emails)>
     :param election: Election Object
-    :param pos: Optional Position Object
     :return: none
     """
 
@@ -68,11 +56,11 @@ def email_election_results(to, election, pos=None):
     positions_to_determine = []
 
     if pos:
-        logging.info('[Report] Sending Position Report for {0} to {1}'.format(election.name, str(to)))
-        positions_to_determine.append(pos)
+        logging.info('[Report] Sending Position Report for :1 to :2', election.name, to)
+        positions_to_determine.extend(pos)
 
     else:
-        logging.info('[Report] Sending Election Report for {0} to {1}'.format(election.name, str(to)))
+        logging.info('[Report] Sending Election Report for :1 to :2', election.name, to)
         # Gather Ranked Positions
         ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election).fetch(None)
         positions_to_determine.extend(ranked_positions)
