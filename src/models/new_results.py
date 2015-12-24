@@ -6,11 +6,10 @@ __author__ = 'Savion Lee'
 import logging
 import models
 import webapp2
-
 from google.appengine.ext import db
 from google.appengine.api import mail
 from algorithms_ import irv, cv
-from jinja2 import Template
+from webapputils import JINJA_ENV
 from datetime import datetime
 
 
@@ -32,8 +31,7 @@ def gather_ballots(pos):
     return ballots
 
 
-
-def email_election_results(to, election):
+def email_election_results(to, election, pos=None):
     """
     Sends an email to the election admin with the results.
 
@@ -57,22 +55,30 @@ def email_election_results(to, election):
 
     positions_to_determine = []
 
-    # Gather Ranked Positions
-    ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election).fetch(None)
-    positions_to_determine.extend(ranked_positions)
+    if pos:
+        logging.info('[Report] Sending Position Report for :1 to :2', election.name, to)
+        positions_to_determine.extend(pos)
 
-    # Gather Cumulative Positions
-    cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1", election).fetch(None)
-    positions_to_determine.extend(cumulative_positions)
+    else:
+        logging.info('[Report] Sending Election Report for :1 to :2', election.name, to)
+        # Gather Ranked Positions
+        ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election).fetch(None)
+        positions_to_determine.extend(ranked_positions)
 
-    # Gather Boolean Positions
-    boolean_positions = models.BooleanVotingPosition.gql("WHERE election=:1", election).fetch(None)
-    positions_to_determine.extend(boolean_positions)
+        # Gather Cumulative Positions
+        cumulative_positions = models.CumulativeVotingPosition.gql("WHERE election=:1", election).fetch(None)
+        positions_to_determine.extend(cumulative_positions)
+
+        # Gather Boolean Positions
+        boolean_positions = models.BooleanVotingPosition.gql("WHERE election=:1", election).fetch(None)
+        positions_to_determine.extend(boolean_positions)
 
     for pos in positions_to_determine:
         new_position = {}
         json = pos.to_json()
         new_position.update(json)
+        new_position['candidates'] = [can['name'] for can in json['candidates']]
+        new_position['winners'] = [can['name'] for can in json['candidates'] if can['winner'] == True]
 
         if pos.position_type == 'Ranked-Choice':
             # Gather Ranked ballots
@@ -89,6 +95,8 @@ def email_election_results(to, election):
 
         positions.append(new_position)
 
-    email_message = Template(source='../views/email_report.html')
-    message.body = email_message.render(positions=positions)
+    email_message = JINJA_ENV.get_template('email_report.html')
+    logging.info('[Report] Rendering Email')
+    message.html = email_message.render(positions=positions)
     message.send()
+    logging.info('[Report] Email Sent!')

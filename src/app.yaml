@@ -1,8 +1,11 @@
 application: owlection
 version: 1-5-1
+module: default
 runtime: python27
 api_version: 1
 threadsafe: yes
+
+instance_class: F4
 
 libraries:
 - name: webapp2

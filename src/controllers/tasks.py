@@ -8,7 +8,7 @@ __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 import logging
 import json
 import webapp2
-from models import models, report_results
+from models import models, report_results, new_results
 
 from datetime import datetime, timedelta
 from google.appengine.api import mail, taskqueue
@@ -60,7 +60,8 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                         url='/tasks/position-results',
                         params={
                             'election_position_key': str(election_position.key())},
-                        retry_options=retry_options
+                        retry_options=retry_options,
+                        queue_name='election-results'
                     )
                 else:
                     election_position.compute_winners()
@@ -76,7 +77,7 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                 admin_emails = []
                 for org_admin in election.organization.organization_admins:
                     admin_emails.append(org_admin.admin.email)
-                report_results.email_report(admin_emails, election)
+                new_results.email_election_results(admin_emails, election)
 
 class PositionResultsHandler(webapp2.RequestHandler):
 
@@ -86,11 +87,13 @@ class PositionResultsHandler(webapp2.RequestHandler):
             self.request.get('election_position_key'))
         elec_pos.compute_winners()
 
+        elec = elec_pos.election
+
         admin_emails = []
         for org_admin in elec_pos.election.organization.organization_admins:
             admin_emails.append(org_admin.admin.email)
 
-        report_results.email_pos_report(admin_emails, elec_pos)
+        new_results.email_election_results(admin_emails, elec, elec_pos)
 
 
 class ElectionVotersHandler(webapp2.RequestHandler):

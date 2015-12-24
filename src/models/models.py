@@ -353,7 +353,6 @@ class BooleanVotingChoice(db.Model):
 
     points = db.IntegerProperty(required=True)
     
-# TODO Create new ballot type, may be similar to cummulative voting.
 class Counter(db.Model):
     """
     A simple counter identified by name.
