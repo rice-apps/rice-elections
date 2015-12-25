@@ -13,7 +13,6 @@ from models import models, report_results, new_results
 from datetime import datetime, timedelta
 from google.appengine.api import mail, taskqueue
 
-
 class ElectionResultsHandler(webapp2.RequestHandler):
 
     def get(self):
@@ -52,6 +51,7 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                 all_computed = False
 
                 if large_election:
+                    logging.info('Found Large Election. Enqueueing Position.')
                     # Enqueue a task for computing results
                     task_name = 'compute-result-' + str(election_position.key())
                     retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
@@ -66,7 +66,6 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                 else:
                     election_position.compute_winners()
 
-
         if all_computed:
             election.result_computed = True
             election.put()
@@ -74,10 +73,11 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                             election.name, election.organization.name)
 
             if not large_election:
-                admin_emails = []
+                admin_emails = ['stl2@rice.edu']
                 for org_admin in election.organization.organization_admins:
                     admin_emails.append(org_admin.admin.email)
                 new_results.email_election_results(admin_emails, election)
+
 
 class PositionResultsHandler(webapp2.RequestHandler):
 
@@ -89,7 +89,7 @@ class PositionResultsHandler(webapp2.RequestHandler):
 
         elec = elec_pos.election
 
-        admin_emails = []
+        admin_emails = ['stl2@rice.edu']
         for org_admin in elec_pos.election.organization.organization_admins:
             admin_emails.append(org_admin.admin.email)
 

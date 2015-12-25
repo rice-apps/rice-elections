@@ -28,7 +28,7 @@
                     Vote Required: {{ pos.vote_required }}<br>
                     Candidates: {{ pos.candidates }}<br>
                     Write-Ins: {{ pos.write_ins |default("No Write-Ins") }}<br>
-                    Winner: {{ pos.winners }}
+                    Winner(s): {{ pos.winners }}
                 </p>
             </div>
 
@@ -52,18 +52,18 @@
                             <!--Majority Found-->
                             <ul>
                                 <li><em>Majority Found!</em></li>
-                                <li>Winner: <strong>{{ pos.winner }}</strong></li>
+                                <li>Winner(s): <strong>{{ pos.winners }}</strong></li>
                             </ul>
                         {% endif %}
                     {% endfor %}
                 </div>
             {% endif %}
-            {% if pos.type == 'Boolean-Voting' %}
+            {% if pos.type in ['Boolean-Voting','Cumulative-Voting'] %}
                 <!--Cumulative Voting-->
                 <div>
                     <ul>
                         <li>Total Points: {{ pos.points }}</li>
-                        <li>Winner(s): <strong>{{ pos.winner }}</strong></li>
+                        <li>Winner(s): <strong>{{ pos.winners }}</strong></li>
                     </ul>
                 </div>
             {% endif %}
