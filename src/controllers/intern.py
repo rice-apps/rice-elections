@@ -7,6 +7,7 @@ import json
 import logging
 import sys
 import webapp2
+from time import sleep
 
 from authentication import auth
 from models import models, webapputils, report_results, new_results
@@ -118,7 +119,8 @@ class JobsHandler(webapp2.RequestHandler):
             params={
                 'job_key': str(job.key())
             },
-            retry_options=retry_options
+            retry_options=retry_options,
+            target='task-manager'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -135,15 +137,21 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
             # task
             assert(job.description == description)
 
+            i = 2
+            while i < 4000:
+                sleep(10)
+                i **= 2
+            print i
+
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Will Rice Beer Bike Theme 2016: Round 2!").get()
+            # election = models.Election.gql("WHERE name=:1", "Will Rice Beer Bike Theme 2016: Round 2!").get()
 
             admin_emails = []
             # for org_admin in election.organization.organization_admins:
             #     admin_emails.append(org_admin.admin.email)
 
-            new_results.email_election_results('stl2@rice.edu', election)
+            # new_results.email_election_results(['stl2@rice.edu'], election)
             
             ### Processing end ###
 
