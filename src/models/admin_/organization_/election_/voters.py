@@ -106,7 +106,8 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         taskqueue.add(url=TASK_URL,
                       queue_name='voters',
                       params={'data': json.dumps(queue_data)},
-                      retry_options=retry_options)
+                      retry_options=retry_options,
+                      target='task-manager')
 
         
 

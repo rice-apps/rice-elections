@@ -7,9 +7,10 @@ import json
 import logging
 import sys
 import webapp2
+from time import sleep
 
 from authentication import auth
-from models import models, webapputils, report_results
+from models import models, webapputils, report_results, new_results
 from google.appengine.api import mail, taskqueue
 
 COMMANDERS = ['wa1', 'wcl2', 'stl2']
@@ -42,8 +43,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
             "organizations": organizations,
             "elections": elections
         }
-
-        return webapputils.render_page(self, '/intern/command-center', page_data)
+        return webapputils.render_page(self, '/intern/command-center', {})
 
     def post(self):
         methods = {
@@ -119,7 +119,8 @@ class JobsHandler(webapp2.RequestHandler):
             params={
                 'job_key': str(job.key())
             },
-            retry_options=retry_options
+            retry_options=retry_options,
+            target='task-manager'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -136,15 +137,21 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
             # task
             assert(job.description == description)
 
+            i = 2
+            while i < 4000:
+                sleep(10)
+                i **= 2
+            print i
+
             ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Round 3 Spring Elections").get()
+            # election = models.Election.gql("WHERE name=:1", "Will Rice Beer Bike Theme 2016: Round 2!").get()
 
             admin_emails = []
-            for org_admin in election.organization.organization_admins:
-                admin_emails.append(org_admin.admin.email)
+            # for org_admin in election.organization.organization_admins:
+            #     admin_emails.append(org_admin.admin.email)
 
-            report_results.email_report(admin_emails, election)
+            # new_results.email_election_results(['stl2@rice.edu'], election)
             
             ### Processing end ###
 

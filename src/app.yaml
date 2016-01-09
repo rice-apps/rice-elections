@@ -1,5 +1,5 @@
 application: owlection
-version: 1-5-1
+version: 1-6-0
 module: default
 runtime: python27
 api_version: 1
@@ -33,14 +33,6 @@ handlers:
 
 - url: /authenticate/.*
   script: controllers.authenticate.app
-
-- url: /tasks/.*
-  script: controllers.tasks.app
-  login: admin
-
-- url: /intern/jobs-taskqueue
-  script: controllers.intern.app
-  login: admin
 
 - url: /intern/.*
   script: controllers.intern.app

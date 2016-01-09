@@ -1,8 +1,10 @@
 cron:
 - description: daily session cleanup
   url: /authenticate/cleanup-sessions
+  target: task-manager
   schedule: every 24 hours
 
 - description: schedule election results
   url: /tasks/election-results
+  target: task-manager
   schedule: every 5 minutes

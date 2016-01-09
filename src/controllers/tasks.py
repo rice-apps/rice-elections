@@ -61,7 +61,8 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                         params={
                             'election_position_key': str(election_position.key())},
                         retry_options=retry_options,
-                        queue_name='election-results'
+                        queue_name='election-results',
+                        target='task-manager'
                     )
                 else:
                     election_position.compute_winners()
@@ -124,8 +125,17 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         models.remove_eligible_voters(election, voters)
         models.update_voter_set(election)
 
+
+class StartHandler(webapp2.RequestHandler):
+
+    def get(self):
+        # respond everything is okay
+        self.response.write('Background Started')
+
+
 app = webapp2.WSGIApplication([
     ('/tasks/election-results', ElectionResultsHandler),
     ('/tasks/position-results', PositionResultsHandler),
-    ('/tasks/election-voters', ElectionVotersHandler)
+    ('/tasks/election-voters', ElectionVotersHandler),
+    ('/_ah/start', StartHandler)
 ], debug=True)
