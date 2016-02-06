@@ -48,10 +48,13 @@
                             </ul>
                         {% endif %}
 
+                        <!--Majority Found-->
                         {% if round.majority == True %}
-                            <!--Majority Found-->
                             <ul>
                                 <li><em>Majority Found!</em></li>
+                                {% if length(pos.rounds) == 1 %}
+                                    <li>First Place Preferences: {{ round.prefs }}</li>
+                                {% endif %}
                                 <li>Winner(s): <strong>{{ pos.winners }}</strong></li>
                             </ul>
                         {% endif %}

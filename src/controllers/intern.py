@@ -43,7 +43,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
             "organizations": organizations,
             "elections": elections
         }
-        return webapputils.render_page(self, '/intern/command-center', {})
+        return webapputils.render_page(self, '/intern/command-center', page_data)
 
     def post(self):
         methods = {
@@ -132,26 +132,23 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the unsent results of the Will Rice election."
+            description = "Send out updated email"
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
-            i = 2
-            while i < 4000:
-                sleep(10)
-                i **= 2
-            print i
 
             ### Processing begin ###
+            jones_c = models.Organization.gql("WHERE name='Jones College'").get()
+            election = models.Election.gql("WHERE name=:1 AND organization=:2",
+                                           "Presidential Election Spring 2016", jones_c).get()
 
-            # election = models.Election.gql("WHERE name=:1", "Will Rice Beer Bike Theme 2016: Round 2!").get()
 
             admin_emails = []
-            # for org_admin in election.organization.organization_admins:
-            #     admin_emails.append(org_admin.admin.email)
+            for org_admin in election.organization.organization_admins:
+                admin_emails.append(org_admin.admin.email)
 
-            # new_results.email_election_results(['stl2@rice.edu'], election)
+            new_results.email_election_results(['stl2@rice.edu'], election)
             
             ### Processing end ###
 
