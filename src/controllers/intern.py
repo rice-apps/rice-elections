@@ -92,7 +92,7 @@ class JobsHandler(webapp2.RequestHandler):
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
             "name": "WillRiceSpringRound3Unsent2",
-            "description": "Sends the unsent results of the Will Rice election."
+            "description": "Send out updated email"
         }
 
         page_data = {
