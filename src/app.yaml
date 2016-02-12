@@ -1,8 +1,11 @@
 application: owlection
-version: 1-5-0
+version: 1-6-1
+module: default
 runtime: python27
 api_version: 1
 threadsafe: yes
+
+instance_class: F2
 
 libraries:
 - name: webapp2
@@ -31,16 +34,11 @@ handlers:
 - url: /authenticate/.*
   script: controllers.authenticate.app
 
-- url: /tasks/.*
-  script: controllers.tasks.app
-  login: admin
-
-- url: /intern/jobs-taskqueue
-  script: controllers.intern.app
-  login: admin
-
 - url: /intern/.*
   script: controllers.intern.app
+
+- url: /api/.*
+  script: controllers.api.app
 
 - url: /.*
   script: main.app

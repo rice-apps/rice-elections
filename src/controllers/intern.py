@@ -7,9 +7,10 @@ import json
 import logging
 import sys
 import webapp2
+from time import sleep
 
 from authentication import auth
-from models import models, webapputils, report_results
+from models import models, webapputils, report_results, new_results
 from google.appengine.api import mail, taskqueue
 
 COMMANDERS = ['wa1', 'wcl2', 'stl2']
@@ -42,7 +43,6 @@ class CommandCenterHandler(webapp2.RequestHandler):
             "organizations": organizations,
             "elections": elections
         }
-
         return webapputils.render_page(self, '/intern/command-center', page_data)
 
     def post(self):
@@ -92,7 +92,7 @@ class JobsHandler(webapp2.RequestHandler):
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
             "name": "WillRiceSpringRound3Unsent2",
-            "description": "Sends the unsent results of the Will Rice election."
+            "description": "Send out updated email"
         }
 
         page_data = {
@@ -119,7 +119,8 @@ class JobsHandler(webapp2.RequestHandler):
             params={
                 'job_key': str(job.key())
             },
-            retry_options=retry_options
+            retry_options=retry_options,
+            target='task-manager'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -131,20 +132,23 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
         job = models.ProcessingJob.get(self.request.get('job_key'))
 
         try:
-            description = "Sends the unsent results of the Will Rice election."
+            description = "Send out updated email"
             # Assertion here to ensure that the developer is running the right
             # task
             assert(job.description == description)
 
-            ### Processing begin ###
 
-            election = models.Election.gql("WHERE name=:1", "Round 3 Spring Elections").get()
+            ### Processing begin ###
+            jones_c = models.Organization.gql("WHERE name='Jones College'").get()
+            election = models.Election.gql("WHERE name=:1 AND organization=:2",
+                                           "Presidential Election Spring 2016", jones_c).get()
+
 
             admin_emails = []
             for org_admin in election.organization.organization_admins:
                 admin_emails.append(org_admin.admin.email)
 
-            report_results.email_report(admin_emails, election)
+            new_results.email_election_results(['stl2@rice.edu'], election)
             
             ### Processing end ###
 
