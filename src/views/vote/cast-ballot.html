@@ -119,6 +119,11 @@
                      data-candidate-name='{{ candidate.name }}'
                      data-candidate-id='{{ candidate.id }}'
                      class='rank-input input-mini {{position.id}}'>
+                {% if organization == 'Student Association' %}
+                    {% if candidate.name in CandidatePictures %}
+                        <img src="{{ CandidatePictures[candidate.name] }}" class="candidate-img">
+                    {% endif %}
+                {% endif %}
                 <span class="help-inline">{{ candidate.name }}</span>
             </li>
           {% endfor %}

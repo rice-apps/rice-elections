@@ -18,3 +18,11 @@ h4 {
 #server-response {
     margin-top: 20px;
 }
+
+.candidate-img {
+    width: 100px;
+
+}
+.candidate-img:hover {
+    transform: scale(2, 2);
+}
