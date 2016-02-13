@@ -37,6 +37,8 @@ class Election(db.Model):
                                         collection_name='elections')
     result_computed = db.BooleanProperty(required=True,
                                          default=False)
+    result_emailed = db.BooleanProperty(required=True,
+                                         default=False)
     result_delay = db.IntegerProperty(required=True,
                                       default=0) # Results delay to public in seconds
     universal = db.BooleanProperty(required=True,
