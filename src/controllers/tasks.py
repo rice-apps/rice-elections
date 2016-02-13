@@ -73,11 +73,13 @@ class ElectionResultsHandler(webapp2.RequestHandler):
             logging.info('Computed results for election: %s, organization: %s.',
                             election.name, election.organization.name)
 
+
             if not large_election:
                 admin_emails = ['stl2@rice.edu']
                 for org_admin in election.organization.organization_admins:
                     admin_emails.append(org_admin.admin.email)
                 new_results.email_election_results(admin_emails, election)
+                election.result_emailed = True
 
 
 class PositionResultsHandler(webapp2.RequestHandler):
