@@ -122,7 +122,6 @@ class BallotHandler(webapp2.RequestHandler):
         verified_positions = {}           # Whether an election_position has been verified
         for election_position in election.election_positions:
             verified_positions[str(election_position.key())] = False
-        # TODO verify appropriate election
 
         for position in formData['positions']:
             if position['type'] == 'Ranked-Choice':
@@ -142,7 +141,6 @@ class BallotHandler(webapp2.RequestHandler):
                 return
         
         # Record all of the votes
-        # TODO Cast appropriate Ballot
         for position in formData['positions']:
             if verified_positions[position['id']]:
                 if position['type'] == 'Ranked-Choice':
@@ -355,8 +353,6 @@ class BallotHandler(webapp2.RequestHandler):
                 choice.put()
         logging.info('Stored cumulative choice ballot in models.')
 
-        # TODO Create verification
-        # TODO Create ballot casting.
 
     @staticmethod
     def verify_boolean_voting_ballot(position):
