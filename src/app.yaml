@@ -1,5 +1,5 @@
 application: owlection
-version: 1-6-1
+version: 1-6-2
 module: default
 runtime: python27
 api_version: 1

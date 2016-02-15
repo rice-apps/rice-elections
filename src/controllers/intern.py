@@ -120,6 +120,7 @@ class JobsHandler(webapp2.RequestHandler):
                 'job_key': str(job.key())
             },
             retry_options=retry_options,
+            queue_name='voters',
             target='task-manager'
         )
 
@@ -141,14 +142,14 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
             ### Processing begin ###
             jones_c = models.Organization.gql("WHERE name='Jones College'").get()
             election = models.Election.gql("WHERE name=:1 AND organization=:2",
-                                           "Presidential Election Spring 2016", jones_c).get()
+                                           "General Election 1 Spring 2016", jones_c).get()
 
 
-            admin_emails = []
+            admin_emails = ['stl2@rice.edu']
             for org_admin in election.organization.organization_admins:
                 admin_emails.append(org_admin.admin.email)
 
-            new_results.email_election_results(['stl2@rice.edu'], election)
+            new_results.email_election_results(admin_emails, election)
             
             ### Processing end ###
 
