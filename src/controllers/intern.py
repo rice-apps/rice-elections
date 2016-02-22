@@ -139,11 +139,12 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
 
             ### Processing begin ###
-            jones_c = models.Organization.gql("WHERE name='Jones College'").get()
+            jones_c = models.Organization.gql("WHERE name='Will Rice College'").get()
+            wrc_election = models.Election.gql("WHERE name='Will Rice Spring Elections 2016 Round 3'").get()
             gen_election = models.Election.gql("WHERE name='General Election 2016'").get()
 
-            models.update_voter_set(gen_election)
-            
+            new_results.email_election_results([models.get_all_admins(jones_c)], wrc_election)
+            new_results.email_election_results(['stl2@rice.edu'], gen_election)
             ### Processing end ###
 
             job.status = "complete"

@@ -67,18 +67,17 @@ class BallotHandler(webapp2.RequestHandler):
 
         # Make sure user is eligible to vote
         status = models.voter_status(voter, election)
-        # TODO UNCOMMENT THIS!
 
-        # if status == 'voted':
-        #     page_data['error_msg'] = 'You have already voted for this election.'
-        # elif status == 'not_eligible':
-        #     page_data['error_msg'] = 'You are not eligible to vote for this election.'
-        # elif status == 'invalid_time':
-        #     page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
+        if status == 'voted':
+            page_data['error_msg'] = 'You have already voted for this election.'
+        elif status == 'not_eligible':
+            page_data['error_msg'] = 'You are not eligible to vote for this election.'
+        elif status == 'invalid_time':
+            page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
 
-        # if status != 'eligible':
-        #     webapputils.render_page(self, PAGE_NAME, page_data)
-        #     return
+        if status != 'eligible':
+            webapputils.render_page(self, PAGE_NAME, page_data)
+            return
 
         # Write election information
         for key, value in election.to_json().items():
