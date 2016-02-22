@@ -11,7 +11,9 @@ from time import sleep
 
 from authentication import auth
 from models import models, webapputils, report_results, new_results
+from scripts import voter_stats
 from google.appengine.api import mail, taskqueue
+from google.appengine.ext import deferred
 
 COMMANDERS = ['wa1', 'wcl2', 'stl2']
 
@@ -121,7 +123,7 @@ class JobsHandler(webapp2.RequestHandler):
             },
             retry_options=retry_options,
             queue_name='voters',
-            target='task-manager'
+            target='default'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -140,16 +142,7 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
 
             ### Processing begin ###
-            jones_c = models.Organization.gql("WHERE name='Jones College'").get()
-            election = models.Election.gql("WHERE name=:1 AND organization=:2",
-                                           "General Election 1 Spring 2016", jones_c).get()
-
-
-            admin_emails = ['stl2@rice.edu']
-            for org_admin in election.organization.organization_admins:
-                admin_emails.append(org_admin.admin.email)
-
-            new_results.email_election_results(admin_emails, election)
+            deferred.defer(voter_stats.run())
             
             ### Processing end ###
 

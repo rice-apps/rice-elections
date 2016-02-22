@@ -6,5 +6,5 @@ cron:
 
 - description: schedule election results
   url: /tasks/election-results
-  target: task-manager
+  target: default
   schedule: every 5 minutes

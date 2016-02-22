@@ -36,7 +36,7 @@ def gather_ballots(pos):
                         ballot_dict[candidate_name] = choice.points
                     ballots.append(ballot_dict)
 
-        ballots_db = pos.ballots.filter('__key__ >', ballots_db[-1].key()).fetch(100)
+        ballots_db = pos.ballots.filter('__key__ >', ballots_db[-1].key()).fetch(100) # TODO Cursor may go here
 
     return ballots
 
@@ -72,6 +72,7 @@ def email_election_results(to, election, pos=None):
 
     else:
         logging.info('[Report] Sending Election Report for {0} to {1}'.format(election.name, str(to)))
+
         # Gather Ranked Positions
         ranked_positions = models.RankedVotingPosition.gql("WHERE election=:1", election).fetch(None)
         positions_to_determine.extend(ranked_positions)
