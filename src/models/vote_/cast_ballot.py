@@ -18,6 +18,7 @@ from models import models, webapputils
 PAGE_NAME = 'vote/cast-ballot'
 
 
+
 class BallotHandler(webapp2.RequestHandler):
     """
     Handles GET requests for the Vote page.
@@ -32,6 +33,22 @@ class BallotHandler(webapp2.RequestHandler):
         # Authenticate user
         voter = auth.get_voter(self)
         net_id = voter.net_id
+
+        #Dictionary of candidates images
+        candidate_images = {"Griffin Thomas": "http://sa.rice.edu/img/candidates2016/GriffinThomasPresident.jpg",
+                            "Joan Liu": "http://sa.rice.edu/img/candidates2016/JoanLiuPresident.jpg",
+                            "Hannah Todd": "http://sa.rice.edu/img/candidates2016/HannahToddEVP.jpg",
+                            "Brianna Singh": "http://sa.rice.edu/img/candidates2016/BriannaSinghEVP.jpg",
+                            "Justin Onwenu": "http://sa.rice.edu/img/candidates2016/JustinOnwenuEVP.jpg",
+                            "Komal Luthra": "http://sa.rice.edu/img/candidates2016/KomalLuthraIVP.jpg",
+                            "Sonal Pai": "http://sa.rice.edu/img/candidates2016/SonalPaiSec.jpg",
+                            "Maurice Frederie": "http://sa.rice.edu/img/candidates2016/MauriceFrediereTreasurer.jpg",
+                            "Iman Khan": "http://sa.rice.edu/img/candidates2016/ImanKhanRPC.jpg",
+                            "Jodie Nghiem": "http://sa.rice.edu/img/candidates2016/JodieNghiemRPC.jpg",
+                            "Kailan Shi": "http://sa.rice.edu/img/candidates2016/KailanShiRSVP.jpg",
+                            "Yasna Haghdoost": "http://sa.rice.edu/img/candidates2016/YasnaHaghdoostThresher.jpg",
+                            "Marcela Interiano": "http://sa.rice.edu/img/candidates2016/MarcelaInterianoUCourt.jpg"}
+        page_data["CandidatePictures"] = candidate_images
         
         # Serve the election the user has requested
         election_id = self.request.get('id')
@@ -50,12 +67,14 @@ class BallotHandler(webapp2.RequestHandler):
 
         # Make sure user is eligible to vote
         status = models.voter_status(voter, election)
+
         if status == 'voted':
             page_data['error_msg'] = 'You have already voted for this election.'
         elif status == 'not_eligible':
             page_data['error_msg'] = 'You are not eligible to vote for this election.'
         elif status == 'invalid_time':
             page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
+
         if status != 'eligible':
             webapputils.render_page(self, PAGE_NAME, page_data)
             return
@@ -66,21 +85,6 @@ class BallotHandler(webapp2.RequestHandler):
         page_data['positions'] = []
         page_data['voter_net_id'] = voter.net_id
 
-        candidate_images = {"Griffin Thomas": "http://sa.rice.edu/img/candidates2016/GriffinThomasPresident.jpg",
-                            "Joan Liu": "http://sa.rice.edu/img/candidates2016/JoanLiuPresident.jpg",
-                            "Hannah Todd": "http://sa.rice.edu/img/candidates2016/HannahToddEVP.jpg",
-                            "Brianna Singh": "http://sa.rice.edu/img/candidates2016/BriannaSinghEVP.jpg",
-                            "Justin Onwenu": "http://sa.rice.edu/img/candidates2016/JustinOnwenuEVP.jpg",
-                            "Komal Luthra": "http://sa.rice.edu/img/candidates2016/KomalLuthraIVP.jpg",
-                            "Sonal Pai": "http://sa.rice.edu/img/candidates2016/SonalPaiSec.jpg",
-                            "Maurice Frediere": "http://sa.rice.edu/img/candidates2016/MauriceFrediereTreasurer.jpg",
-                            "Iman Khan": "http://sa.rice.edu/img/candidates2016/ImanKhanRPC.jpg",
-                            "Jodie Nghiem": "http://sa.rice.edu/img/candidates2016/JodieNghiemRPC.jpg",
-                            "Kalian Shi": "http://sa.rice.edu/img/candidates2016/KailanShiRSVP.jpg",
-                            "Yasna Haghdoost": "http://sa.rice.edu/img/candidates2016/YasnaHaghdoostThresher.jpg",
-                            "Marcela Interiano": "http://sa.rice.edu/img/candidates2016/MarcelaInterianoUCourt.jpg"}
-        page_data["CandidatePictures"] = candidate_images
-
         # TODO Catch Shuffle Option
         # Write position information
         election_positions = election.election_positions
@@ -88,8 +92,7 @@ class BallotHandler(webapp2.RequestHandler):
             position = {}
             for key, value in election_position.to_json().items():
                 position[key] = value
-            if election_position.position_type != "Boolean-Voting":
-                random.shuffle(position['candidates'])
+            random.shuffle(position['candidates'])
             page_data['positions'].append(position)
 
         logging.info(page_data)

@@ -11,9 +11,7 @@ from time import sleep
 
 from authentication import auth
 from models import models, webapputils, report_results, new_results
-from scripts import voter_stats
 from google.appengine.api import mail, taskqueue
-from google.appengine.ext import deferred
 
 COMMANDERS = ['wa1', 'wcl2', 'stl2']
 
@@ -69,7 +67,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
 
     def add_admin(self, data):
         org = models.Organization.get(data['organization'])
-        voter = models.get_voter(data['net_id'], create=True)
+        voter = get_voter(data['net_id'], create=True)
         org_admin = models.put_admin(voter, data['email'], org)
         if org_admin:
             webapputils.respond(self, 'OK', 'Done')
@@ -122,8 +120,7 @@ class JobsHandler(webapp2.RequestHandler):
                 'job_key': str(job.key())
             },
             retry_options=retry_options,
-            queue_name='voters',
-            target='default'
+            target='task-manager'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -142,8 +139,12 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
 
             ### Processing begin ###
-            deferred.defer(voter_stats.run())
-            
+            jones_c = models.Organization.gql("WHERE name='Will Rice College'").get()
+            wrc_election = models.Election.gql("WHERE name='Will Rice Spring Elections 2016 Round 3'").get()
+            gen_election = models.Election.gql("WHERE name='General Election 2016'").get()
+
+            new_results.email_election_results([models.get_all_admins(jones_c)], wrc_election)
+            new_results.email_election_results(['stl2@rice.edu'], gen_election)
             ### Processing end ###
 
             job.status = "complete"
