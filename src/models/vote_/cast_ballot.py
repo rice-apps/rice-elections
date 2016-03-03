@@ -18,6 +18,7 @@ from models import models, webapputils
 PAGE_NAME = 'vote/cast-ballot'
 
 
+
 class BallotHandler(webapp2.RequestHandler):
     """
     Handles GET requests for the Vote page.
@@ -34,7 +35,8 @@ class BallotHandler(webapp2.RequestHandler):
         net_id = voter.net_id
 
         #Dictionary of candidates images
-        candidate_images = {"Griffin Thomas": "http://sa.rice.edu/img/candidates2016/GriffinThomasPresident.jpg", 
+
+        candidate_images = {"Griffin Thomas": "http://sa.rice.edu/img/candidates2016/GriffinThomasPresident.jpg",
                             "Joan Liu": "http://sa.rice.edu/img/candidates2016/JoanLiuPresident.jpg",
                             "Hannah Todd": "http://sa.rice.edu/img/candidates2016/HannahToddEVP.jpg",
                             "Brianna Singh": "http://sa.rice.edu/img/candidates2016/BriannaSinghEVP.jpg",
@@ -66,12 +68,14 @@ class BallotHandler(webapp2.RequestHandler):
 
         # Make sure user is eligible to vote
         status = models.voter_status(voter, election)
+
         if status == 'voted':
             page_data['error_msg'] = 'You have already voted for this election.'
         elif status == 'not_eligible':
             page_data['error_msg'] = 'You are not eligible to vote for this election.'
         elif status == 'invalid_time':
             page_data['error_msg'] = 'You are not in the eligible voting time for this election.'
+
         if status != 'eligible':
             webapputils.render_page(self, PAGE_NAME, page_data)
             return

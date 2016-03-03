@@ -197,9 +197,7 @@ def gen_ballots(file_name):
 
 if __name__ == '__main__':
 
-    balls = gen_ballots('../../../wrc_ballots.txt')
-    print run_the_rounds(balls)
-
+    pass
     # ballots = simul_ballots(20)
     #
     # while True:

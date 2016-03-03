@@ -20,23 +20,20 @@ def gather_ballots(pos):
     :return: list of ballots
     """
 
-    ballots_db = pos.ballots.fetch(100)
     ballots = []
-    while ballots_db:
-        for ballot in ballots_db:
+    if pos.position_type == 'Ranked-Choice':
+        for ballot in pos.ballots:
             if pos.position_type == 'Ranked-Choice':
                 can_names = [db.get(can).name for can in ballot.preferences]
                 ballots.append(can_names)
 
-            elif pos.position_type in ['Boolean-Voting', 'Cumulative-Voting']:
-                for ballot in pos.ballots:
-                    ballot_dict = {}
-                    for choice in ballot.choices:
-                        candidate_name = choice.candidate.name
-                        ballot_dict[candidate_name] = choice.points
-                    ballots.append(ballot_dict)
-
-        ballots_db = pos.ballots.filter('__key__ >', ballots_db[-1].key()).fetch(100)
+    elif pos.position_type in ['Boolean-Voting', 'Cumulative-Voting']:
+        for ballot in pos.ballots:
+            ballot_dict = {}
+            for choice in ballot.choices:
+                candidate_name = choice.candidate.name
+                ballot_dict[candidate_name] = choice.points
+            ballots.append(ballot_dict)
 
     return ballots
 

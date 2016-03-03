@@ -8,7 +8,10 @@ instance_class: B1
 
 basic_scaling:
   max_instances: 3
-  idle_timeout: 10s
+  idle_timeout: 1m
+
+builtins:
+- deferred: on
 
 libraries:
 - name: webapp2
@@ -27,6 +30,10 @@ handlers:
 
 - url: /intern/jobs-taskqueue
   script: controllers.intern.app
+  login: admin
+
+- url: /_ah/queue/deferred
+  script: google.appengine.ext.deferred.deferred.application
   login: admin
 
 - url: /authenticate/cleanup-sessions

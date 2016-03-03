@@ -53,7 +53,7 @@ class ElectionResultsHandler(webapp2.RequestHandler):
                 if large_election:
                     logging.info('Found Large Election. Enqueueing Position.')
                     # Enqueue a task for computing results
-                    task_name = 'compute-result-' + str(election_position.key())
+                    task_name = 'compute-result-' + str(election_position.key()) + 'banana'
                     retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
                     taskqueue.add(
                         name=task_name,
