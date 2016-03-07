@@ -37,6 +37,10 @@ handlers:
 - url: /intern/.*
   script: controllers.intern.app
 
+- url: /tasks/.*
+  script: controllers.tasks.app
+  login: admin
+
 - url: /api/.*
   script: controllers.api.app
 

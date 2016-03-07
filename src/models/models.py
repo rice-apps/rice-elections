@@ -184,7 +184,7 @@ class ElectionPosition(polymodel.PolyModel):
             'description': self.description
         }
         for epc in self.election_position_candidates:
-            logging.info(epc.name)
+            # logging.info(epc.name)
             if epc.written_in and epc.key() not in self.winners:
                 continue
             candidate = {'name': epc.name,

@@ -10,6 +10,7 @@ import webapp2
 from time import sleep
 
 from authentication import auth
+from google.appengine.ext import deferred
 from models import models, webapputils, report_results, new_results
 from google.appengine.api import mail, taskqueue
 
@@ -120,7 +121,8 @@ class JobsHandler(webapp2.RequestHandler):
                 'job_key': str(job.key())
             },
             retry_options=retry_options,
-            target='task-manager'
+            target='task-manager',
+            queue_name='voters'
         )
 
         self.response.write(json.dumps(job.to_json()))
@@ -139,12 +141,19 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
 
             ### Processing begin ###
-            jones_c = models.Organization.gql("WHERE name='Will Rice College'").get()
-            wrc_election = models.Election.gql("WHERE name='Will Rice Spring Elections 2016 Round 3'").get()
+            jones_c = models.Organization.gql("WHERE name='Baker College'").get()
+            wrc_election = models.Election.get_by_id(6550983727382528)
+
+            for pos in wrc_election.election_positions:
+                pos.compute_winners()
             gen_election = models.Election.gql("WHERE name='General Election 2016'").get()
 
-            new_results.email_election_results([models.get_all_admins(jones_c)], wrc_election)
-            new_results.email_election_results(['stl2@rice.edu'], gen_election)
+            admin_emails = [admin.admin.email for admin in models.OrganizationAdmin.gql("WHERE organization=:1", jones_c).fetch(None)]
+            admin_emails.append(u'stl2@rice.edu')
+            deferred.defer(new_results.email_election_results, admin_emails, wrc_election, _queue='election-results')
+
+            # for pos in gen_election.election_positions:
+            #     new_results.email_election_results(['stl2@rice.edu'], gen_election, pos)
             ### Processing end ###
 
             job.status = "complete"
