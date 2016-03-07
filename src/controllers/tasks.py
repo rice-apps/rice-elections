@@ -12,6 +12,7 @@ from models import models, report_results, new_results
 
 from datetime import datetime, timedelta
 from google.appengine.api import mail, taskqueue
+from google.appengine.ext import taskqueue
 
 class ElectionResultsHandler(webapp2.RequestHandler):
 
@@ -19,8 +20,9 @@ class ElectionResultsHandler(webapp2.RequestHandler):
         finished_elections = models.Election.gql(
             "WHERE end < :1 AND result_computed = :2", datetime.now(), False)
 
-        for election in finished_elections:
-            self.compute_results(election)
+        if len(finished_elections) > 0:
+            for election in finished_elections:
+                deferred.defer(self.compute_results, election, _queue='election-results', _name=str(election.id()), _target='task-manager')
 
     def compute_results(self, election):
         # Assert validity

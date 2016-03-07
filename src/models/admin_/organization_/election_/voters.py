@@ -69,7 +69,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
         
         voter_set = memcache.get(str(election.key())+'-voter-set')
         if not voter_set:
-            deferred.defer(models.update_voter_set, election)
+            deferred.defer(models.update_voter_set, election, _name=str(election.key()), _queue='voters')
             panel = get_panel(
                 PAGE_URL,
                 {'status': 'Adding Voters',
