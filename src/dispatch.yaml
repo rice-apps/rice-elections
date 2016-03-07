@@ -3,9 +3,10 @@ application: owlection
 dispatch:
 # Send all task traffic to the backend
 
+- url: "*/tasks/.*"
+  module: task-manager
+
 - url: "*/.*"
   module: default
 
-- url: "*/tasks/.*"
-  module: task-manager
 

@@ -138,5 +138,3 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       retry_options=retry_options,
                       target='task-manager')
 
-        
-
