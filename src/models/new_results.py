@@ -85,8 +85,8 @@ def email_election_results(to, election, pos=None):
         new_position = {}
         json = pos.to_json()
         new_position.update(json)
-        new_position['candidates'] = [can['name'] for can in json['candidates']]
-        new_position['winners'] = [can['name'] for can in json['candidates'] if can['winner'] == True]
+        new_position['candidates'] = [str(can['name']) for can in json['candidates']]
+        new_position['winners'] = [str(can['name']) for can in json['candidates'] if can['winner'] == True]
 
         if pos.position_type == 'Ranked-Choice':
             # Gather Ranked ballots
@@ -106,5 +106,6 @@ def email_election_results(to, election, pos=None):
     email_message = JINJA_ENV.get_template('email_report.html')
     logging.info('[Report] Rendering Email')
     message.html = email_message.render(positions=positions)
+    #logging.info(str(message.html))
     message.send()
     logging.info('[Report] Email Sent!')

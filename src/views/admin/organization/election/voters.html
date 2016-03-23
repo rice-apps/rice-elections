@@ -28,6 +28,9 @@
   {% else %}
     <div class="alert alert-error">
       <strong>{{ status }}: </strong> {{ msg }}
+      {%  if status == 'ERROR' and msg == 'No election found.' %}
+          You must save your election before adding voters!
+      {% endif %}
     </div>
   {% endif %}
   <br style='clear:both;'>

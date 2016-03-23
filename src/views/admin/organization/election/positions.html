@@ -12,6 +12,7 @@
     {% else %}
       <div class='row'>
         <div class='span4' style='width:425px;'>
+            <span id="position-changing-warning"><strong>Note:</strong> Positions can only be changed before the election begins!</span>
           <table id="positions" class='table table-striped' style='margin-top:10px'>
             <!-- HTML for Positions Goes Here -->
           </table>
@@ -20,6 +21,7 @@
         </div>
         <div class='span2 pull-right' style='width:200px;'>
           <h4>Add A Position</h4>
+            <span>Not sure which position type to use? Click on each one for a detailed description.</span>
           <ul class='unstyled'>
             <li>
               <a data-toggle="modal" href="#modal-ranked"><i class='icon-plus'></i> Ranked-Choice Position</a>
@@ -39,6 +41,9 @@
     <div class="alert alert-error">
       {% if status and msg %}
         <strong>{{ status }}: </strong> {{ msg }}
+        {%  if status == 'ERROR' and msg == 'No election found.' %}
+             You must save your election before adding positions!
+        {% endif %}
       {% else %}
         <strong>ERROR:</strong> Unknown error.
       {% endif %}
