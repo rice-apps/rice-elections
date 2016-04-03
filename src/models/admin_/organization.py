@@ -34,21 +34,35 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         admin = models.Admin.gql('WHERE voter=:1', voter).get()
         logging.info("<Admin: %s>", admin.email)
         org_admin = models.OrganizationAdmin.gql('WHERE admin=:1',
-                                                    admin).get()
-        logging.info("<Admin of Organizations: %s>", org_admin.organization.name)
+                                                    admin).fetch(None)
+        logging.info("<Admin of Organizations: %s>", [oa.organization.name for oa in org_admin])
         if not org_admin:
             logging.info('Not authorized')
             webapputils.render_page(self, '/templates/message',
                 {'status': 'Not Authorized', 'msg': MSG_NOT_AUTHORIZED})
             return
-        org = org_admin.organization
-        auth.set_organization(org)
+        orgs = [org_admin.organization for org_admin in org_admin]
+        auth.set_organizations(orgs)
+
+        # Pick one organization to display information about.
+        org_param = self.request.get('org')
+
+        if org_param:   # Wants to change current active organization
+            org_req = models.Organization.get(org_param)
+            auth.set_active_organization(org_req)
+
+        elif auth.get_active_organization():    # Did not intend a change in the active organization
+            pass
+
+        else:   # No active organizations have been set yet
+            auth.set_active_organization(orgs[0])
 
         # Construct page information
         page_data = {}
-        page_data['organization'] = org
-        page_data['admins'] = self.admin_list(org)
-        page_data['elections'] = [elec.to_json(True) for elec in org.elections]
+        page_data['organizations'] = orgs
+        page_data['active_org'] = auth.get_active_organization()
+        page_data['admins'] = self.admin_list(auth.get_active_organization())
+        page_data['elections'] = [elec.to_json(True) for elec in auth.get_active_organization().elections]
         logging.info(page_data['elections'])
         logging.info(page_data)
         webapputils.render_page(self, PAGE_NAME, page_data)

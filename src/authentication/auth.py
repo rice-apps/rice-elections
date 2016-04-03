@@ -163,15 +163,25 @@ def get_voter(handler=None):
     else:
         return None
 
-def set_organization(organization):
+def set_organizations(organizations):
     """
     Sets the specified organization for reference for the logged in admin.
+
+    Args:
+        organization {List <Organization>}: the organizations to set.
+    """
+    session = get_current_session()
+    session['_organizations'] = [str(organization.key()) for organization in organizations]
+
+def set_active_organization(organization):
+    """
+    Sets the active organization of the current logged in admin for reference.
 
     Args:
         organization {Organization}: the organization to set.
     """
     session = get_current_session()
-    session['_organization'] = str(organization.key())
+    session['_active_organization'] = str(organization.key())
 
 def get_organization():
     """
@@ -184,6 +194,20 @@ def get_organization():
     session = get_current_session()
     if session.has_key('_organization'):
         return models.Organization.get(session['_organization'])
+    else:
+        return None
+
+def get_active_organization():
+    """
+    Gets the organization from the admin session.
+
+    Returns:
+        organization {Organization}: the Organization that the admin is working
+            with.
+    """
+    session = get_current_session()
+    if session.has_key('_active_organization'):
+        return models.Organization.get(session['_active_organization'])
     else:
         return None
 

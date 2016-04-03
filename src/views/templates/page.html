@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="internApp">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Rice Elections</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A secure, user friendly, and transparent way of voting for elections within different organizations at Rice!">
-    <meta name="author" content="">
+    <meta name="author" content="Rice Apps">
+
+    <!-- Facebook/OpenGraph Properties -->
+    <meta property="og:url" content="https://elections.riceapps.org"/>
+    <meta property="og:title" content="Rice Elections"/>
+    <meta property="og:image" content="https://1-6-4-dot-owlection.appspot.com/static/img/brand/testing_shield.png" />
+    <meta property="og:description" content="A secure, user friendly, and transparent way
+      of voting for elections within Rice Communities!" />
+
     <link href="/static/css/shared/bootstrap.css" rel="stylesheet">
     <link href="/static/css/shared/bootstrap-responsive.css" rel="stylesheet">
     <link href="/static/css/shared/docs.css" rel="stylesheet">
@@ -21,22 +29,18 @@
 
     <!-- Placed at the start of the document so that pages are able to use it -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="/static/js/shared/angular.min.js"></script>
-    <script src="/static/js/intern/ang-command-center.js"></script>
     <script src="/static/js/shared/bootstrap.js"></script>
     <script src="/static/js/shared/timezone.js"></script>
-    <script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-37939334-1']);
-		_gaq.push(['_trackPageview']);
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-		(function() {
-		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
-</head>
+      ga('create', 'UA-73721682-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
 <body>
     <!-- REDO all of this -->
     <div>
@@ -64,7 +68,7 @@
       {{ page_content }}
 
       <div style="margin-top:50px;" class="container-narrow">
-        &copy; Rice Elections 2013 <span class="muted credit"> &middot; Maintained by  <a href="/contact">Rice Apps</a>.</span>
+        &copy; Rice Elections 2016 <span class="muted credit"> &middot; Maintained by  <a href="/contact">Rice Apps</a>.</span>
       </div>
 
     </div> <!-- /container -->

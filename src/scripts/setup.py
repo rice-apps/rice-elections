@@ -38,13 +38,14 @@ def main():
     print "Creating admins..."
 
     users = [
-        ('wa1', 'wa1@rice.edu'),
-        ('dan1', 'dan1@rice.edu'),
-        ('jcc7', 'jcc7@rice.edu'),
-        ('jbb4', 'jbb4@rice.edu'),
-        ('cmp1', 'cmp1@rice.edu'),
-        ('pe4', 'pe4@rice.edu'),
-        ('wcl2', 'wcl2@rice.edu')
+        # ('wa1', 'wa1@rice.edu'),
+        # ('dan1', 'dan1@rice.edu'),
+        # ('jcc7', 'jcc7@rice.edu'),
+        # ('jbb4', 'jbb4@rice.edu'),
+        # ('cmp1', 'cmp1@rice.edu'),
+        # ('pe4', 'pe4@rice.edu'),
+        # ('wcl2', 'wcl2@rice.edu')
+        ('stl2', 'stl2@rice.edu')
     ]
 
     admins = []
@@ -55,13 +56,16 @@ def main():
         admins.append(admin)
 
 
-    for admin in admins[:3]:
-        models.OrganizationAdmin(admin=admin, organization=brown).put()
+    # for admin in admins[:3]:
+    #     models.OrganizationAdmin(admin=admin, organization=brown).put()
 
-    models.OrganizationAdmin(admin=admins[3], organization=mcmurtry).put()
-    models.OrganizationAdmin(admin=admins[4], organization=baker).put()
-    models.OrganizationAdmin(admin=admins[5], organization=martel).put()
-    models.OrganizationAdmin(admin=admins[6], organization=testing).put()
+    for org in [brown, mcmurtry, baker, martel]:
+        models.OrganizationAdmin(admin=admins[0], organization=org).put()
+
+    # models.OrganizationAdmin(admin=admins[3], organization=mcmurtry).put()
+    # models.OrganizationAdmin(admin=admins[4], organization=baker).put()
+    # models.OrganizationAdmin(admin=admins[5], organization=martel).put()
+    # models.OrganizationAdmin(admin=admins[6], organization=testing).put()
 
     print "Done."
 

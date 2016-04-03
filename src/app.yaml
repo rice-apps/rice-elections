@@ -1,11 +1,11 @@
 application: owlection
-version: omega
+version: beta
 module: default
 runtime: python27
 api_version: 1
 threadsafe: yes
 
-instance_class: F2
+instance_class: F1
 
 libraries:
 - name: webapp2
@@ -37,9 +37,12 @@ handlers:
 - url: /intern/.*
   script: controllers.intern.app
 
+- url: /tasks/.*
+  script: controllers.tasks.app
+  login: admin
+
 - url: /api/.*
   script: controllers.api.app
 
 - url: /.*
   script: main.app
-  secure: always
