@@ -5,13 +5,15 @@
   <div class='navbar-inner'>
     <ul class='nav'>
       <li>
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-          {{ organization.name }}
+        <a class="dropdown-toggle" data-toggle="dropdown" href="/admin/organization?org={{ active_org.id }}">
+          {{ active_org.name }}
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          <li><a href='#'>Other Organization</a></li>
-          <li><a href='#'>Other Organization II</a></li>
+            {% for org in organizations %}
+              <li><a href='/admin/organization?org={{ org.key() }}'>{{ org.name }}</a></li>
+            {% endfor %}
+
           <li class="divider"></li>
           <li><a href='#'><i class='icon-plus'></i> New Organization</a></li>
         </ul>
@@ -145,7 +147,7 @@
             <input type="text"
                    class="input-xlarge span4 profile-input"
                    id="organization-name"
-                   value='{{ organization.name }}'>
+                   value='{{ active_org.name }}'>
           </div>
         </div>
         <div class="control-group">
@@ -154,7 +156,7 @@
             <textarea class="input-xlarge span4 profile-input"
                       rows='4'
                       id="organization-description"
-                      placeholder="We like to hold elections">{{ organization.description }}</textarea>
+                      placeholder="We like to hold elections">{{ active_org.description }}</textarea>
           </div>
         </div>
         <div class="control-group">
@@ -164,7 +166,7 @@
                    class="input-xlarge span4 profile-input"
                    id="organization-website"
                    placeholder='http://awesome.com'
-                   value='{{ organization.website }}'>
+                   value='{{ active_org.website }}'>
           </div>
         </div>
         <div class="control-group">
@@ -178,14 +180,14 @@
         </div>
         <input type="hidden"
                id="organization-id"
-               value='{{ organization.key() }}'>
+               value='{{ active_org.key() }}'>
       </fieldset>
 
     </form>
   </div>
   <!-- ===================================================================== -->
   <div class="tab-pane fade" id="admins">
-    <h4>{{organization.name }} Admins</h4>
+    <h4>{{active_org.name }} Admins</h4>
     <ul>
       {% for admin in admins %}
         <li><a href="mailto:{{ admin.email }}">{{ admin.email }}</a></li>

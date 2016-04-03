@@ -45,7 +45,7 @@ class ElectionInformationHandler(webapp2.RequestHandler):
         }
 
         # Authenticate user
-        org = auth.get_organization()
+        org = auth.get_active_organization()
         if not org:
             webapputils.respond(self, 'ERROR', 'Not Authorized')
             return
@@ -80,7 +80,7 @@ class ElectionInformationHandler(webapp2.RequestHandler):
                 name=data['name'],
                 start=datetime.fromtimestamp(data['times']['start']),
                 end=end_dt,
-                organization=auth.get_organization(),
+                organization=auth.get_active_organization(),
                 universal=data['universal'],
                 hidden=data['hidden'],
                 result_delay=res_delay,
