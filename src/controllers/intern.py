@@ -67,9 +67,9 @@ class CommandCenterHandler(webapp2.RequestHandler):
         webapputils.respond(self, 'OK', 'Done')
 
     def add_admin(self, data):
-        org = models.Organization.get(data['organization'])
-        voter = get_voter(data['net_id'], create=True)
-        org_admin = models.put_admin(voter, data['email'], org)
+        org = models.get_organization(data['organization'])
+        voter = models.get_voter(data['net_id'], create=True)
+        org_admin = models.put_admin(voter, data['net_id']+'@rice.edu', org)
         if org_admin:
             webapputils.respond(self, 'OK', 'Done')
         else:

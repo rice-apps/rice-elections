@@ -13,7 +13,7 @@
         return $('#organization-create').removeClass('disabled');
       });
     }
-    return $('#organization-create').click(function(e) {
+    $('#organization-create').click(function(e) {
       var data, description, j, len1, name, ref1, val, website;
       if ($('#organization-create').hasClass('disabled')) {
         return;
@@ -53,6 +53,49 @@
               $('#organization-create').addClass('btn-success');
               $('#organization-create').text('Created');
               return $('#organization-create').addClass('disabled');
+            }
+          };
+        })(this)
+      });
+    });
+    return $('#admin-add').click(function(e) {
+      var data, j, len1, net_id, organization, ref1, val;
+      if ($('#admin-add').hasClass('disabled')) {
+        return;
+      }
+      net_id = $('#admin-netid').val().trim();
+      organization = $('#admin-organization').val().trim();
+      ref1 = [net_id, organization];
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        val = ref1[j];
+        if (!val) {
+          $('#admin-add').removeClass('btn-primary');
+          $('#admin-add').addClass('btn-danger');
+          $('#admin-add').text('Missing information');
+          $('#admin-add').addClass('disabled');
+          return;
+        }
+      }
+      data = {
+        net_id: net_id,
+        organization: organization,
+        method: 'add_admin'
+      };
+      return $.ajax({
+        url: postURL,
+        type: 'POST',
+        data: {
+          'data': JSON.stringify(data)
+        },
+        success: (function(_this) {
+          return function(data) {
+            var response;
+            response = JSON.parse(data);
+            if (response.status === 'OK') {
+              $('#admin-add').removeClass('btn-danger');
+              $('#admin-add').addClass('btn-success');
+              $('#admin-add').text('Created');
+              return $('#admin-add').addClass('disabled');
             }
           };
         })(this)
