@@ -17,6 +17,7 @@
 <div class="form-horizontal well" id="createForm">
   <fieldset>
     <legend>Election Information</legend>
+    <p><strong>Tip:</strong> Hover over the names of the fields to get more information!</p>
     <!-- Election Name -->
     <div class="control-group">
       <label class="control-label" for="name">Election Name</label>
@@ -27,7 +28,7 @@
 
     <!-- Start and End Date Time -->
     <div class="control-group">
-      <label class="control-label">Voting Times</label>
+      <label class="control-label" rel="tooltip" data-placement="right" data-original-title="Choose when you want the election to be open to voting">Voting Times</label>
       <div class="controls controls-row">
         <!-- Start Date -->
         <div class="input-append date" id="startDate" data-date-format="mm/dd/yy" data-date="">
@@ -57,7 +58,7 @@
 
     <!-- Election results available to voters. -->
     <div class="control-group">
-      <label class="control-label" for="position-select-type">Result Publication Date</label>
+      <label class="control-label" for="position-select-type" rel="tooltip" data-placement="right" data-original-title="Choose when your voters can see the election results">Result Publication Date</label>
       <div class="controls controls-row">
         <!-- Pub Date --!>
         <div class="input-append date" id="pubDate" data-date-format="mm/dd/yy" data-date="">

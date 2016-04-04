@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Election Results</title>
+</head>
+
+<body style="background-color: #151F33; width: 90%; margin: 0 auto;">
+<header style="display: flex; width: 90%; height: 53px; background-color: #344D7F; align-items: center; margin: inherit;">
+    <a href="https://elections.riceapps.org"><img src="https://elections.riceapps.org/static/img/brand/logo.png"
+                                                  alt="Rice Elections" height="53" style="display: inline-block;"
+                                                  align="left"/></a>
+
+    <p style="width: inherit; vertical-align: middle; font-family: 'Courier New', Courier, monospace; font-weight: 100; height: auto; display: inline-block; color: #FFF; font-size: 1em; position: relative; width:auto;">
+        Elections for Rice Communities</p>
+</header>
+<section style="background-color: #363E4C; width: 90%; margin: inherit;">
+    <div>
+        <p style="margin-bottom: 0px; font-size: 2em; text-align: center; color: #FFFFFF; font-family: 'Courier New', Courier, monospace;">
+            Your Election Results!</p>
+        <hr width="50%"/>
+    </div>
+    {% for pos in positions %}
+        <div style="color: rgb(230, 236, 255); display:flex">
+            <div style=" position: relative; flex: 0 1 auto; text-align: right; border-right: solid #999 1px; padding: 5px;">
+                <p>{{ pos.name }}<br>
+                    Position Type: {{ pos.type }}<br>
+                    Vote Required: {{ pos.vote_required }}<br>
+                    Candidates: {{ pos.candidates }}<br>
+                    Write-Ins: {{ pos.write_ins |default("No Write-Ins") }}<br>
+                    Winner(s): {{ pos.winners }}
+                </p>
+            </div>
+
+            {%  if pos.type == "Ranked-Choice" %}
+                <!--Ranked Voting Type-->
+                <div style=" position: relative; flex: 1; text-align: left;">
+                    {%  for round in pos.rounds %}
+
+                        <p>Round: {{ round.number }}</p>
+                        <!--Majority not Found-->
+                        {% if round.majority == False %}
+                            <ul>
+                                <li><em>Majority Not Found!</em></li>
+                                <li>First Place Preferences: {{ round.prefs }}</li>
+                                <li>Remaining Candidates: {{ round.remaining }}</li>
+                                <li>Candidate Cut: {{ round.cut }}</li>
+                            </ul>
+                        {% endif %}
+
+                        {% if round.majority == True %}
+                            <!--Majority Found-->
+                            <ul>
+                                <li><em>Majority Found!</em></li>
+                                <li>First Place Preferences: {{ round.prefs }}</li>
+                                <li>Winner(s): <strong>{{ pos.winners }}</strong></li>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if pos.type in ['Boolean-Voting','Cumulative-Voting'] %}
+                <!--Cumulative Voting-->
+                <div>
+                    <ul>
+                        <li>Total Points: {{ pos.points }}</li>
+                        <li>Winner(s): <strong>{{ pos.winners }}</strong></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</section>
+<section style="background: #5A6273; width: inherit; margin: inherit;">
+    <div style="color: #FFFFFF; padding: .33em;">
+        <p style="text-align: center; font-size: 1.5em; margin: 0;">At Your Service,<br>
+            Rice Elections</p>
+
+        <div style="width:inherit; display: flex; align-items: center; margin: 0;">
+            <div style="flex: 1;width: 45%;text-align: right; margin: 0 5px;">
+                <p style="text-align: right;">Questions or Comments?<br>
+                    Email our Admin!</p>
+            </div>
+            <div style="flex: 1;width: 45%; height: inherit; text-align: left;">
+                <a href="mailto:stl2@rice.edu?subject=[Rice-Elections]%20Results%20Inquiry"><img
+                        src="http://i.imgur.com/J9srEnU.png"></a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

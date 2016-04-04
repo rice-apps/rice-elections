@@ -257,6 +257,5 @@ Voting for {1} has concluded. Below are the detailed results of the election.
     message.body += u'\nPosition Results\n' + u'\n'.join(results)
     message.body += u'\n\nAt your service,\n\nOwlection Team'
     logging.info(message.body)
-    #print message.body
     message.send()
     logging.info('Message Sent')
