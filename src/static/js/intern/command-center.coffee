@@ -35,4 +35,36 @@ jQuery ->
                     $('#organization-create').addClass('btn-success')
                     $('#organization-create').text('Created')
                     $('#organization-create').addClass('disabled')
+                    
+    $('#admin-add').click (e) ->
+        return if $('#admin-add').hasClass('disabled')
+        net_id = $('#admin-netid').val().trim()
+        organization = $('#admin-organization').val().trim()
+        
+        for val in [net_id, organization]
+            if not val
+                $('#admin-add').removeClass('btn-primary')
+                $('#admin-add').addClass('btn-danger')
+                $('#admin-add').text('Missing information')
+                $('#admin-add').addClass('disabled')
+                return
+                
+        data = 
+            net_id: net_id
+            organization: organization
+            method: 'add_admin'
+            
+        $.ajax
+            url: postURL
+            type: 'POST'
+            data: 'data': JSON.stringify(data)
+            success: (data) =>
+                response = JSON.parse(data)
+                if response.status == 'OK'
+                    $('#admin-add').removeClass('btn-danger')
+                    $('#admin-add').addClass('btn-success')
+                    $('#admin-add').text('Created')
+                    $('#admin-add').addClass('disabled')
+                
+
         

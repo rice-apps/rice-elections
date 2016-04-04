@@ -1,5 +1,6 @@
-{#<script type='text/javascript' src='/static/js/intern/command-center.js'></script>#}
-<section id="main" class='container-narrow'  ng-controller="tabController as panel">
+<script type='text/javascript' src='/static/js/intern/command-center.js'></script>
+
+<section ng-app="Internal_CC" id="main" class='container-narrow'>
   <div class='navbar'>
     <div class='navbar-inner'>
       <ul class='nav'>
@@ -8,117 +9,196 @@
             Command Center
           </a>
         </li>
-        <li ng-class="{ active:panel.isCurrent(1) }" >
-          <a href="#organizations" ng-click="panel.setTab(1)">
-            <i class='icon-user'></i> Organizations
-          </a>
+        <li class="dropdown active">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+             role="button" aria-haspopup="true" aria-expanded="false">
+            <i class='icon-user'></i> Organizations<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#organizations" class="active" data-placement="top" data-toggle="tab">Organizations</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="" data-toggle="modal" data-target="#newOrganization">Add Organization</a></li>
+            <li><a href="" data-toggle="modal" data-target="#newAdmin">Add Admin</a></li>
+          </ul>
         </li>
-        <li ng-class="{ active:panel.isCurrent(2) }">
-          <a href="#elections" ng-click="panel.setTab(2)">
+        <li>
+          <a href="#elections" data-toggle="tab">
             <i class='icon-envelope'></i> Elections
           </a>
         </li>
       </ul>
     </div>
   </div>
-<div id="organizations" ng-controller="orgController as apple" ng-init="loadData()" ng-show="panel.isCurrent(1)" >
-    {[ apple.elections ]}
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Admin Count</th>
-            <th>Election Count</th>
-            <th>Vote Count</th>
-          </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="org in apple.organizations">
-              <td>{[ org.name ]}</td>
-              <td>{[ org.adminCount ]}</td>
-              <td>{[ org.electionCount ]}</td>
-              <td>{[ org.voteCount ]}</td>
-            </tr>
 
-        </tbody>
-      </table>
-      <form class="form-horizontal well">
-        <fieldset>
-          <legend>Create Organization</legend>
-          <div class="control-group">
-            <label class="control-label" for="name">Name</label>
-            <div class="controls">
-              <input type="text"
-                     class="input-xlarge span4 profile-input"
-                     id="organization-name">
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="description">Description</label>
-            <div class="controls">
-              <textarea class="input-xlarge span4 profile-input"
-                        rows='4'
-                        id="organization-description"
-                        placeholder="We like to hold elections"></textarea>
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="website">Website</label>
-            <div class="controls">
-              <input type="text"
-                     class="input-xlarge span4 profile-input"
-                     id="organization-website"
-                     placeholder='http://awesome.com'>
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="updateProfile"></label>
-            <div class="controls">
-              <a id='organization-create'
-                     class="input-large btn btn-primary"
-                     data-default-text='Create Organization'
-                     value=''>Create Organization</a>
-            </div>
-          </div>
-          <input type="hidden"
-                 id="organization-id">
-        </fieldset>
-      </form>
+
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active in" id="organizations">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Admin Count</th>
+                    <th>Election Count</th>
+                    <th>Vote Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for org in organizations %}
+                    <tr>
+                        <td>{{ org.name }}</td>
+                        <td>{{ org.adminCount }}</td>
+                        <td>{{ org.electionCount }}</td>
+                        <td>{{ org.voteCount }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="tab-pane fade" id="elections">
+            <h2>Upcoming / Recent Elections</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th width='150px'>Name</th>
+                    <th>Election Open</th>
+                    <th>Participation</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if not elections %}
+                    <tr>
+                        <td colspan='5'>No elections yet. Create one now!</td>
+                    </tr>
+                {% endif %}
+                {% for elec in elections %}
+                    {% set status_flag = 'info' %}
+
+                    {% if elec.status == 'Voting has ended' %}
+                        {% set status_flag = 'warning' %}
+                    {% endif %}
+
+                    {% if elec.status == 'Result computed' %}
+                        {% set status_flag = 'success' %}
+                    {% endif %}
+
+                    <tr>
+                        <td>
+                            <span>{{ elec.organization }}</span>
+                        </td>
+                        <td>
+                            {% if elec.times.end > now %}
+                                <a href="/vote/cast-ballot?id={{ elec.id }}">{{ elec.name }}</a>
+                            {% else %}
+                                <a href="/vote/view-results?id={{ elec.id }}">{{ elec.name }}</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="date-format">{{ elec.times.start }}</span><br>
+                            <span class="date-format">{{ elec.times.end }}</span>
+                        </td>
+                        <td><span>{{ elec.voted_count }} / {{ elec.voter_count }} </span>voters</td>
+                        <td><span class="alert-{{status_flag}}" style='background:none;'>{{ elec.status }} </span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-<div id="elections" ng-show="panel.isCurrent(2)" ng-controller="electionsController as elecCtrl">
-  <h2>Upcoming / Recent Elections</h2>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Organization</th>
-        <th width='150px'>Name</th>
-        <th>Election Open</th>
-        <th>Participation</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr ng-if="elecCtrl.isElections">
-          <td colspan='5'>No elections yet. Create one now!</td>
-        </tr>
-        <tr ng-if="elecCtrl.isElections" ng-repeat="elec in elecCtrl.elections">
-          <td>
-              <span>{[ elec.organization ]}</span>
-          </td>
-          <td>
-              <a ng-if="elec.times.end > date" href="/vote/cast-ballot?id={[ elec.id ]}">{[ elec.name ]}</a>
-              <a ng-if="elec.times.end <= date" href="/vote/view-results?id={[ elec.id ]}">{[ elec.name ]}</a>
-          </td>
-          <td>
-            <span class="date-format">{[ elec.times.start ]}</span><br>
-            <span class="date-format">{[ elec.times.end ]}</span>
-          </td>
-          <td><span>{[ elec.voted_count ]} / {[ elec.voter_count ]} </span>voters</td>
-        TODO: Fix alert flag
-          <td><span class='alert-"{[status_flag]}"' style='background:none;'>{[ elec.status ]} </span></td>
-        </tr>
 
-    </tbody>
-  </table>
-</div>
+    <!-- New Organization Modal -->
+    <div class="hide modal fade" id="newOrganization" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New Organization</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="name">Name</label>
+                                <div class="controls">
+                                    <input type="text"
+                                           ng-model="orgCtrl.new_organization.name"
+                                           class="input-xlarge span4 profile-input"
+                                           id="organization-name">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="description">Description</label>
+                                <div class="controls">
+                                    <textarea class="input-xlarge span4 profile-input"
+                                        rows='4'
+                                        id="organization-description"
+                                        placeholder="We like to hold elections"
+                                        ng-model="orgCtrl.new_organization.description"></textarea>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="website">Website</label>
+                                <div class="controls">
+                                    <input type="text"
+                                           class="input-xlarge span4 profile-input"
+                                           id="organization-website"
+                                           ng-model="orgCtrl.new_organization.website"
+                                           placeholder='http://awesome.com'>
+                                </div>
+                            </div>
+                            <input type="hidden"
+                                   id="organization-id">
+                            <input type="button" ng-click="dump_data()" value="Dump"/>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="organization-create">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Modal for adding an admin to an organization by a given name -->
+<div class="hide modal fade" id="newAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New Admin</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="name">Net_id</label>
+                                <div class="controls">
+                                    <input type="text"
+                                           class="input-xlarge span4 profile-input"
+                                           id="admin-netid">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="name">Organization</label>
+                                <div class="controls">
+                                    <select id="admin-organization">
+                                        {% for organization in organizations %}
+                                            <option value="{{ organization.name }}">{{ organization.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="admin-add">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
