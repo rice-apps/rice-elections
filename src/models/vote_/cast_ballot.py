@@ -35,6 +35,7 @@ class BallotHandler(webapp2.RequestHandler):
         net_id = voter.net_id
 
         #Dictionary of candidates images
+
         candidate_images = {"Griffin Thomas": "http://sa.rice.edu/img/candidates2016/GriffinThomasPresident.jpg",
                             "Joan Liu": "http://sa.rice.edu/img/candidates2016/JoanLiuPresident.jpg",
                             "Hannah Todd": "http://sa.rice.edu/img/candidates2016/HannahToddEVP.jpg",
@@ -42,9 +43,9 @@ class BallotHandler(webapp2.RequestHandler):
                             "Justin Onwenu": "http://sa.rice.edu/img/candidates2016/JustinOnwenuEVP.jpg",
                             "Komal Luthra": "http://sa.rice.edu/img/candidates2016/KomalLuthraIVP.jpg",
                             "Sonal Pai": "http://sa.rice.edu/img/candidates2016/SonalPaiSec.jpg",
-                            "Maurice Frederie": "http://sa.rice.edu/img/candidates2016/MauriceFrediereTreasurer.jpg",
+                            "Maurice Frediere": "http://sa.rice.edu/img/candidates2016/MauriceFrediereTreasurer.jpg",
                             "Iman Khan": "http://sa.rice.edu/img/candidates2016/ImanKhanRPC.jpg",
-                            "Jodie Nghiem": "http://sa.rice.edu/img/candidates2016/JodieNghiemRPC.jpg",
+                            "Jodie Ngheim": "http://sa.rice.edu/img/candidates2016/JodieNghiemRPC.jpg",
                             "Kailan Shi": "http://sa.rice.edu/img/candidates2016/KailanShiRSVP.jpg",
                             "Yasna Haghdoost": "http://sa.rice.edu/img/candidates2016/YasnaHaghdoostThresher.jpg",
                             "Marcela Interiano": "http://sa.rice.edu/img/candidates2016/MarcelaInterianoUCourt.jpg"}

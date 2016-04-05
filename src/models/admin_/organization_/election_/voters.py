@@ -11,6 +11,7 @@ import webapp2
 from authentication import auth
 from google.appengine.api import taskqueue
 from google.appengine.api import memcache
+from google.appengine.ext import deferred
 from models import models, webapputils
 from models.admin_.organization_.election import get_panel
 
@@ -49,6 +50,34 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                 None)
             webapputils.render_page_content(self, PAGE_URL, panel)
             return
+
+        #check to see if task already in task queue, indicates voters still being added
+        try:
+            taskqueue.add(name=str(election.key())
+                      queue_name='voters')
+        except taskqueue.TaskAlreadyExistsError:
+            panel = get_panel(
+                PAGE_URL,
+                {'status': 'Adding Voters',
+                 'msg': 'Come back later. Still adding voters.'},
+                None)
+            webapputils.render_page_content(self, PAGE_URL, panel)
+            return
+
+        #checks to see if the voter set exists (in mem cache), 
+        #if not indicates voters still being added
+        
+        voter_set = memcache.get(str(election.key())+'-voter-set')
+        if not voter_set:
+            deferred.defer(models.update_voter_set, election, _name=str(election.key()), _queue='voters')
+            panel = get_panel(
+                PAGE_URL,
+                {'status': 'Adding Voters',
+                 'msg': 'Come back later. Still adding voters.'},
+                None)
+            webapputils.render_page_content(self, PAGE_URL, panel)
+            return
+
 
         data = {'status': 'OK',
                 'id': str(election.key()),
@@ -103,7 +132,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       'method': method,
                       'voters': data['voters']}
         retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
-        taskqueue.add(url=TASK_URL,
+        taskqueue.add(url=TASK_URL, name=election.key()
                       queue_name='voters',
                       params={'data': json.dumps(queue_data)},
                       retry_options=retry_options,
