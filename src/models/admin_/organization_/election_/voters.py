@@ -132,7 +132,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       'method': method,
                       'voters': data['voters']}
         retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
-        taskqueue.add(url=TASK_URL, name=election.key()
+        taskqueue.add(url=TASK_URL, name=election.key(),
                       queue_name='voters',
                       params={'data': json.dumps(queue_data)},
                       retry_options=retry_options,
