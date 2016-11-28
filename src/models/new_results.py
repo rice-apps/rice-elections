@@ -85,8 +85,8 @@ def email_election_results(to, election, pos=None):
         new_position = {}
         json = pos.to_json()
         new_position.update(json)
-        new_position['candidates'] = [str(can['name']) for can in json['candidates']]
-        new_position['winners'] = [str(can['name']) for can in json['candidates'] if can['winner'] == True]
+        new_position['candidates'] = [unicode(can['name']) for can in json['candidates']]
+        new_position['winners'] = [unicode(can['name']) for can in json['candidates'] if can['winner'] == True]
 
         if pos.position_type == 'Ranked-Choice':
             # Gather Ranked ballots
@@ -94,12 +94,12 @@ def email_election_results(to, election, pos=None):
             computed_rounds = irv.run_the_rounds(ballots)
             new_position.update({'rounds': computed_rounds})
 
-        if pos.position_type == ('Boolean-Voting' or 'Cumulative-Voting'):
+        if pos.position_type in ('Boolean-Voting', 'Cumulative-Voting'):
             ballots = gather_ballots(pos)
 
             counts = cv.get_counts(ballots)
 
-            new_position.update({'points': counts})
+            new_position.update({'can_points': counts})
 
         positions.append(new_position)
 

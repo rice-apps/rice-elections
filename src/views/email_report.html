@@ -126,12 +126,17 @@
                                 <li>Total Points:
                                     {% if pos.type == 'Boolean-Voting' %}
                                         <ul>
-                                            {% for can, points in pos.points.items() %}
+                                            {% for can, points in pos.can_points.items() %}
                                                 <li>{{ can }} - {{ points }} point(s)</li>
                                             {% endfor %}
                                         </ul>
                                     {% else %}
-                                        {{ pos.points }}
+                                        {# pos.points #}
+                                        <ul>
+                                            {% for can, points in pos.can_points.items() %}
+                                                <li>{{ can }} - {{ points }} point(s)</li>
+                                            {% endfor %}
+                                        </ul>
                                     {% endif %}
                                 </li>
                                 <li>Winner(s):

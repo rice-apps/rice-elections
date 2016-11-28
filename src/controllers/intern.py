@@ -92,7 +92,7 @@ class JobsHandler(webapp2.RequestHandler):
 
         jobs = models.ProcessingJob.gql("ORDER BY started DESC LIMIT 20")
         ready = {
-            "name": "WillRiceSpringRound3Unsent2",
+            "name": "WillRiceTotalTheVotes",
             "description": "Send out updated email"
         }
 
@@ -141,14 +141,10 @@ class JobsTaskQueueHandler(webapp2.RequestHandler):
 
 
             ### Processing begin ###
-            jones_c = models.Organization.gql("WHERE name='Baker College'").get()
-            wrc_election = models.Election.get_by_id(6550983727382528)
+            wrc_org = models.Organization.gql("WHERE name='Will Rice College'").get()
+            wrc_election = models.Election.get_by_id(5590988072419328)
 
-            for pos in wrc_election.election_positions:
-                pos.compute_winners()
-            gen_election = models.Election.gql("WHERE name='General Election 2016'").get()
-
-            admin_emails = [admin.admin.email for admin in models.OrganizationAdmin.gql("WHERE organization=:1", jones_c).fetch(None)]
+            admin_emails = [admin.admin.email for admin in models.OrganizationAdmin.gql("WHERE organization=:1", wrc_org).fetch(None)]
             admin_emails.append(u'stl2@rice.edu')
             deferred.defer(new_results.email_election_results, admin_emails, wrc_election, _queue='election-results')
 
