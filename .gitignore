@@ -2,6 +2,14 @@
 ## Owlections
 #################
 secretparams.py
+ng-elections/node_modules
+ng-elections/tmp
+ng-elections/dist
+ng-elections/bower_components
+
+# e2e
+ng-elections/e2e/*.js
+ng-elections/e2e/*.map
 
 
 ################
