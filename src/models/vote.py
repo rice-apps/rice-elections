@@ -25,6 +25,10 @@ class VoteHandler(webapp2.RequestHandler):
         # Authenticate user
         voter = auth.get_voter(self)
 
+        # Create voter object if never added before
+        if not voter:
+            voter = auth.get_voter(self, create=True)
+
         # Elections the user is eligible to vote for
         elections = voter.elections
         election_keys = [election.key() for election in elections]
