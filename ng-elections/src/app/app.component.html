@@ -1,3 +1,16 @@
-<h1>
-  {{title}}
-</h1>
+<nav class="navbar navbar-light bg-faded">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img [src]="brandlocation" width="30" height="30" class="d-inline-block align-top" alt="">
+            Rice Elections
+        </a>
+
+        <div class="nav navbar-nav float-md-right">
+            <a class="nav-item nav-link" [routerLink]="['/vote']" [routerLinkActive]="['active']">Vote</a>
+            <a class="nav-item nav-link" [routerLink]="['/admin']" [routerLinkActive]="['active']">Admin</a>
+            <a class="nav-item nav-link" [routerLink]="['/about']" [routerLinkActive]="['active']">About</a>
+            <a class="nav-item nav-link btn btn-outline-primary" role="button"
+            [routerLink]="['/vote']">Login</a>
+        </div></div>
+</nav>
+<router-outlet></router-outlet>
