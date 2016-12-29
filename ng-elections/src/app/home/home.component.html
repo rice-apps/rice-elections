@@ -1,0 +1,44 @@
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Your Vote, Your Voice</h1>
+        <p class="lead">Rice Elections offers up a secure, easy to use platform
+            for organizations to give students the opportunity to choose their future.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="card-group">
+            <div class="card card-block">
+                <h4 class="card-title">Student Run</h4>
+                <p class="card-text">Rice Elections is run by the on campus organization Rice Apps.</p>
+                <a href="http://www.riceapps.org" class="card-link">Rice Apps</a>
+            </div>
+
+            <div class="card card-block">
+                <h4 class="card-title">Simple Use</h4>
+                <p class="card-text">Voting is simple, so everyone can participate.</p>
+            </div>
+
+            <div class="card card-block">
+                <h4 class="card-title">Secure Vote</h4>
+                <p class="card-tex">Powered by Google Cloud, Net IDs, and encrypted ballots, we ensure 1 person equals 1 vote</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="height: 2em"></div>
+<div class="container">
+    <div class="row">
+        <h3 class="text-xs-center">Current Organizations</h3>
+        <div class="card-columns">
+            <div *ngFor="let org of organizations">
+                <div class="card card-block text-xs-center">
+                    <img class="card-img-top img-fluid" style="max-height: 100px" [src]="org.imgsrc" alt="">
+                    <div class="card-title">{{ org.name }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

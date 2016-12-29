@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import {RouterLink} from '@angular/router';
+
+const assets = '../assets';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
+    brandlocation = assets + '/shield.png';
 }

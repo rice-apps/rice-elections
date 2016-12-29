@@ -144,7 +144,7 @@ def require_login(request_handler):
     cas_url = CAS_SERVER + '/cas/login?service=' + service_url + '?destination=' + destination_url
     request_handler.redirect(cas_url, abort=True)
 
-def get_voter(handler=None):
+def get_voter(handler=None, create=False):
     """
     Returns the voter from user session.
 
@@ -157,7 +157,7 @@ def get_voter(handler=None):
     """
     session = get_current_session()
     if session.has_key('net_id'):
-        return models.get_voter(session['net_id'])
+        return models.get_voter(session['net_id'], create=create)
     elif handler:
         require_login(handler)
     else:
