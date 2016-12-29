@@ -44,5 +44,23 @@ handlers:
 - url: /api/.*
   script: controllers.api.app
 
+# Angular2 Frontend
+- url: /(.*\.js)
+  mime_type: text/javascript
+  static_files: static/dist/\1
+  upload: static/dist/(.*\.js)
+
+- url: /(.*\.css)
+  mime_type: text/css
+  static_files: static/dist/\1
+  upload: static/dist/(.*\.css)
+
+# image files
+- url: /(.*\.(bmp|gif|ico|jpeg|jpg|png))
+  static_files: static/dist/\1
+  upload: static/dist/(.*\.(bmp|gif|ico|jpeg|jpg|png))
+
 - url: /.*
-  script: main.app
+#  script: main.app
+  static_files: static/dist/index.html
+  upload: static/dist/index.html

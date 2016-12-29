@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Http } from '@angular/http';
+
+import 'rxjs/add/operator/toPromise';
+import {Organization} from '../shared/models';
 
 const assets = '../../assets';
 
@@ -8,17 +12,22 @@ const assets = '../../assets';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  organizations = [
-    {'name': 'Architectural Society', 'imgsrc': assets + '/who/architectural-society-rice.png'},
-    {'name': 'Baker College', 'imgsrc': assets + '/who/baker-college.gif'},
-    {'name': 'Brown College', 'imgsrc': assets + '/who/brown-college.png'},
-    {'name': 'Chi Epsilon', 'imgsrc': assets + '/who/chi-epsilon.jpg'},
-    {'name': 'Chinese Student Association', 'imgsrc': assets + '/who/chinese-student-association.jpg'}
-  ];
-
-  constructor() { }
+  organizations: Organization[] = [];
+  constructor(private http: Http) {}
 
   ngOnInit() {
+    this.getOganizations()
+      .then(orgs => this.organizations = orgs);
   }
 
+  private getOganizations():  Promise<Organization[]> {
+    return this.http.get('/api/organizations')
+      .toPromise()
+      .then(response => response.json().orgs as Organization[])
+      .catch(this.handleError);
+  }
+  private handleError(error: any): Promise<any> {
+    console.error(); // for demo purposes only
+    return Promise.reject(error.message || error);
+  }
 }

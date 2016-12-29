@@ -7,13 +7,11 @@ import { AppComponent } from './app.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './home/home.component';
 import {AppRoutingModule} from './app-routing/app-routing.module';
-import { VoteComponent } from './vote/vote.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    VoteComponent
   ],
   imports: [
     AppRoutingModule,
