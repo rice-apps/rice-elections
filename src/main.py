@@ -22,9 +22,9 @@ NAV_BAR = [
 class StaticHandler(webapp2.RequestHandler):
     """Handles GET requests for static pages."""
     def get(self):
-        orgs = [org for org in models.Organization.all()]
-        random.shuffle(orgs)
-        webapputils.render_page(self, self.request.path, {'orgs': orgs})
+        # orgs = [org for org in models.Organization.all()]
+        # random.shuffle(orgs)
+        webapputils.render_page(self, self.request.path, {'orgs': []})
 
 
 class VotesCountHandler(webapp2.RequestHandler):

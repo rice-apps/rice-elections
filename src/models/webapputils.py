@@ -1,6 +1,7 @@
 """
 Utility functions for webapp2.
 """
+import logging
 
 __author__ = 'Waseem Ahmad <waseem@rice.edu>'
 
@@ -74,7 +75,11 @@ def get_page(page_name, page_data):
     
     # Get page info
     try:
-        page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
+        if page_data:
+            page = JINJA_ENV.get_template(page_name + '.html').render(page_data)
+        else:
+            page = JINJA_ENV.get_template(page_name + '.html').render()
+        logging.info(page)
     except jinja2.TemplateNotFound:
         page = JINJA_ENV.get_template('templates/not-found.html').render()
 

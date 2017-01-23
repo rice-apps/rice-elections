@@ -1,11 +1,13 @@
 application: owlection
-version: beta
+version: temp
 module: default
 runtime: python27
 api_version: 1
 threadsafe: yes
 
 instance_class: F1
+
+default_expiration: "10s"
 
 libraries:
 - name: webapp2
@@ -19,6 +21,10 @@ builtins:
 
 inbound_services:
 - warmup
+
+error_handlers:
+  - error_code: over_quota
+    file: views/full_outage.html
 
 handlers:
 
