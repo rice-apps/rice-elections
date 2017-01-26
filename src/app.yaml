@@ -1,5 +1,5 @@
 application: owlection
-version: temp
+version: new
 module: default
 runtime: python27
 api_version: 1

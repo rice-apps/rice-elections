@@ -51,32 +51,35 @@ class ElectionVotersHandler(webapp2.RequestHandler):
             webapputils.render_page_content(self, PAGE_URL, panel)
             return
 
-        #check to see if task already in task queue, indicates voters still being added
-        try:
-            taskqueue.add(name=str(election.key()),
-                      queue_name='voters')
-        except taskqueue.TaskAlreadyExistsError:
-            panel = get_panel(
-                PAGE_URL,
-                {'status': 'Adding Voters',
-                 'msg': 'Come back later. Still adding voters.'},
-                None)
-            webapputils.render_page_content(self, PAGE_URL, panel)
-            return
+        # check to see if task already in task queue, indicates voters still being added
+        # TODO: Don't add blank task, just see if there is already something working in the queue.
+        # try:
+        #     response = requests.get('https://www.googleapis.com/taskqueue/v1beta2/projects/owlection/taskqueues/voters/tasks')
+        #
+        #     # taskqueue.add(name=str(election.key()),
+        #     #           queue_name='voters')
+        # except taskqueue.TaskAlreadyExistsError:
+        #     panel = get_panel(
+        #         PAGE_URL,
+        #         {'status': 'Adding Voters',
+        #          'msg': 'Come back later. Still adding voters.'},
+        #         None)
+        #     webapputils.render_page_content(self, PAGE_URL, panel)
+        #     return
 
         #checks to see if the voter set exists (in mem cache), 
         #if not indicates voters still being added
         
-        voter_set = memcache.get(str(election.key())+'-voter-set')
-        if not voter_set:
-            deferred.defer(models.update_voter_set, election, _name=str(election.key()), _queue='voters')
-            panel = get_panel(
-                PAGE_URL,
-                {'status': 'Adding Voters',
-                 'msg': 'Come back later. Still adding voters.'},
-                None)
-            webapputils.render_page_content(self, PAGE_URL, panel)
-            return
+        # voter_set = memcache.get(str(election.key())+'-voter-set')
+        # if not voter_set:
+        #     deferred.defer(models.update_voter_set, election, _name=str(election.key()), _queue='voters')
+        #     panel = get_panel(
+        #         PAGE_URL,
+        #         {'status': 'Adding Voters',
+        #          'msg': 'Come back later. Still adding voters.'},
+        #         None)
+        #     webapputils.render_page_content(self, PAGE_URL, panel)
+        #     return
 
 
         data = {'status': 'OK',
@@ -132,7 +135,7 @@ class ElectionVotersHandler(webapp2.RequestHandler):
                       'method': method,
                       'voters': data['voters']}
         retry_options = taskqueue.TaskRetryOptions(task_retry_limit=0)
-        taskqueue.add(url=TASK_URL, name=election.key(),
+        taskqueue.add(url=TASK_URL,
                       queue_name='voters',
                       params={'data': json.dumps(queue_data)},
                       retry_options=retry_options,
