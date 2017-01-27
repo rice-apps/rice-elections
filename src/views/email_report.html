@@ -74,8 +74,8 @@
                                         <li><em>Majority Not Found!</em></li>
                                         <li>First Place Preferences:
                                             <ul>
-                                                {% for pref in round.prefs %}
-                                                    <li>{{ pref }}</li>
+                                                {% for can, points in round.prefs.items() %}
+                                                    <li>{{ can }} - {{ points }} point(s)</li>
                                                 {% endfor %}
                                             </ul>
                                         </li>
@@ -102,8 +102,8 @@
                                         <li><em>Majority Found!</em></li>
                                         <li>First Place Preferences:
                                            <ul>
-                                                {% for pref in round.prefs %}
-                                                    <li>{{ pref }}</li>
+                                                {% for can, points in round.prefs.items() %}
+                                                    <li>{{ can }} - {{ points }} point(s)</li>
                                                 {% endfor %}
                                             </ul>
                                         </li>
