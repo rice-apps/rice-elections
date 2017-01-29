@@ -160,7 +160,6 @@ def run_the_rounds(ballots):
 
         new_round['number'] = round_number
         new_round['prefs'] = counts
-        print new_round['prefs']
 
         winners = get_winners(ballots)
 
@@ -184,6 +183,9 @@ def run_the_rounds(ballots):
         round_number += 1
 
         if majority:
+            break
+
+        if not counts: # An election where no ballots were cast.
             break
 
     return rounds
