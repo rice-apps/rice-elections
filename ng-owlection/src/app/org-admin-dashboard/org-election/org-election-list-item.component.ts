@@ -11,7 +11,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OrgElectionListItemComponent implements OnInit {
 
+
+
+
   constructor() { }
+
 
   ngOnInit() {
   }
