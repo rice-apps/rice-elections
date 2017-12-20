@@ -3,6 +3,9 @@
     <ngx-datatable
     [rows]="organizations"
     [columns]="columns"
-    [columnMode]="'force'">
+    [columnMode]="'flex'"
+    [headerHeight]="50"
+    [rowHeight]="getRowHeight()"
+    class="bootstrap">
     </ngx-datatable>
 </div>
