@@ -13,6 +13,7 @@ import { InternalsComponent } from './internals/internals.component';
 
 import {OrganizationsService} from './organizations/organizations.service';
 import {DashboardService} from './dashboard/dashboard.service';
+import {ElectionsService} from './elections/elections.service';
 
 @NgModule({
   imports: [
@@ -22,8 +23,9 @@ import {DashboardService} from './dashboard/dashboard.service';
     NgxDatatableModule
   ],
   providers: [
+    DashboardService,
     OrganizationsService,
-    DashboardService
+    ElectionsService
   ],
   declarations: [DashboardComponent, OrganizationsComponent, ElectionsComponent, ReportsComponent, InternalsComponent]
 })

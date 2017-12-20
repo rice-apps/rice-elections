@@ -1,3 +1,13 @@
-<p>
-  elections works!
-</p>
+<h3 class="text-center">Elections</h3>
+<div>
+    <ngx-datatable
+    [rows]="elections"
+    [columns]="columns"
+    [columnMode]="'flex'"
+    [loadingIndicator]="true"
+    [headerHeight]="50"
+    [rowHeight]="getRowHeight()"
+    class="bootstrap"
+    >
+    </ngx-datatable>
+</div>
