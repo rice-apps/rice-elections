@@ -1,0 +1,8 @@
+@import "./variables";
+@import "./mixins";
+
+@import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+@import '../../node_modules/@swimlane/ngx-datatable/release/index.css';
+@import '../../node_modules/@swimlane/ngx-datatable/release/themes/bootstrap.css';
+@import '../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
