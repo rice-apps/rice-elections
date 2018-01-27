@@ -7,10 +7,14 @@ import {AppComponent} from './app.component';
 import {InternalsModule} from './internals/internals.module';
 
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
+import { ProfileComponent } from './users/edwardfeng/pycharm-projects/rice-elections/ng-owlection/src/app/admin/management/profile/profile.component';
+import { MembersComponent } from './Users/edwardfeng/pycharm-projects/rice-elections/ng-owlection/src/app/admin/management/members/members.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ProfileComponent,
+    MembersComponent
   ],
   imports: [
     BrowserModule,
