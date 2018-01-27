@@ -1,6 +1,7 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {OrganizationsService} from './organizations.service';
 import {InternalsOrganization} from '../models/internals-organization';
+import {Organization} from '../../shared/models/organization';
 
 @Component({
   selector: 'app-organizations',
@@ -22,12 +23,22 @@ export class OrganizationsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.get_organizations();
+    this.get_all_organizations();
   }
 
-  get_organizations(): void {
-    this.orgService.get_organizations()
+  get_all_organizations(): void {
+    this.orgService.get_all_organizations()
       .subscribe(organizations => this.organizations = organizations['organizations']);
+  }
+
+  private get_organization(organization: InternalsOrganization): Organization {
+    // Parse Organization name
+    const org_name = organization.name;
+
+    // setup the response
+    let req_org: Organization;
+    this.orgService.get_organization(org_name).subscribe((resp) => req_org = resp);
+    return req_org;
   }
 
   getRowHeight(row) {
@@ -36,5 +47,7 @@ export class OrganizationsComponent implements OnInit {
 
   // return my height
     return row.height;
-}
+  }
+
+  // TODO: Add links into the table to pass on information about what organization admins.
 }
