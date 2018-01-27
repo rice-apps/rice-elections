@@ -7,12 +7,14 @@ import {AppComponent} from './app.component';
 import {InternalsModule} from './internals/internals.module';
 
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
-import { HomeComponent } from './home/home.component';
+import { ProfileComponent } from './admin/management/profile/profile.component';
+import { MembersComponent } from './admin/management/members/members.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    ProfileComponent,
+    MembersComponent
   ],
   imports: [
     BrowserModule,
