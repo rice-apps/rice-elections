@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {AdminModule} from './admin/admin.module';
 
 import {InternalsModule} from './internals/internals.module';
 
@@ -19,6 +20,7 @@ import { MembersComponent } from './admin/management/members/members.component';
   imports: [
     BrowserModule,
     BsDropdownModule.forRoot(),
+    AdminModule,
     InternalsModule,
     AppRoutingModule
   ],
