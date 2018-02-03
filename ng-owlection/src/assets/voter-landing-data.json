@@ -1,0 +1,136 @@
+{
+  "election_results": [
+    {
+      "organization": "Student Association",
+      "result_delay": 10800,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICQvpyACww",
+      "name": "Second Round Elections 2016",
+      "end_date": "Sat, April 16, 2016, 01:00 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 1515600,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICQvpyACQw",
+      "name": "test 2016",
+      "end_date": "Wed, March 30, 2016, 01:00 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 8985960,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchELEghFbGVjdGlvbhiJwZsCDA",
+      "name": "General Elections",
+      "end_date": "Sat, February 15, 2014, 05:59 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 60,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICgts2RCgw",
+      "name": "test2",
+      "end_date": "Wed, February 25, 2015, 02:56 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Rice Elections Test",
+      "result_delay": 86700,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDQ1ae4CAw",
+      "name": "Never Starting Election",
+      "end_date": "Fri, January 26, 2018, 03:20 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 162060,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDAoJDTCQw",
+      "name": "General Elections Spring 2015",
+      "end_date": "Sat, February 14, 2015, 05:59 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Rice Elections Test",
+      "result_delay": 60,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICwisCTCQw",
+      "name": "Just Finish",
+      "end_date": "Thu, January 26, 2017, 08:00 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 72060,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDgypnVCAw",
+      "name": "General Election 2016",
+      "end_date": "Sat, February 20, 2016, 05:59 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 8460,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICA89OUCgw",
+      "name": "Special Election",
+      "end_date": "Sat, April 26, 2014, 04:59 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 6900,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDgs6CvCQw",
+      "name": "Testing 1",
+      "end_date": "Sat, February 13, 2016, 09:20 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 125798460,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDAnfqECAw",
+      "name": "asdf Election",
+      "end_date": "Fri, February 06, 2015, 07:40 AM UTC",
+      "time_remaining": 31313857000L
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 3600,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICApo2SCgw",
+      "name": "Test Election",
+      "end_date": "Sat, February 22, 2014, 11:25 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 0,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgIDAuv2MCgw",
+      "name": "testt",
+      "end_date": "Mon, February 09, 2015, 11:29 PM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 172800,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICA1ZPhCAw",
+      "name": "Second Round Elections",
+      "end_date": "Tue, April 01, 2014, 05:00 AM UTC",
+      "time_remaining": -1
+    },
+    {
+      "organization": "Student Association",
+      "result_delay": 6900,
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICglZedCgw",
+      "name": "Second Round Elections 2015",
+      "end_date": "Sat, March 28, 2015, 04:55 AM UTC",
+      "time_remaining": -1
+    }
+  ],
+  "open_elections": [
+    {
+      "id": "ag1kZXZ-b3dsZWN0aW9uchULEghFbGVjdGlvbhiAgICwitCNCQw",
+      "user_action": "not_started",
+      "status": {
+        "date": "Sat, February 10, 2018, 10:20 PM UTC",
+        "text": "Voting begins on"
+      },
+      "organization": "Will Rice College",
+      "name": "Temp"
+    }
+  ]
+}
