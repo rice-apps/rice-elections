@@ -1,5 +1,5 @@
 <nav class="navbar navbar-dark bg-dark">
-    <a href="#" class="navbar-brand">
+    <a href="" routerLink="/" class="navbar-brand">
         <img src="/assets/brand_shield.png" width="30" height="30" alt="" class="d-inline-block align-top">
         OWLECTION
     </a>
@@ -16,7 +16,14 @@
             <li role="menuitem"><a class="dropdown-item" href="" routerLink="/voter" routerLinkActive="active">Dashboard</a></li>
 
                 <li *ngIf="user.admin" class="divider dropdown-divider"></li>
-                <li *ngIf="user.admin" role="menuitem"><a class="dropdown-item" href="" routerLink="/admin" routerLinkActive="active">Admin</a></li>
+                <li *ngIf="user.admin" role="menuitem">
+                  <a class="dropdown-item" href="" routerLink="/admin" routerLinkActive="active">Admin</a>
+                </li>
+
+                <li *ngIf="user.intern" class="divider dropdown-divider"></li>
+                <li *ngIf="user.intern" role="menuitem">
+                  <a class="dropdown-item" href="" routerLink="/intern" routerLinkActive="active">Intern</a>
+                </li>
 
             <li class="divider dropdown-divider"></li>
             <li role="menuitem"><a class="dropdown-item" href="" routerLink="/logout">Logout</a>
@@ -25,6 +32,6 @@
     </div>
 </nav>
 
-<main role="main" class="container">
+<main role="main">
     <router-outlet></router-outlet>
 </main>
