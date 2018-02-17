@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+
 import { AdminRoutingModule } from './admin-routing.module';
 
 import { ElectionDashComponent } from './election/election-dash/election-dash.component';
@@ -15,6 +16,9 @@ import { VotersComponent } from './election/election-manage/voters/voters.compon
     CommonModule,
     AdminRoutingModule
   ],
+
+
   declarations: [ElectionDashComponent, ElectionManageComponent, InfoComponent, PositionsComponent, VotersComponent]
+
 })
 export class AdminModule { }

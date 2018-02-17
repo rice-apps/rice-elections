@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
 
+import { Component, OnInit } from '@angular/core';
 import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
-
 
 
 @Component({
@@ -11,7 +10,6 @@ import {ElectionDashService} from "./election-dash.service";
   styleUrls: ['./election-dash.component.css']
 })
 export class ElectionDashComponent implements OnInit {
-
 
   elections:InternalsElection[];
   columns = [
@@ -22,23 +20,24 @@ export class ElectionDashComponent implements OnInit {
   ];
 
   constructor(
-    //private elecDashService: ElectionDashService
+    // private elecDashService: ElectionDashService
   ) { }
 
   ngOnInit() {
-     //this.get_elections();
+    // this.get_elections();
   }
 
   get_elections(): void {
-    //this.elecDashService.get_elections()
+    // this.elecDashService.get_elections()
       //.subscribe(elections => this.elections = elections['elections']);
   }
 
   getRowHeight(row) {
-  // set default
-    //if (!row) { return 50; }
+    // set default
+    //  if (!row) { return 50; }
 
-  // return my height
-    //return row.height;
+    // return my height
+     // return row.height;
+  }
 }
-}
+

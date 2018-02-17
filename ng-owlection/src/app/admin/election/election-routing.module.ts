@@ -6,34 +6,16 @@ import {InfoComponent} from "./election/election-manage/info/info.component";
 import {PositionsComponent} from "./election/election-manage/positions/positions.component";
 import {VotersComponent} from "./election/election-manage/voters/voters.component";
 
-const routes: Routes = [
-  {
-    path: 'election-dash',
-    component: ElectionDashComponent
 
-  },
-  {
-    path: 'election-manage',
-    component: ElectionManageComponent,
-    children: [
-      {
-        path: '',
-        component: ElectionManageComponent
-      },
-      {
-        path: 'info',
-        component: InfoComponent
-      },
-      {
-        path: 'positions',
-        component: PositionsComponent
-      },
-      {
-        path: 'voters',
-        component: VotersComponent
-      }
-    ]
-  }
+import { elecroutes } from './election/election-routing.module'
+
+import {ElectionDashComponent} from './election/election-dash/election-dash.component'
+
+const routes: Routes = [
+ {
+ path: 'admin',
+ children: elecroutes
+ }
 ];
 
 @NgModule({
