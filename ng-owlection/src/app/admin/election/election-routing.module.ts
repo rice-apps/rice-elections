@@ -9,7 +9,8 @@ import {VotersComponent} from "./election/election-manage/voters/voters.componen
 const routes: Routes = [
   {
     path: 'election-dash',
-    component: ElectionDashComponent,
+    component: ElectionDashComponent
+
   },
   {
     path: 'election-manage',

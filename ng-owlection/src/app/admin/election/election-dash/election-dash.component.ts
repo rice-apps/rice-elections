@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+
 import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
+
 
 
 @Component({
@@ -9,6 +11,7 @@ import {ElectionDashService} from "./election-dash.service";
   styleUrls: ['./election-dash.component.css']
 })
 export class ElectionDashComponent implements OnInit {
+
 
   elections:InternalsElection[];
   columns = [
