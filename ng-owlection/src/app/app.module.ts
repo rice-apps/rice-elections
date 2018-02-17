@@ -8,8 +8,8 @@ import {AdminModule} from './admin/admin.module';
 import {InternalsModule} from './internals/internals.module';
 
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
-import { ProfileComponent } from '.admin/management/profile/profile.component';
-import { MembersComponent } from '.admin/management/members/members.component';
+import { ProfileComponent } from './admin/management/profile/profile.component';
+import { MembersComponent } from './admin/management/members/members.component';
 
 @NgModule({
   declarations: [
