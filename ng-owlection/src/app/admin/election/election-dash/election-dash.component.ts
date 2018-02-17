@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
@@ -39,3 +40,4 @@ export class ElectionDashComponent implements OnInit {
      // return row.height;
   }
 }
+

@@ -1,3 +1,4 @@
+
 //import { Injectable } from '@angular/core';
 //import {HttpClient} from '@angular/common/http';
 //import {InternalsElection } from '..../internals/models/internals-election';
@@ -18,3 +19,4 @@ export class ElectionDashService {
  // }
 
 }
+
