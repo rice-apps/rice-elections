@@ -16,6 +16,10 @@ const routes: Routes = [
     component: ElectionManageComponent,
     children: [
       {
+        path: '',
+        component: ElectionManageComponent
+      },
+      {
         path: 'info',
         component: InfoComponent
       },

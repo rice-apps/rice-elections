@@ -5,4 +5,6 @@ export class ElectionDashService {
 
   constructor() { }
 
+  get_elections()
+  {}
 }
