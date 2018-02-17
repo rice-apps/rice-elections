@@ -10,6 +10,6 @@ export class AppComponent {
   user = {
     'net_id': 'abc1',
     'admin': true,
-    'intern': false
+    'intern': true
   };
 }
