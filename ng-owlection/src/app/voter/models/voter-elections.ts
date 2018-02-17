@@ -3,6 +3,7 @@ export class VoterElection {
   result_delay?: number;
   id: string;
   name: string;
+  start_date?: string;
   end_date?: string;
   time_remaining?: number;
   user_action?: string;
