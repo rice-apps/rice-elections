@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ProfileService } from '../profile.service';
+import { ManagementProfile } from '../../model/ManagementProfile';
 
 @Component({
   selector: 'app-profile',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+  profile: ManagementProfile;
+
+  constructor(
+    private profileService: ProfileService
+  ) { }
 
   ngOnInit() {
+    this.get_profile();
   }
 
+  get_profile(): void {
+    this.profileService.get_profile()
+      .subscribe(file => this.profile = file);
+  }
 }

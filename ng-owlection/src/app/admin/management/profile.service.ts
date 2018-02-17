@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
-import { InternalsElection } from '../../internals/models/internals-election';
+import { ManagementProfile } from '../../model/ManagementProfile';
 
 @Injectable()
 export class ProfileService {
@@ -11,7 +11,7 @@ export class ProfileService {
     private http: HttpClient
   ) { }
 
-  get_elections(): Observable<InternalsElection[]> {
-    return this.http.get<InternalsElection[]>('/assets/organization-admin-page-data.json');
+  get_profile(): Observable<ManagementProfile> {
+    return this.http.get<ManagementProfile>('/assets/Management-Profile.json');
   }
 }
