@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
 
+import {USER} from "../../../shared/models/mock-user"
+
 
 
 @Component({
@@ -13,6 +15,9 @@ import {ElectionDashService} from "./election-dash.service";
 export class ElectionDashComponent implements OnInit {
 
   elections:InternalsElection[];
+
+  user = USER;
+
   columns = [
     { prop: 'name', name: 'Name', flexGrow: 3 },
     { prop: 'organization', name: 'Organization', flexGrow: 2 },
@@ -37,10 +42,10 @@ export class ElectionDashComponent implements OnInit {
 
   getRowHeight(row) {
     //set default
-    //if (!row) { return 50; }
+    if (!row) { return 50; }
 
     //return my height
-    //return row.height;
+    return row.height;
   }
 }
 
