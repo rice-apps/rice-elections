@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
-import { ManagementProfile } from '../../model/ManagementProfile';
+import { ManagementProfile } from '../model/ManagementProfile';
 
 @Injectable()
 export class ProfileService {
