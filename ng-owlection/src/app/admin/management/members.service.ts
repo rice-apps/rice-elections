@@ -11,7 +11,7 @@ export class MembersService {
     private http: HttpClient
   ) { }
 
-  get_members(): Observable<ManagementMembers> {
-    return this.http.get<ManagementMembers>('/assets/members.json');
+  get_members(): Observable<string[]> {
+    return this.http.get<string[]>('/assets/members.json');
   }
 }

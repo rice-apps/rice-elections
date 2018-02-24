@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MembersService } from '../members.service';
+import { ProfileService } from '../profile.service';
 import { ManagementMembers } from '../../model/ManagementMembers';
 
 @Component({
@@ -9,7 +10,7 @@ import { ManagementMembers } from '../../model/ManagementMembers';
 })
 export class MembersComponent implements OnInit {
 
-  members: ManagementMembers;
+  members: string[];
 
   constructor(
     private membersService: MembersService
@@ -21,7 +22,7 @@ export class MembersComponent implements OnInit {
 
   get_members(): void {
     this.membersService.get_members()
-      .subscribe(file => this.members = file);
+      .subscribe(file => this.members = file["people"]);
   }
 
 }
