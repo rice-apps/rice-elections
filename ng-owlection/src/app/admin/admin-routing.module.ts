@@ -9,7 +9,6 @@ import {VotersComponent} from "./election/election-manage/voters/voters.componen
 
 import { elecroutes } from './election/election-routing.module'
 
-import {ElectionDashComponent} from './election/election-dash/election-dash.component'
 
 const routes: Routes = [
  {

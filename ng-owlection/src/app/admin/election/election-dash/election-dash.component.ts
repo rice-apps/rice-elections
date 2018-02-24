@@ -4,6 +4,7 @@ import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
 
 
+
 @Component({
   selector: 'app-election-dash',
   templateUrl: './election-dash.component.html',
@@ -14,17 +15,19 @@ export class ElectionDashComponent implements OnInit {
   elections:InternalsElection[];
   columns = [
     { prop: 'name', name: 'Name', flexGrow: 3 },
+    { prop: 'organization', name: 'Organization', flexGrow: 2 },
     { prop: 'status', name: 'Status', flexGrow: 2 },
+    // { prop: 'times.end', hidden: true, sort: true },
     { prop: 'voted_count', name: 'Voted', flexGrow: 1 },
     { prop: 'voter_count', name: 'Voters', flexGrow: 1 }
   ];
 
   constructor(
-    // private elecDashService: ElectionDashService
+    private elecDashService: ElectionDashService
   ) { }
 
   ngOnInit() {
-    // this.get_elections();
+    this.get_elections();
   }
 
   get_elections(): void {
