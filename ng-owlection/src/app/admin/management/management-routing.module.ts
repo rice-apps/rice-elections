@@ -5,14 +5,7 @@ import {ProfileComponent} from './profile/profile.component';
 import {MembersComponent} from './members/members.component';
 
 const routes: Routes = [
-      {
-        path: 'profile',
-        component: ProfileComponent
-      },
-      {
-        path: 'members',
-        component: MembersComponent
-      }
+      
     ];
 
 @NgModule({
