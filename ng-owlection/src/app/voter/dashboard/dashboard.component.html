@@ -1,0 +1,22 @@
+<div class="container-fluid">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      <ul class="nav flex-column nav-pills nav-justified text-center">
+        <li class="nav-item"><a href="" class="nav-link" routerLink="/vote" routerLinkActive="active">Home</a></li>
+      </ul>
+    </div>
+{{ current_elections }}
+    <div class="col-12 col-md-9 col-xl-8 bd-content">
+    </div>
+  </div>
+</div>
+
+<ngx-datatable
+  [rows]="finished_elections"
+  [columns]="columns"
+  [columnMode]="'flex'"
+  [loadingIndicator]="true"
+  [headerHeight]="50"
+  [rowHeight]="getRowHeight()"
+  class="bootstrap"
+></ngx-datatable>
