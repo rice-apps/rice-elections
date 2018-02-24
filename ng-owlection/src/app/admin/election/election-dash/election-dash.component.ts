@@ -17,6 +17,8 @@ export class ElectionDashComponent implements OnInit {
   elections:InternalsElection[];
 
   user = USER;
+  organization = "Jones College";
+  selected = []
 
   columns = [
     { prop: 'name', name: 'Name', flexGrow: 3 },
@@ -46,6 +48,10 @@ export class ElectionDashComponent implements OnInit {
 
     //return my height
     return row.height;
+  }
+
+  onSelect({ selected }) {
+    console.log("Select Event", selected, this.selected);
   }
 }
 

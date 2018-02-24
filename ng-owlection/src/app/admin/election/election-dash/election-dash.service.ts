@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {InternalsElection } from '../../../internals/models/internals-election';
 import {Observable} from 'rxjs/Observable';
 
@@ -12,6 +12,11 @@ export class ElectionDashService {
 
   get_elections() {
     return this.http.get<InternalsElection[]>('/assets/internals-elections.json');
+  }
+
+  filter_elections() {
+     //return this.http.get<InternalsElection[]>('/assets/internals-elections.json', {params: new HttpParams().set("organization", "Jones College")});
+     // user Pipe to filter JSON
   }
 
 }
