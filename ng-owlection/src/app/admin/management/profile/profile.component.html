@@ -1,16 +1,16 @@
 <h3 class="text-center">Organization</h3>
 
 <div>
-  <img src={{profile.image}} width = "15%" height = "15%" alt="ProfilePic">
+  <img src={{profile?.image}} width = "15%" height = "15%" alt="ProfilePic">
 </div>
 <div>
-  {{profile.name}}
+  {{profile?.name}}
 </div>
 <div>
-  <a href={{profile.website}}> Organization Website </a>
+  <a href={{profile?.website}}> Organization Website </a>
 </div>
 <div>
   <body>
-    <p> Description: {{profile.description}} </p>
+    <p> Description: {{profile?.description}} </p>
   </body>
 </div>
