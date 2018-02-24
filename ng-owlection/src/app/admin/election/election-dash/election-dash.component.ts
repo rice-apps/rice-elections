@@ -20,15 +20,15 @@ export class ElectionDashComponent implements OnInit {
   ];
 
   constructor(
-    // private elecDashService: ElectionDashService
+     private elecDashService: ElectionDashService
   ) { }
 
   ngOnInit() {
-    // this.get_elections();
+     this.get_elections();
   }
 
   get_elections(): void {
-    // this.elecDashService.get_elections()
+     this.elecDashService.get_elections()
       //.subscribe(elections => this.elections = elections['elections']);
   }
 

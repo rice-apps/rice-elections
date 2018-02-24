@@ -1,25 +1,39 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {ElectionDashComponent} from "./election/election-dash/election-dash.component";
-import {ElectionManageComponent} from "./election/election-manage/election-manage.component";
-import {InfoComponent} from "./election/election-manage/info/info.component";
-import {PositionsComponent} from "./election/election-manage/positions/positions.component";
-import {VotersComponent} from "./election/election-manage/voters/voters.component";
 
+import {ElectionDashComponent} from "./election-dash/election-dash.component";
+import {ElectionManageComponent} from "./election-manage/election-manage.component";
+import {InfoComponent} from "./election-manage/info/info.component";
+import {PositionsComponent} from "./election-manage/positions/positions.component";
+import {VotersComponent} from "./election-manage/voters/voters.component";
 
-import { elecroutes } from './election/election-routing.module'
-
-import {ElectionDashComponent} from './election/election-dash/election-dash.component'
-
-const routes: Routes = [
- {
- path: 'admin',
- children: elecroutes
- }
+export const elecroutes: Routes = [
+  {
+    path: 'election-dash',
+    component: ElectionDashComponent,
+  },
+  {
+    path: 'election-manage',
+    component: ElectionManageComponent,
+    children: [
+      {
+        path: 'info',
+        component: InfoComponent
+      },
+      {
+        path: 'positions',
+        component: PositionsComponent
+      },
+      {
+        path: 'voters',
+        component: VotersComponent
+      }
+    ]
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(elecroutes)],
   exports: [RouterModule]
 })
-export class AdminRoutingModule { }
+export class ElectionRoutingModule { }

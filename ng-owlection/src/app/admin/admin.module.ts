@@ -9,16 +9,21 @@ import { ElectionManageComponent } from './election/election-manage/election-man
 import { InfoComponent } from './election/election-manage/info/info.component';
 import { PositionsComponent } from './election/election-manage/positions/positions.component';
 import { VotersComponent } from './election/election-manage/voters/voters.component';
+import {HttpClientModule} from "@angular/common/http";
+import {NgxDatatableModule} from "@swimlane/ngx-datatable";
+import {ElectionDashService} from "./election/election-dash/election-dash.service";
+import {ElectionHomeService} from "./election/elec-home/elec-home.service";
+import {ElecHomeComponent} from "./election/elec-home/elec-home.component";
 
 
 @NgModule({
   imports: [
     CommonModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    HttpClientModule,
+    NgxDatatableModule
   ],
-
-
-  declarations: [ElectionDashComponent, ElectionManageComponent, InfoComponent, PositionsComponent, VotersComponent]
-
+  providers: [ElectionDashService, ElectionHomeService],
+  declarations: [ElecHomeComponent ,ElectionDashComponent, ElectionManageComponent, InfoComponent, PositionsComponent, VotersComponent]
 })
 export class AdminModule { }

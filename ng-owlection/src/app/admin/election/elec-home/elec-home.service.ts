@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 
 @Injectable()
-export class ElectionDashService {
+export class ElectionHomeService {
 
   constructor(
     private http: HttpClient
@@ -12,9 +12,4 @@ export class ElectionDashService {
 
   get_elections() { }
 
- // get_elections(): Observable<InternalsElection[]> {
-   // return this.http.get<InternalsElection[]>('/assets/internals-elections.json');
- // }
-
 }
-
