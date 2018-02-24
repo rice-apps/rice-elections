@@ -12,6 +12,10 @@ export class DashboardComponent implements OnInit {
   current_elections: VoterElection[];
   finished_elections: VoterElection[];
 
+  columns = [
+    {prop: 'name', name: 'Name', flexGrow: 3}
+  ];
+
   constructor(private voteserv: VoterService) {
   }
 
@@ -22,7 +26,7 @@ export class DashboardComponent implements OnInit {
 
   getCurrentElections(): void {
     this.voteserv.getElections().subscribe(
-      res => this.current_elections = res['open_elections']
+      res => this.current_elections = res
     );
     console.log(this.current_elections);
   }

@@ -11,8 +11,4 @@ export class CastBallotService {
   // TODO write a method to cast the ballot to the server.
   castBallot() {}
 
-
-
-
-
 }

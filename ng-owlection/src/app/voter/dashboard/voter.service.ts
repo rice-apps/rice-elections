@@ -16,7 +16,7 @@ export class VoterService {
 }
 
   getCurrentElections(): Observable<VoterElection[]> {
-    return this.getElections()['open_elections'];
+    return this.http.get<VoterElection[]>('/assets/open-election.json');
   }
 
   getFinishedElections(): Observable<VoterElection[]> {
