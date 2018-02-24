@@ -10,7 +10,9 @@ export class ElectionDashService {
     private http: HttpClient
   ) { }
 
-  get_elections() { }
+  get_elections() {
+    return this.http.get<InternalsElection[]>('/assets/internals-elections.json');
+  }
 
 }
 

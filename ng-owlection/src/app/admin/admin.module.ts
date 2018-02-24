@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import {HttpClientModule} from '@angular/common/http';
 
 import { AdminRoutingModule } from './admin-routing.module';
+import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 
 import { ElectionDashComponent } from './election/election-dash/election-dash.component';
 import { ElectionManageComponent } from './election/election-manage/election-manage.component';
@@ -16,7 +17,9 @@ import {ElectionDashService} from './election/election-dash/election-dash.servic
 @NgModule({
   imports: [
     CommonModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    HttpClientModule,
+    NgxDatatableModule
   ],
   providers: [
     ElectionDashService

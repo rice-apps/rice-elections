@@ -31,16 +31,16 @@ export class ElectionDashComponent implements OnInit {
   }
 
   get_elections(): void {
-    // this.elecDashService.get_elections()
-      //.subscribe(elections => this.elections = elections['elections']);
+    this.elecDashService.get_elections()
+      .subscribe(elections => this.elections = elections['elections']);
   }
 
   getRowHeight(row) {
-    // set default
-    //  if (!row) { return 50; }
+    //set default
+    //if (!row) { return 50; }
 
-    // return my height
-     // return row.height;
+    //return my height
+    //return row.height;
   }
 }
 
