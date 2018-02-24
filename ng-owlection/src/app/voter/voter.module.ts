@@ -11,3 +11,4 @@ import { VoterRoutingModule } from './voter-routing.module';
   declarations: []
 })
 export class VoterModule { }
+//A voter is just a netid at this point
