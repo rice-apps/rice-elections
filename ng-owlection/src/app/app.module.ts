@@ -8,6 +8,7 @@ import {InternalsModule} from './internals/internals.module';
 
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import { HomeComponent } from './home/home.component';
+import {VoterModule} from './voter/voter.module';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { HomeComponent } from './home/home.component';
     BrowserModule,
     BsDropdownModule.forRoot(),
     InternalsModule,
+    VoterModule,
     AppRoutingModule
   ],
   providers: [],
