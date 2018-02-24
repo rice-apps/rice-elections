@@ -22,7 +22,7 @@ export class MembersComponent implements OnInit {
 
   get_members(): void {
     this.membersService.get_members()
-      .subscribe(file => this.members = file["people"]);
+      .subscribe(file => this.members = file);
   }
 
 }
