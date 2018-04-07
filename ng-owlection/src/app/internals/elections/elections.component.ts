@@ -29,7 +29,7 @@ export class ElectionsComponent implements OnInit {
 
   get_elections(): void {
     this.elecService.get_elections()
-      .subscribe(elections => this.elections = elections['elections']);
+      .subscribe(elections => console.log(elections)); // this.elections = elections['elections']);
   }
 
   getRowHeight(row) {

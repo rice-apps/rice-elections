@@ -1,5 +1,5 @@
 application: owlection
-version: new
+version: angular
 module: default
 runtime: python27
 api_version: 1
@@ -47,8 +47,17 @@ handlers:
   script: controllers.tasks.app
   login: admin
 
+#- url: /.*
+#  script: main.app
+##
+# Angular Settings
 - url: /api/.*
   script: controllers.api.app
 
-- url: /.*
-  script: main.app
+- url: /(.*\.(gif|png|jpeg|jpg|css|js|ico))$
+  static_files: static/dist/\1
+  upload: static/dist/(.*)
+
+- url: /(.*)
+  static_files: static/dist/index.html
+  upload: static/dist/index.html

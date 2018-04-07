@@ -25,6 +25,14 @@ class Organization(db.Model):
     image = db.StringProperty()
     carousel_show_name = db.BooleanProperty(default=True)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'website': self.website,
+            'image': self.image,
+        }
+
 
 class Election(db.Model):
     """

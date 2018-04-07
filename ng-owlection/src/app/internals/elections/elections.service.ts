@@ -11,7 +11,7 @@ export class ElectionsService {
   ) { }
 
   get_elections(): Observable<InternalsElection[]> {
-    return this.http.get<InternalsElection[]>('/assets/internals-elections.json');
+    return this.http.get<InternalsElection[]>('/api/organizations');
   }
 
 }
