@@ -12,6 +12,14 @@ export class ProfileService {
   ) { }
 
   get_profile(): Observable<ManagementProfile> {
-    return this.http.get<ManagementProfile>('/assets/Management-Profile.json');
+    return this.http.get<ManagementProfile>('../../../assets/Management-Profile.json');
+  }
+
+  upload(fileToUpload: any) {
+    let input = new FormData();
+    input.append("file", fileToUpload);
+
+    return this.http
+        .post("/api/uploadFile", input);
   }
 }

@@ -2,6 +2,7 @@
 
 <div>
   <img src={{profile?.image}} width = "15%" height = "15%" alt="ProfilePic">
+  <input #fileInput type="file"/>
 </div>
 <div>
   {{profile?.name}}
@@ -13,4 +14,32 @@
   <body>
     <p> Description: {{profile?.description}} </p>
   </body>
+</div>
+
+
+<form [formGroup]="profileForm">
+<div class="form-group">
+  <label class="center-block">Name:
+    <input #name class="form-control" formControlName="name"
+      (keyup.enter)="editName(name.value)"
+      (blur)="editName(name.value); name.value='' ">
+  </label>
+  <button (click)="editName(name.value)">Edit</button>
+
+</div>
+<div class="form-group">
+  <label class="center-block">Website:
+    <input #website class="form-control" formControlName="website"
+      (keyup.enter)="editWebsite(website.value)"
+      (blur)="editWebsite(website.value); website.value='' ">
+  </label>
+  <button (click)="editWebsite(website.value)">Edit</button>
+</div>
+<div class="form-group">
+  <label #description class="center-block">Description:
+    <input class="form-control" formControlName="description"
+      (keyup.enter)="editDescription(description.value)"
+      (blur)="editDescription(description.value); description.value='' ">
+  </label>
+  <button (click)="editDescription(description.value)">Edit</button>
 </div>

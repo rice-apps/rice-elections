@@ -12,6 +12,6 @@ export class MembersService {
   ) { }
 
   get_members(): Observable<string[]> {
-    return this.http.get<string[]>('/assets/members.json');
+    return this.http.get<string[]>('../assets/members.json');
   }
 }
