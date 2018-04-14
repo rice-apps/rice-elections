@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import {InternalsElection} from "../../../internals/models/internals-election";
 import {ElectionDashService} from "./election-dash.service";
 
-import {USER} from "../../../shared/models/mock-user"
+import {USER} from "../../../shared/models/mock-user";
+import { Router, NavigationExtras } from "@angular/router";
 
 
 @Component({
@@ -19,6 +20,7 @@ export class ElectionDashComponent implements OnInit {
   organization = "Jones College";
   selected = []
 
+
   columns = [
     { prop: 'name', name: 'Name', flexGrow: 3 },
     { prop: 'organization', name: 'Organization', flexGrow: 2 },
@@ -28,7 +30,7 @@ export class ElectionDashComponent implements OnInit {
   ];
 
   constructor(
-     private elecDashService: ElectionDashService
+     private elecDashService: ElectionDashService, private rtr: Router
   ) { }
 
   ngOnInit() {
@@ -49,7 +51,11 @@ export class ElectionDashComponent implements OnInit {
   }
 
   onSelect({ selected }) {
-    console.log("Select Event", selected, this.selected);
+    console.log("Select Event", selected, this.selected[0]["id"]);
+    this.rtr.navigate(["/admin/election-manage"], { queryParams: { id: this.selected[0]["id"]} });
+
+
+
   }
 }
 

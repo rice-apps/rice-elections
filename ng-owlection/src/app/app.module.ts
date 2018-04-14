@@ -11,6 +11,9 @@ import {InternalsModule} from './internals/internals.module';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import { HomeComponent } from './home/home.component';
 
+import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
+// in imports, paste this: FormsModule,
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +24,9 @@ import { HomeComponent } from './home/home.component';
     BsDropdownModule.forRoot(),
     AdminModule,
     InternalsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

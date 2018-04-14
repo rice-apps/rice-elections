@@ -13,7 +13,9 @@ import { VotersComponent } from './election/election-manage/voters/voters.compon
 
 import {NgxDatatableModule} from "@swimlane/ngx-datatable";
 import {ElectionDashService} from "./election/election-dash/election-dash.service";
+import {ElectionManageService} from "./election/election-manage/election-manage.service";
 import {ElectionHomeService} from "./election/elec-home/elec-home.service";
+
 import {ElecHomeComponent} from "./election/elec-home/elec-home.component";
 
 
@@ -24,7 +26,7 @@ import {ElecHomeComponent} from "./election/elec-home/elec-home.component";
     HttpClientModule,
     NgxDatatableModule
   ],
-  providers: [ElectionDashService, ElectionHomeService],
+  providers: [ElectionDashService, ElectionHomeService, ElectionManageService],
   declarations: [ElecHomeComponent ,ElectionDashComponent, ElectionManageComponent, InfoComponent, PositionsComponent, VotersComponent]
 })
 export class AdminModule { }

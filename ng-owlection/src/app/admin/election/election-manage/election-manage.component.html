@@ -6,3 +6,102 @@
 <div><span> </span> </div>
 <div><span> </span> </div>
 
+<!-- useful: https://angular.io/guide/user-input
+https://angular.io/guide/reactive-forms#setup-->
+
+
+<div class = "container">
+
+   <h4>Update Election</h4>
+   <p>Election Name: {{election.name}}</p>
+  <!-- <p>Form value: {{ electionForm.value | json }}</p>
+   <p>oh</p> -->
+
+
+   <form #electionForm>
+
+      <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" formControlName = "title" id="title" #title required >
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" class="form-control" id="description" #description required>
+        </div>
+
+        <div class="form-group">
+          <label for="organization">Organization</label>
+          <input class="form-control" id="organization" #organization required>
+        </div>
+
+       <!-- <div class="form-group">
+          <label for="times">Times</label>
+          <input type="text" class="form-control" id="times" name="times" #times required>
+        </div> -->
+
+        <!--<button type="submit" class="btn btn-success" [disabled]="!electionForm.form.valid">Submit</button> -->
+        <button type="submit" class="btn btn-success" (click)="onSubmit()" #submitButton>Submit</button>
+   </form>
+
+
+</div>
+
+
+
+<!--
+<div class="container">
+  <div [hidden]="submitted">
+    <h1>New Election</h1>
+    <form (ngSubmit)="onSubmit()" #electionForm="ngForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name"
+               required
+               [(ngModel)]="model.name" name="name"
+               #name="ngModel">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description"
+               [(ngModel)]="model.description" name="description">
+      </div>
+      <div class="form-group">
+        <label for="power">Organisation</label>
+        <input class="form-control" id="power"
+                [(ngModel)]="model.organisation" name="organisation">
+      </div>
+        <div class="form-group">
+        <label for="name">Times</label>
+        <input type="text" class="form-control" id="name"
+               required
+               [(ngModel)]="model.name" name="name"
+               #name="ngModel">
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!electionForm.form.valid">Submit</button>
+    </form>
+  </div>
+
+  <div [hidden]="!submitted">
+    <h2>You submitted the following:</h2>
+    <div class="row">
+      <div class="col-xs-3">Name</div>
+      <div class="col-xs-9 pull-left">{{ model.name }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Description</div>
+      <div class="col-xs-9 pull-left">{{ model.description }}</div>
+    </div>
+      <div class="row">
+      <div class="col-xs-3">Organization</div>
+      <div class="col-xs-9 pull-left">{{ model.organization }}</div>
+    </div>
+      <div class="row">
+      <div class="col-xs-3">Times</div>
+      <div class="col-xs-9 pull-left">{{ model.times }}</div>
+    </div>
+    <br>
+    <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+  </div>
+</div> -->
