@@ -19,8 +19,6 @@ export class ProfileComponent implements OnInit {
 
   profileForm: FormGroup;
 
-  edit = '';
-
   constructor(
     private profileService: ProfileService,
     private profilefb: FormBuilder
@@ -58,34 +56,34 @@ export class ProfileComponent implements OnInit {
 
   create_form() {
     this.profileForm = this.profilefb.group({
-      name: '', // <--- the FormControl called "name"
-      website: '',
-      description: ''
+      name: "", // <--- the FormControl called "name"
+      website: "",
+      description: ""
     });
   }
 
-  editName(name: String) {
+  editName(name: string) {
     if (name) {
       this.profileForm.patchValue({
-        name: name;
+        name: name
       })
       this.profile.name = name;
     }
   }
 
-  editWebsite(website: String) {
+  editWebsite(website: string) {
     if (website) {
       this.profileForm.patchValue({
-        website: website;
+        website: website
       })
       this.profile.website = website;
     }
   }
 
-  editDescription(description: String) {
+  editDescription(description: string) {
     if (description) {
       this.profileForm.patchValue({
-        description: description;
+        description: description
       })
       this.profile.description = description;
     }
