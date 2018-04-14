@@ -1,6 +1,13 @@
 <div>
+
+    <p></p>
+
+        <a href="http://localhost:4200/admin/election-manage" class="button">Create Election</a>
+
+    {{clickMessage}}
+
     <ngx-datatable
-    [rows]="elections"
+    (click)="onClickIt(row)" [rows]="elections"
     [columns]="columns"
     [columnMode]="'flex'"
     [loadingIndicator]="true"
@@ -9,4 +16,5 @@
     class="bootstrap"
     >
     </ngx-datatable>
+
 </div>

@@ -6,14 +6,13 @@ import { AdminRoutingModule } from './admin-routing.module';
 
 import { ElectionDashComponent } from './election/election-dash/election-dash.component';
 import { ElectionManageComponent } from './election/election-manage/election-manage.component';
-import { InfoComponent } from './election/election-manage/info/info.component';
-import { PositionsComponent } from './election/election-manage/positions/positions.component';
-import { VotersComponent } from './election/election-manage/voters/voters.component';
 import {HttpClientModule} from "@angular/common/http";
 import {NgxDatatableModule} from "@swimlane/ngx-datatable";
 import {ElectionDashService} from "./election/election-dash/election-dash.service";
 import {ElectionHomeService} from "./election/elec-home/elec-home.service";
 import {ElecHomeComponent} from "./election/elec-home/elec-home.component";
+import { ReactiveFormsModule} from "@angular/forms";
+import {ElectionManageService} from "./election/election-manage/election-manage.service";
 
 
 @NgModule({
@@ -21,9 +20,10 @@ import {ElecHomeComponent} from "./election/elec-home/elec-home.component";
     CommonModule,
     AdminRoutingModule,
     HttpClientModule,
-    NgxDatatableModule
+    NgxDatatableModule,
+      ReactiveFormsModule
   ],
-  providers: [ElectionDashService, ElectionHomeService],
-  declarations: [ElecHomeComponent ,ElectionDashComponent, ElectionManageComponent, InfoComponent, PositionsComponent, VotersComponent]
+  providers: [ElectionDashService, ElectionHomeService, ElectionManageService],
+  declarations: [ElecHomeComponent ,ElectionDashComponent, ElectionManageComponent]
 })
 export class AdminModule { }

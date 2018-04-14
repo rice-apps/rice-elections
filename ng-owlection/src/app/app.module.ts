@@ -10,6 +10,7 @@ import {InternalsModule} from './internals/internals.module';
 
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import { HomeComponent } from './home/home.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -21,7 +22,9 @@ import { HomeComponent } from './home/home.component';
     BsDropdownModule.forRoot(),
     AdminModule,
     InternalsModule,
-    AppRoutingModule
+      ReactiveFormsModule,
+    AppRoutingModule,
+      FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

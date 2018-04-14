@@ -1,8 +1,36 @@
 
-<h1>ELECTION INFORMATION</h1>
+<form [formGroup]= electionForm (ngSubmit)="onSubmit()">
+  <div >
+    <button type="submit"
+            [disabled]="electionForm.pristine" class="btn btn-success">Submit</button>;
+  </div>
 
-<p>
-<h2> </h2>
-<div><span> </span> </div>
-<div><span> </span> </div>
+  <div class="form-group">
+      <label class="center-block">Election Information:
+          <p></p>
+          <label> Name: <input class="form-control" formControlName="name"></label>
+          <p></p>
+          <label> Description: <input class="form-control" formControlName="description"></label>
+          <p></p>
+          <label> Organization: <input class="form-control" formControlName="organization"></label>
+          <p></p>
+      </label>
+  </div>
+
+	<div class="input-append date form_datetime">
+    <input size="16" type="text" value="" readonly>
+    <span class="add-on"><i class="icon-th"></i></span>
+</div>
+
+<script type="text/javascript">
+    $(".form_datetime").datetimepicker({
+        format: "dd MM yyyy - hh:ii"
+    });
+</script>
+
+
+</form>
+
+
+
 
