@@ -12,6 +12,9 @@ jQuery ->
     $('.profile-input').focus (event) ->
         restoreDefaultButtonState(false)
 
+    $('#addAdmin').click (event) ->
+        addAdmin(event)
+
 # Open a voter list for editing
 toggleListForEditing = (event, link) ->
     listID = link.attr('href')
@@ -44,7 +47,7 @@ updateOrganizationInformation = (event) ->
         'data': data
     console.log(postData)
     $.ajax
-        url: '/admin/organization-panel'
+        url: '/admin/organization'
         type: 'POST'
         data: 'data': JSON.stringify(postData)
         success: (data) ->
@@ -52,6 +55,21 @@ updateOrganizationInformation = (event) ->
         error: (data) ->
             errorHandler(data)
     return false
+
+addAdmin = (event) ->
+
+    data =
+        'organization_id': $('#admin-orgid').val()
+        'net_id': $('#admin-netid').val()
+
+    $.ajax
+        url: '/admin/organization'
+        type: 'POST'
+        data: 'data : JSON.stringify(postData)'
+        success: (data) -> successHandler(data)
+        error: (data) -> errorHandler(data)
+    return false
+
 
 successHandler = (data) ->
     s = $('#updateProfile')

@@ -193,6 +193,35 @@
         <li><a href="mailto:{{ admin.email }}">{{ admin.email }}</a></li>
       {% endfor %}
     </ul>
+
+     <form class="form-horizontal well">
+      <fieldset>
+        <legend>Organization Profile</legend>
+        <div class="control-group">
+          <label class="control-label">NetID</label>
+          <div class="controls">
+            <input type="text"
+                   class="input-xlarge span4 profile-input"
+                   id="admin-netid">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="updateProfile"></label>
+          <div class="controls">
+            <a href='#' id='addAdmin'
+                   class="input-large btn btn-primary disabled"
+                   data-default-text='Add Admin'
+                   value=''>Add Admin</a>
+          </div>
+        </div>
+
+        <input type="hidden"
+               id="admin-orgid"
+               value='{{ active_org.key() }}'>
+      </fieldset>
+
+     </form>
   </div>
 </div>
 </section>
