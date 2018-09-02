@@ -14,7 +14,7 @@ from google.appengine.ext import deferred
 from models import models, webapputils, report_results, new_results
 from google.appengine.api import mail, taskqueue
 
-COMMANDERS = ['wa1', 'wcl2', 'stl2']
+COMMANDERS = ['wa1', 'wcl2', 'stl2', 'alh9']
 
 class CommandCenterHandler(webapp2.RequestHandler):
 
@@ -44,6 +44,7 @@ class CommandCenterHandler(webapp2.RequestHandler):
             "organizations": organizations,
             "elections": elections
         }
+        # self.response.write(page_data)
         return webapputils.render_page(self, '/intern/command-center', page_data)
 
     def post(self):

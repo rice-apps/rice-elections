@@ -37,6 +37,7 @@ class ElectionPanelHandler(webapp2.RequestHandler):
 
         election = None
         election_id = self.request.get('id')
+        logging.info(election_id)
         if election_id:
             election = models.Election.get(election_id)
             if not election:

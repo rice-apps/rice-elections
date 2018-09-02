@@ -1,5 +1,5 @@
 application: owlection
-version: new
+version: 2-1
 module: default
 runtime: python27
 api_version: 1
@@ -11,7 +11,7 @@ default_expiration: "10s"
 
 libraries:
 - name: webapp2
-  version: "2.5.1"
+  version: "2.5.2"
 
 - name: jinja2
   version: latest
