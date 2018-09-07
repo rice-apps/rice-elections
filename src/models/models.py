@@ -395,7 +395,7 @@ def get_all_admins(organization):
     return (org_admin.admin.voter for org_admin in 
         OrganizationAdmin.gql("WHERE organization=:1", organization))
 
-def remove_admin(voter, organization):
+def remove_admin(voter, organization, permanent = False):
     admin = Admin.gql("WHERE voter=:1", voter).get()
     if not admin:
         return False
@@ -403,7 +403,8 @@ def remove_admin(voter, organization):
         organization_admin = OrganizationAdmin.gql(
             "WHERE admin=:1 AND organization=:2", admin, organization).get()
         organization_admin.delete()
-    admin.delete()
+    if permanent:
+        admin.delete()
 
 def put_admin(voter, email, organization):
     """
@@ -417,12 +418,18 @@ def put_admin(voter, email, organization):
     Returns:
         {OrganizationAdmin}: the OrganizationAdmin entity.
     """
-    prev_admin = Admin.gql("WHERE voter=:1 AND email=:2", voter, email).get()
-    if prev_admin:  # Check if admin entity already exist
-        return OrganizationAdmin(admin=prev_admin, organization=organization).put()
+    admin = Admin.gql("WHERE voter=:1 AND email=:2", voter, email).get()
+    if not admin:  # Check if admin entity already exist
+        # if not, create a new Admin
+        admin = Admin(voter=voter, email=email).put()
 
-    admin = Admin(voter=voter, email=email).put()
-    return OrganizationAdmin(admin=admin, organization=organization).put()
+    # check if Admin is already an admin for this organization specifically
+    org_admin = OrganizationAdmin.gql("WHERE admin=:1 AND organization=:2", admin, organization).get()
+    if not org_admin:
+        return OrganizationAdmin(admin=admin, organization=organization).put()
+
+    else:
+        return org_admin
 
 
 def get_admin_status(voter, organization=None):
