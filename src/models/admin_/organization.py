@@ -80,6 +80,7 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
 
         # Get method and data
         logging.info('Received call')
+        logging.info(self.request.get('data'))
         data = json.loads(self.request.get('data'))
         # TODO: add function names mapped to function in methods dictionary (future)
         methods = {'update_profile': self.update_profile, 'add_admin': self.add_admin}
@@ -119,10 +120,18 @@ class OrganizationPanelHandler(webapp2.RequestHandler):
         return admins
 
     def add_admin(self, data):
-        org = models.get_organization(data['organization_id'])
+
+        org = models.Organization.get(data['organization_id'])
+        #org = models.get_organization(data['organization_id'])
         voter = models.get_voter(data['net_id'], create=True)
         org_admin = models.put_admin(voter, data['net_id']+'@rice.edu', org)
         if org_admin:
             webapputils.respond(self, 'OK', 'Done')
         else:
             webapputils.respond(self, 'ERROR', "Couldn't create admin")
+
+    def delete_admin(self, data):
+        org = models.Organization.get(data['organization_id'])
+        # org = models.get_organization(data['organization_id'])
+        voter = models.get_voter(data['net_id'], create=True)
+

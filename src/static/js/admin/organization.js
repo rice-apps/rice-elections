@@ -77,10 +77,15 @@ var addAdmin = function(event) {
         'net_id': $('#admin-netid').val()
     };
 
+    const postData = {
+        'method': 'add_admin',
+        'data': data
+    }
+
     $.ajax({
         url: '/admin/organization',
         type: 'POST',
-        data: 'data : JSON.stringify(postData)',
+        data: { 'data': JSON.stringify(postData) },
         success(data) { return successHandler(data); },
         error(data) { return errorHandler(data); }
     });
